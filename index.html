@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
     <style>
         /* --- Base & Variables --- */
         :root {
@@ -30,9 +31,9 @@
             --wishlist-heart: #ff6b6b; /* Red for wishlist */
             --remove-btn-color: #e74c3c;
             --remove-btn-hover-bg: rgba(231, 76, 60, 0.2);
-            --zoomed-bg-overlay: rgba(18, 18, 18, 0.85); /* Dark overlay for zoom */
+            --button-active-bg: rgba(224, 192, 112, 0.2); /* Subtle active state */
 
-            /* Light Theme Variables (overridden by body.light-theme) */
+            /* Light Theme Variables */
             --light-bg-color: #f8f8f8;
             --light-surface-color: #ffffff;
             --light-card-bg: #ffffff;
@@ -41,7 +42,7 @@
             --light-border-color: #e0e0e0;
             --light-shadow-color: rgba(0, 0, 0, 0.1);
             --light-shadow-light: rgba(0, 0, 0, 0.05);
-            --zoomed-bg-overlay-light: rgba(248, 248, 248, 0.85); /* Light overlay */
+            --light-button-active-bg: rgba(224, 192, 112, 0.1);
 
 
             /* General UI */
@@ -65,9 +66,9 @@
             --border-color: var(--light-border-color);
             --shadow-color: var(--light-shadow-color);
             --shadow-light: var(--light-shadow-light);
-            --glow-color: rgba(224, 192, 112, 0.15); /* Less intense glow */
+            --glow-color: rgba(224, 192, 112, 0.15);
             --remove-btn-hover-bg: rgba(231, 76, 60, 0.1);
-             --zoomed-bg-overlay: var(--zoomed-bg-overlay-light);
+            --button-active-bg: var(--light-button-active-bg);
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -77,12 +78,13 @@
             background-color: var(--bg-color);
             color: var(--text-primary);
             line-height: 1.65;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Prevent horizontal scroll */
             padding-bottom: var(--bottom-nav-height);
             font-weight: 400;
             transition: background-color var(--transition-medium), color var(--transition-medium);
              -webkit-font-smoothing: antialiased;
              -moz-osx-font-smoothing: grayscale;
+             -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
         }
         .container { max-width: 1600px; margin: 0 auto; padding: 0 30px; }
         img { max-width: 100%; display: block; }
@@ -93,10 +95,17 @@
 
         /* --- Utility Classes --- */
         .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
-        .hidden-visually { /* Use this to hide elements visually but keep them accessible */
-             border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px;
+        .hidden-visually { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+        .display-none { display: none !important; }
+
+        .button-base, .icon-button {
+             /* Basic mobile touch feedback */
+            -webkit-tap-highlight-color: rgba(0,0,0,0.05);
         }
-        .display-none { display: none !important; } /* Helper for JS toggling */
+        .button-base:active, .icon-button:active {
+            background-color: var(--button-active-bg); /* Use variable for theme compatibility */
+             transform: scale(0.98); /* Slight press effect */
+        }
 
         .button-base {
             display: inline-flex; align-items: center; justify-content: center;
@@ -106,15 +115,29 @@
         }
         .button-primary { background-color: var(--primary-accent); color: #111; }
         .button-primary:hover { background-color: var(--primary-accent-hover); transform: translateY(-2px); box-shadow: 0 4px 10px var(--shadow-light); }
+         .button-primary:active {
+             background-color: var(--primary-accent-darker); /* Darker gold on press */
+             transform: scale(0.98);
+             box-shadow: 0 2px 5px var(--shadow-light);
+         }
         .button-secondary { background-color: var(--surface-color); color: var(--text-primary); border: 1px solid var(--border-color); }
         .button-secondary:hover { background-color: var(--card-bg); border-color: var(--primary-accent); }
+         .button-secondary:active {
+             background-color: var(--card-bg); /* Keep bg */
+             border-color: var(--primary-accent-darker);
+             transform: scale(0.98);
+         }
         .icon-button { background: none; border: none; color: var(--text-secondary); font-size: 1.3rem; padding: 8px; cursor: pointer; transition: color var(--transition-fast), transform var(--transition-fast); }
         .icon-button:hover { color: var(--primary-accent); transform: scale(1.1); }
+         .icon-button:active {
+             /* Active state handled by base rule */
+             color: var(--primary-accent-darker);
+         }
 
         /* --- Header --- */
         header {
             position: sticky; top: 0; z-index: 1000;
-            background-color: rgba(18, 18, 18, 0.85); /* Slightly different base for dark */
+            background-color: rgba(18, 18, 18, 0.85);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border-bottom: 1px solid var(--border-color);
             height: var(--header-height);
@@ -154,36 +177,31 @@
             display: flex; justify-content: center; align-items: center; line-height: 1; padding-bottom: 1px;
             transition: transform 0.2s ease-in-out;
         }
-        #wishlist-button.active i, #mobile-wishlist-button.active i { color: var(--wishlist-heart); } /* Indicate active wishlist */
+        #wishlist-button.active i, #mobile-wishlist-button.active i { color: var(--wishlist-heart); }
         .mobile-controls { display: none; gap: 10px; }
 
         /* --- Hero Section --- */
         .hero-section {
-            min-height: 75vh; /* Slightly less tall */
+            min-height: 70vh; /* Slightly shorter */
             display: flex; align-items: center;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://via.placeholder.com/1920x1080/222222/555555?text=High+Quality+Fashion+Image') no-repeat center center / cover; /* Placeholder */
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://via.placeholder.com/1920x1080/222222/555555?text=High+Quality+Fashion+Image') no-repeat center center / cover;
             padding: 60px 0; text-align: center; position: relative; overflow: hidden;
-            border-bottom: 1px solid var(--border-color); /* Subtle separation */
+            border-bottom: 1px solid var(--border-color);
         }
         body.light-theme .hero-section { background: linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.7)), url('https://via.placeholder.com/1920x1080/eeeeee/cccccc?text=High+Quality+Fashion+Image') no-repeat center center / cover; }
         .hero-content { max-width: 800px; margin: 0 auto; animation: fadeInHero 1.5s ease-out; }
         .hero-title {
-            font-family: var(--heading-font);
-            font-size: 4rem; /* Adjusted size */
-            color: var(--primary-accent);
-            margin-bottom: 15px; line-height: 1.2;
-            text-shadow: 1px 1px 5px var(--shadow-color);
+            font-family: var(--heading-font); font-size: 4rem; color: var(--primary-accent);
+            margin-bottom: 15px; line-height: 1.2; text-shadow: 1px 1px 5px var(--shadow-color);
         }
         .hero-subtitle {
-            font-family: var(--main-font); /* Use main font */
-            font-size: 1.3rem; color: var(--text-primary); margin-bottom: 35px;
+            font-family: var(--main-font); font-size: 1.3rem; color: var(--text-primary); margin-bottom: 35px;
             opacity: 0.9; font-weight: 400;
         }
         body.light-theme .hero-subtitle { color: var(--light-text-primary); }
         .hero-cta-button {
-            padding: 14px 40px; font-size: 1.1rem; border-radius: 50px; /* Pill shape */
-            background: var(--primary-accent); color: #111;
-            box-shadow: 0 6px 15px var(--shadow-color);
+            padding: 14px 40px; font-size: 1.1rem; border-radius: 50px;
+            background: var(--primary-accent); color: #111; box-shadow: 0 6px 15px var(--shadow-color);
         }
         .hero-cta-button:hover { background: var(--primary-accent-hover); box-shadow: 0 8px 20px var(--shadow-color); transform: scale(1.03) translateY(-2px); }
         @keyframes fadeInHero { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -194,7 +212,7 @@
         .category-section-header h2 { font-size: 2.2rem; }
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Slightly larger min width */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
         }
         .product-card {
@@ -207,14 +225,12 @@
             animation: fadeInUpCard 0.6s ease-out forwards;
             animation-delay: calc(var(--card-index) * 0.05s);
         }
-        .product-card.hidden { display: none; } /* For filtering */
+        .product-card.hidden { display: none; }
         .product-card:hover { transform: translateY(-8px); box-shadow: 0 12px 25px var(--shadow-color); }
         .product-image-container {
             width: 100%; overflow: hidden; background-color: var(--surface-color);
-            aspect-ratio: 1 / 1.1; /* Control image height */
-            position: relative; display: flex; align-items: center; justify-content: center;
-            transition: background-color var(--transition-medium);
-             cursor: pointer; /* Clickable for quick view */
+            aspect-ratio: 1 / 1.1; position: relative; display: flex; align-items: center; justify-content: center;
+            transition: background-color var(--transition-medium); cursor: pointer;
         }
         .product-card img { width: 100%; height: 100%; object-fit: contain; transition: transform var(--transition-medium), filter var(--transition-medium); }
         .product-card:hover img { transform: scale(1.05); filter: brightness(1.08); }
@@ -228,7 +244,7 @@
         .badge i { font-size: 0.65rem; opacity: 0.9; }
         .badge.available { background-color: var(--success-color); color: #fff; }
         .badge.new-arrival { background-color: var(--new-badge-bg); color: #fff; }
-        body.light-theme .badge.available, body.light-theme .badge.new-arrival { color: #fff; } /* Keep white text for colored badges */
+        body.light-theme .badge.available, body.light-theme .badge.new-arrival { color: #fff; }
 
         .product-info { padding: 18px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
         .product-card h3 { font-size: 1.1rem; color: var(--text-primary); margin-bottom: 8px; line-height: 1.4; font-family: var(--main-font); font-weight: 600; min-height: 40px; }
@@ -236,7 +252,7 @@
         .product-card .price-card .currency { font-size: 0.8rem; font-weight: 400; color: var(--text-secondary); margin-right: 2px; }
         .product-card-actions { display: flex; justify-content: center; gap: 10px; margin-top: auto; padding-top: 10px; }
         .product-card-actions .icon-button { font-size: 1.1rem; padding: 6px; background-color: var(--surface-color); border-radius: 50%; border: 1px solid var(--border-color); }
-        .product-card-actions .icon-button.wishlist-btn.active { color: var(--wishlist-heart); border-color: var(--wishlist-heart); } /* Style active wishlist button */
+        .product-card-actions .icon-button.wishlist-btn.active { color: var(--wishlist-heart); border-color: var(--wishlist-heart); }
         .product-card-actions .icon-button:hover { background-color: var(--card-bg); }
         .product-card-actions .quick-order-btn { font-size: 1rem; color: var(--success-color); border-color: var(--success-color);}
         .product-card-actions .quick-order-btn:hover { color: #fff; background-color: var(--success-color); }
@@ -245,8 +261,7 @@
 
         /* --- Features Section --- */
         .features-section {
-            padding: 70px 0; margin-top: 50px;
-            background-color: var(--surface-color); /* Distinct background */
+            padding: 70px 0; margin-top: 50px; background-color: var(--surface-color);
             border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
             transition: background-color var(--transition-medium), border-color var(--transition-medium);
         }
@@ -275,22 +290,11 @@
             max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto;
             border: 1px solid var(--border-color); box-shadow: 0 15px 40px var(--shadow-color);
             transform: scale(0.95) translateY(-10px); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color var(--transition-medium), color var(--transition-medium);
-             /* Scrollbar styling for webkit */
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary-accent) var(--bg-color);
+            scrollbar-width: thin; scrollbar-color: var(--primary-accent) var(--bg-color);
         }
-         .modal-content::-webkit-scrollbar {
-             width: 8px;
-         }
-         .modal-content::-webkit-scrollbar-track {
-             background: var(--bg-color);
-             border-radius: 10px;
-         }
-         .modal-content::-webkit-scrollbar-thumb {
-             background-color: var(--primary-accent);
-             border-radius: 10px;
-             border: 2px solid var(--bg-color);
-         }
+         .modal-content::-webkit-scrollbar { width: 8px; }
+         .modal-content::-webkit-scrollbar-track { background: var(--bg-color); border-radius: 10px; }
+         .modal-content::-webkit-scrollbar-thumb { background-color: var(--primary-accent); border-radius: 10px; border: 2px solid var(--bg-color); }
 
         .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
         .modal-close {
@@ -308,57 +312,40 @@
         /* Quick View Modal */
         #quick-view-modal .modal-body {
             display: grid; grid-template-columns: 1fr 1fr; gap: 35px; align-items: flex-start;
-            position: relative; /* Needed for zoomed image positioning */
-            overflow: hidden; /* Clip zoomed image if it exceeds bounds slightly */
+            /* No position relative needed here anymore */
+            /* No overflow hidden needed here anymore */
          }
-        /* Image Zoom Styles (In-Place) */
-        #quick-view-modal .modal-image-zoom-wrapper { /* Wrapper for zoom click */
+        /* Image container for Panzoom */
+        #quick-view-modal .modal-image { /* This is the direct parent of the img */
             border-radius: var(--border-radius-md);
-            overflow: hidden;
+            overflow: hidden; /* CRUCIAL: Clip the zoomed image */
             background-color: var(--bg-color);
-             padding: 10px;
-             transition: all var(--transition-fast); /* Smooth transition for zoom */
-             cursor: zoom-in;
-             position: relative; /* Base position */
-             z-index: 1; /* Base layer */
+            position: relative; /* Context for the image */
+            z-index: 1;
+            transition: background-color var(--transition-medium);
+            /* Define aspect ratio or height */
+             aspect-ratio: 1 / 1.1; /* Or set a fixed height */
+             /* min-height: 400px; */ /* Example fixed height */
+             display: flex; /* Center image if needed */
+             align-items: center;
+             justify-content: center;
          }
         #quick-view-modal .modal-image img {
-            border-radius: var(--border-radius-sm);
-            width: 100%;
-            height: auto;
-            max-height: 500px;
-            object-fit: contain;
-            display: block; /* Ensure no extra space */
-            transition: transform 0.3s ease; /* Smooth image scaling inside */
-         }
-         /* Zoomed State */
-        #quick-view-modal .modal-image-zoom-wrapper.zoomed {
-            position: absolute; /* Overlay */
-            top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%; height: 100%;
-            padding: 20px; /* Padding around the zoomed image */
-            background-color: var(--zoomed-bg-overlay); /* Use variable overlay */
-            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 5; /* Above other modal content */
-            cursor: zoom-out;
-            border-radius: 0; /* Full overlay */
-        }
-        #quick-view-modal .modal-image-zoom-wrapper.zoomed .modal-image {
-             width: 100%; /* Allow image container to fill */
-             height: 100%;
-        }
-        #quick-view-modal .modal-image-zoom-wrapper.zoomed .modal-image img {
-             max-width: 100%; /* Fit within wrapper */
-             max-height: 100%; /* Fit within wrapper */
-             transform: scale(1.0); /* Reset any hover scale */
+             display: block;
+             max-width: 100%;
+             height: auto; /* Let aspect ratio control height */
              object-fit: contain;
+             cursor: grab; /* Indicate pannable */
+             transition: none; /* Panzoom handles transforms */
+         }
+         #quick-view-modal .modal-image img:active {
+             cursor: grabbing;
          }
 
-        #quick-view-modal .modal-details { position: relative; z-index: 2; } /* Keep details above base image layer */
-        #quick-view-modal .modal-details h2 { font-size: 1.8rem; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: var(--primary-accent); } /* Title style like other modals */
+        /* Removed .modal-image-zoom-wrapper and .zoomed styles */
+
+        #quick-view-modal .modal-details { position: relative; z-index: 2; }
+        #quick-view-modal .modal-details h2 { font-size: 1.8rem; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: var(--primary-accent); }
         #quick-view-modal .info-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 1rem; }
         #quick-view-modal .info-item i { color: var(--primary-accent); width: 20px; text-align: center; }
         #quick-view-modal .info-item .label { color: var(--text-secondary); }
@@ -368,43 +355,23 @@
 
         /* Order Form Modal */
         #order-form-modal .modal-content { max-width: 600px; }
-        /* Inherits .modal-header styles */
         .order-summary { background-color: var(--bg-color); padding: 15px; margin-bottom: 20px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); transition: background-color var(--transition-medium), border-color var(--transition-medium); }
         .order-summary h4 { color: var(--primary-accent); margin-bottom: 10px; font-size: 1.1rem; font-weight: 600; border-bottom: 1px dashed var(--primary-accent-darker); padding-bottom: 8px; }
         .order-summary p { font-size: 0.9rem; color: var(--text-primary); margin-bottom: 5px; }
         .order-summary span { font-weight: bold; color: var(--primary-accent); }
-        /* Styles for multi-item list in order summary */
          #order-summary-items-list {
-             list-style: none; /* Remove default bullets */
-             padding: 0;
-             margin: 10px 0;
-             text-align: right;
-             max-height: 150px; /* Limit height if list is long */
-             overflow-y: auto;
-             border: 1px solid var(--border-color);
-             border-radius: var(--border-radius-sm);
-             padding: 10px;
-             background-color: var(--surface-color);
+             list-style: none; padding: 0; margin: 10px 0; text-align: right;
+             max-height: 150px; overflow-y: auto; border: 1px solid var(--border-color);
+             border-radius: var(--border-radius-sm); padding: 10px; background-color: var(--surface-color);
+             scrollbar-width: thin; scrollbar-color: var(--primary-accent) var(--bg-color);
          }
-         #order-summary-items-list li {
-             font-size: 0.85rem;
-             color: var(--text-secondary);
-             border-bottom: 1px solid var(--border-color);
-             padding-bottom: 5px;
-             margin-bottom: 5px;
-         }
-          #order-summary-items-list li:last-child {
-             border-bottom: none;
-             margin-bottom: 0;
-         }
-          #order-summary-items-list li span { /* For price */
-             color: var(--primary-accent);
-             font-weight: 600;
-             margin-right: 5px;
-         }
-         #order-summary-single-item-details { /* Wrapper for single item details */
-             /* Add styles if needed, or rely on JS to hide/show */
-         }
+          #order-summary-items-list::-webkit-scrollbar { width: 6px; }
+          #order-summary-items-list::-webkit-scrollbar-track { background: var(--surface-color); border-radius: 10px; }
+          #order-summary-items-list::-webkit-scrollbar-thumb { background-color: var(--primary-accent); border-radius: 10px; border: 1px solid var(--surface-color); }
+         #order-summary-items-list li { font-size: 0.85rem; color: var(--text-secondary); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-bottom: 5px; }
+          #order-summary-items-list li:last-child { border-bottom: none; margin-bottom: 0; }
+          #order-summary-items-list li span { color: var(--primary-accent); font-weight: 600; margin-right: 5px; }
+         #order-summary-single-item-details { /* Wrapper for single item details */ }
 
         #order-form label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-secondary); font-size: 0.9rem; text-align: right; }
         #order-form input[type="text"], #order-form input[type="tel"], #order-form textarea {
@@ -421,125 +388,40 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
         #modal-whatsapp-button-final:hover { background: linear-gradient(145deg, #388E3C, #66bb6a); box-shadow: 0 6px 15px rgba(0,0,0,0.3); transform: translateY(-2px); }
+        #modal-whatsapp-button-final:active { transform: scale(0.98); box-shadow: none; }
 
         /* --- Wishlist Modal --- */
         #wishlist-modal .modal-content { max-width: 700px; }
         #wishlist-items-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px; /* Space below header */
-             max-height: 55vh; /* Adjust height for button space */
-             overflow-y: auto;
-             padding-right: 10px; /* Space for scrollbar */
-             margin-bottom: 20px; /* Space above order all button */
+            display: flex; flex-direction: column; gap: 15px; margin-top: 20px;
+             max-height: 55vh; overflow-y: auto; padding-right: 10px; margin-bottom: 20px;
+             scrollbar-width: thin; scrollbar-color: var(--primary-accent) var(--bg-color);
         }
-        .wishlist-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background-color: var(--bg-color);
-            padding: 12px;
-            border-radius: var(--border-radius-md);
-            border: 1px solid var(--border-color);
-            transition: background-color var(--transition-medium), border-color var(--transition-medium);
-        }
+         #wishlist-items-container::-webkit-scrollbar { width: 6px; }
+         #wishlist-items-container::-webkit-scrollbar-track { background: var(--surface-color); border-radius: 10px; }
+         #wishlist-items-container::-webkit-scrollbar-thumb { background-color: var(--primary-accent); border-radius: 10px; border: 1px solid var(--surface-color); }
+
+        .wishlist-item { display: flex; align-items: center; gap: 15px; background-color: var(--bg-color); padding: 12px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); transition: background-color var(--transition-medium), border-color var(--transition-medium); }
         body.light-theme .wishlist-item { background-color: var(--light-bg-color); }
-        .wishlist-item-image {
-            width: 70px;
-            height: 70px;
-            border-radius: var(--border-radius-sm);
-            overflow: hidden;
-            flex-shrink: 0;
-            background-color: var(--surface-color); /* Background for image container */
-        }
-        .wishlist-item-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .wishlist-item-details {
-            flex-grow: 1;
-            text-align: right;
-        }
-        .wishlist-item-details h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--text-primary);
-            font-family: var(--main-font);
-        }
-        .wishlist-item-details p {
-            font-size: 0.9rem;
-            color: var(--primary-accent);
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .wishlist-item-actions {
-            display: flex;
-             /* Removed flex-direction */
-            gap: 8px;
-            align-items: center; /* Align remove button vertically */
-             flex-shrink: 0;
-        }
-        /* Removed individual order button styles */
-        .wishlist-item-actions .wishlist-remove-item-btn {
-            color: var(--remove-btn-color);
-            font-size: 1.1rem; /* Slightly larger icon */
-            padding: 5px;
-            background: none;
-            border: none;
-        }
-         .wishlist-item-actions .wishlist-remove-item-btn:hover {
-            background-color: var(--remove-btn-hover-bg);
-             border-radius: 50%;
-         }
+        .wishlist-item-image { width: 70px; height: 70px; border-radius: var(--border-radius-sm); overflow: hidden; flex-shrink: 0; background-color: var(--surface-color); }
+        .wishlist-item-image img { width: 100%; height: 100%; object-fit: contain; }
+        .wishlist-item-details { flex-grow: 1; text-align: right; }
+        .wishlist-item-details h4 { font-size: 1rem; font-weight: 600; margin-bottom: 5px; color: var(--text-primary); font-family: var(--main-font); }
+        .wishlist-item-details p { font-size: 0.9rem; color: var(--primary-accent); font-weight: bold; margin-bottom: 8px; }
+        .wishlist-item-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+        .wishlist-item-actions .wishlist-remove-item-btn { color: var(--remove-btn-color); font-size: 1.1rem; padding: 5px; background: none; border: none; }
+         .wishlist-item-actions .wishlist-remove-item-btn:hover { background-color: var(--remove-btn-hover-bg); border-radius: 50%; }
          /* Order All Button */
-         #wishlist-order-all-btn {
-             width: 100%;
-             margin-top: 15px; /* Space above */
-             padding: 12px 25px;
-             font-size: 1rem;
-             background: linear-gradient(145deg, var(--success-color), #388E3C);
-             color: white;
-             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-         }
-          #wishlist-order-all-btn:hover {
-              background: linear-gradient(145deg, #388E3C, #66bb6a);
-              box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-              transform: translateY(-2px);
-          }
-           #wishlist-order-all-btn:disabled {
-               background: var(--text-secondary);
-               cursor: not-allowed;
-               opacity: 0.6;
-               transform: none;
-               box-shadow: none;
-           }
+         #wishlist-order-all-btn { width: 100%; margin-top: 15px; padding: 12px 25px; font-size: 1rem; background: linear-gradient(145deg, var(--success-color), #388E3C); color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+          #wishlist-order-all-btn:hover { background: linear-gradient(145deg, #388E3C, #66bb6a); box-shadow: 0 6px 15px rgba(0,0,0,0.3); transform: translateY(-2px); }
+          #wishlist-order-all-btn:disabled { background: var(--text-secondary); cursor: not-allowed; opacity: 0.6; transform: none; box-shadow: none; }
+          #wishlist-order-all-btn:active:not(:disabled) { transform: scale(0.98); box-shadow: none; }
 
-
-        #wishlist-empty-message {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-        #wishlist-empty-message i {
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 15px;
-            color: var(--primary-accent);
-        }
-
-        /* --- Image Zoom Modal --- (Removed) */
+        #wishlist-empty-message { text-align: center; padding: 40px 20px; color: var(--text-secondary); font-size: 1.1rem; }
+        #wishlist-empty-message i { font-size: 3rem; display: block; margin-bottom: 15px; color: var(--primary-accent); }
 
         /* --- Footer --- */
-        footer {
-            text-align: center; margin-top: 60px; padding: 40px 20px;
-            background-color: var(--surface-color); color: var(--text-secondary);
-            font-size: 0.9rem; border-top: 1px solid var(--border-color);
-            transition: background-color var(--transition-medium), color var(--transition-medium), border-color var(--transition-medium);
-        }
+        footer { text-align: center; margin-top: 60px; padding: 40px 20px; background-color: var(--surface-color); color: var(--text-secondary); font-size: 0.9rem; border-top: 1px solid var(--border-color); transition: background-color var(--transition-medium), color var(--transition-medium), border-color var(--transition-medium); }
         footer p { margin-bottom: 8px; font-weight: 400; }
         footer a { font-weight: 600; }
         footer a i { margin-left: 5px; }
@@ -549,20 +431,16 @@
         #no-results i { color: var(--primary-accent); margin-bottom: 15px; font-size: 2rem; display: block; }
 
         /* --- Bottom Navigation (Mobile Only) --- */
-        .bottom-nav {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height);
-            background-color: var(--surface-color); box-shadow: 0 -5px 15px var(--shadow-light);
-            border-top: 1px solid var(--border-color); z-index: 1001;
-            transition: background-color var(--transition-medium), border-color var(--transition-medium);
-        }
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height); background-color: var(--surface-color); box-shadow: 0 -5px 15px var(--shadow-light); border-top: 1px solid var(--border-color); z-index: 1001; transition: background-color var(--transition-medium), border-color var(--transition-medium); }
         .bottom-nav ul { list-style: none; display: flex; justify-content: space-around; align-items: stretch; height: 100%; }
         .bottom-nav ul li { flex: 1; }
         .bottom-nav ul li a { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; color: var(--text-secondary); font-size: 0.7rem; font-weight: 600; padding: 5px 0; transition: color var(--transition-fast); position: relative; }
         .bottom-nav ul li a i { font-size: 1.4rem; margin-bottom: 3px; display: block; }
         .bottom-nav ul li a.active { color: var(--primary-accent); }
         .bottom-nav ul li a.active i { transform: scale(1.1); }
+         .bottom-nav ul li a:active { background-color: var(--button-active-bg); } /* Touch feedback */
 
-        /* --- Mobile Overlays (Simplified) --- */
+        /* --- Mobile Overlays --- */
         .mobile-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 1500; display: flex; justify-content: center; align-items: flex-start; padding-top: calc(var(--header-height) + 20px); opacity: 0; visibility: hidden; transition: opacity var(--transition-medium), visibility 0s linear var(--transition-medium); }
         body.light-theme .mobile-overlay { background-color: rgba(255, 255, 255, 0.5); }
         .mobile-overlay.active { opacity: 1; visibility: visible; transition-delay: 0s; }
@@ -588,18 +466,17 @@
 
         @media (max-width: 992px) {
             nav.desktop-nav { display: none; }
-            .header-controls .filter-control, .header-controls .search-container { display: none; } /* Hide desktop filter/search */
-            .mobile-controls { display: flex; } /* Show mobile filter/search icons */
+            .header-controls .filter-control, .header-controls .search-container { display: none; }
+            .mobile-controls { display: flex; }
             .product-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
             #quick-view-modal .modal-body { grid-template-columns: 1fr; gap: 20px; }
-            #quick-view-modal .modal-image img { max-height: 400px; }
-             /* Adjust zoomed image overlay for stacked layout */
-             #quick-view-modal .modal-image-zoom-wrapper.zoomed {
-                 padding: 10px; /* Less padding on mobile */
+            #quick-view-modal .modal-image { /* Adjust height for mobile */
+                 /* max-height: 400px; */ /* Remove fixed max-height */
+                 aspect-ratio: 1 / 1; /* More square on mobile maybe? */
+                 min-height: 300px; /* Ensure decent min height */
              }
             .hero-title { font-size: 3rem; }
-            /* Wishlist modal adjustments */
-             #wishlist-modal .modal-content { max-width: 90%; }
+            #wishlist-modal .modal-content { max-width: 90%; }
         }
 
         @media (max-width: 768px) {
@@ -622,16 +499,17 @@
             .features-grid { grid-template-columns: 1fr; gap: 20px; }
             .modal-content { padding: 20px; max-height: 85vh; }
             #quick-view-modal .modal-details h2 { font-size: 1.5rem; }
+             #quick-view-modal .modal-image { min-height: 250px; } /* Adjust min height further */
             #order-form-modal .modal-content { max-width: 95%; }
             #order-form-modal .modal-header h2 { font-size: 1.4rem; }
-            .wishlist-item { flex-direction: row; /* Back to row */ align-items: center; gap: 10px; text-align: right; }
-             .wishlist-item-image { width: 60px; height: 60px; /* Keep smaller image */ }
+            .wishlist-item { flex-direction: row; align-items: center; gap: 10px; text-align: right; }
+             .wishlist-item-image { width: 60px; height: 60px; }
              .wishlist-item-details { flex-grow: 1; }
-             .wishlist-item-actions { flex-shrink: 0; /* Ensure remove btn stays right */}
+             .wishlist-item-actions { flex-shrink: 0; }
         }
 
         @media (max-width: 500px) {
-             .product-grid { grid-template-columns: 1fr; } /* Single column */
+             .product-grid { grid-template-columns: 1fr; }
              .hero-title { font-size: 2.2rem; }
              footer { padding: 30px 15px 80px 15px; font-size: 0.85rem;}
              .bottom-nav ul li a { font-size: 0.65rem; }
@@ -643,6 +521,9 @@
              .wishlist-item-details p{ font-size: 0.8rem;}
              .wishlist-item-actions .wishlist-remove-item-btn { font-size: 1rem; padding: 3px;}
              #wishlist-order-all-btn { font-size: 0.9rem; padding: 10px 20px;}
+             #quick-view-modal .modal-body { gap: 15px; } /* Reduce gap */
+              #quick-view-modal .modal-image { min-height: 200px; } /* Adjust min height */
+
         }
     </style>
 </head>
@@ -776,11 +657,9 @@
         <div class="modal-content">
             <button id="modal-close-button-qv" class="modal-close" title="إغلاق">&times;</button>
             <div class="modal-body">
-                <div class="modal-image-zoom-wrapper">
-                    <div class="modal-image">
-                         <img id="modal-product-image" src="" alt="صورة المنتج" loading="lazy">
-                    </div>
-                 </div>
+                <div class="modal-image">
+                     <img id="modal-product-image" src="" alt="صورة المنتج" loading="lazy">
+                </div>
                  <div class="modal-details">
                     <h2 id="modal-product-title">اسم المنتج</h2>
                     <div class="info-item">
@@ -824,8 +703,7 @@
                         <i class="fas fa-tag" style="color: var(--text-secondary)"></i> السعر: <span id="order-summary-price"></span> <span class="currency">د.ع</span>
                     </p>
                 </div>
-                 <ul id="order-summary-items-list" class="display-none">
-                     </ul>
+                 <ul id="order-summary-items-list" class="display-none"></ul>
                 <input type="hidden" id="order-form-product-id">
                 <input type="hidden" id="order-form-product-title">
                 <input type="hidden" id="order-form-product-size">
@@ -873,7 +751,7 @@
         </div>
      </div>
 
-     <nav class="bottom-nav">
+    <nav class="bottom-nav">
         <ul>
             <li><a href="#category-header" data-category="all" class="nav-link-mobile active"><i class="fas fa-store"></i><span class="nav-text">الكل</span></a></li>
             <li><a href="#category-header" data-category="trousers" class="nav-link-mobile"><i class="fas fa-user-secret"></i><span class="nav-text">بناطيل</span></a></li>
@@ -889,7 +767,7 @@
         </div>
     </footer>
 
-    <script>
+    <script defer>
         // --- Product Data (Same as provided) ---
         const products = [
              // --- Trousers/Jeggings ---
@@ -939,7 +817,7 @@
         const categoryHeader = document.getElementById('category-header');
         const categoryTitleMain = document.getElementById('category-title-main');
         const noResultsDiv = document.getElementById('no-results');
-        const allCards = []; // To store references to card elements
+        const allCards = [];
 
         // Desktop Controls
         const desktopSearchInput = document.getElementById('search-input');
@@ -973,11 +851,10 @@
         const wishlistModalCloseButton = document.getElementById('modal-close-button-wishlist');
         const wishlistItemsContainer = document.getElementById('wishlist-items-container');
         const wishlistEmptyMessage = document.getElementById('wishlist-empty-message');
-        const wishlistOrderAllBtn = document.getElementById('wishlist-order-all-btn'); // New Order All Button
+        const wishlistOrderAllBtn = document.getElementById('wishlist-order-all-btn');
 
         // Quick View Modal Content
-        const modalImageContainer = document.querySelector('#quick-view-modal .modal-image-zoom-wrapper');
-        const modalImage = document.getElementById('modal-product-image');
+        const modalImageElement = document.getElementById('modal-product-image'); // The <img> element
         const modalTitle = document.getElementById('modal-product-title');
         const modalSize = document.getElementById('modal-product-size');
         const modalPrice = document.getElementById('modal-product-price');
@@ -989,42 +866,36 @@
         // Order Form Modal Content
         const orderForm = document.getElementById('order-form');
         const formErrorMessage = document.getElementById('form-error-message');
-        const orderSummaryMainTitle = document.getElementById('order-summary-main-title'); // Title element
-        const orderSummarySingleItemDetails = document.getElementById('order-summary-single-item-details'); // Single item div
-        const orderSummaryItemsList = document.getElementById('order-summary-items-list'); // Multi item UL
-        const orderSummaryTitle = document.getElementById('order-summary-title'); // Single item title P
-        const orderSummarySize = document.getElementById('order-summary-size'); // Single item size span
-        const orderSummaryPrice = document.getElementById('order-summary-price'); // Single item price span
+        const orderSummaryMainTitle = document.getElementById('order-summary-main-title');
+        const orderSummarySingleItemDetails = document.getElementById('order-summary-single-item-details');
+        const orderSummaryItemsList = document.getElementById('order-summary-items-list');
+        const orderSummaryTitle = document.getElementById('order-summary-title');
+        const orderSummarySize = document.getElementById('order-summary-size');
+        const orderSummaryPrice = document.getElementById('order-summary-price');
         const orderFormProductId = document.getElementById('order-form-product-id');
         const orderFormProductTitle = document.getElementById('order-form-product-title');
         const orderFormProductSize = document.getElementById('order-form-product-size');
         const orderFormProductPrice = document.getElementById('order-form-product-price');
 
         // --- State & Constants ---
-        const whatsappNumber = '9647711359997'; // Replace with your actual number
-        let currentProductIdForOrder = null; // For single item orders initiated from QuickView
+        const whatsappNumber = '9647711359997';
+        let currentProductIdForOrder = null;
         let activeCategory = 'all';
-        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || []; // Array of product IDs
-        let wishlistItemsForOrder = []; // Holds item IDs when ordering all from wishlist
+        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        let wishlistItemsForOrder = [];
+        let currentPanzoomInstance = null; // To hold the Panzoom instance
 
         // --- Wishlist Functions ---
         function updateWishlistCount() {
             const count = wishlist.length;
             wishlistCountSpan.textContent = count;
             mobileWishlistCountSpan.textContent = count;
-            if (count > 0) {
-                wishlistCountSpan.classList.remove('visually-hidden');
-                mobileWishlistCountSpan.classList.remove('visually-hidden');
-                wishlistButton.classList.add('active');
-                mobileWishlistButton.classList.add('active');
-                if(wishlistOrderAllBtn) wishlistOrderAllBtn.disabled = false; // Enable order all button
-            } else {
-                wishlistCountSpan.classList.add('visually-hidden');
-                mobileWishlistCountSpan.classList.add('visually-hidden');
-                 wishlistButton.classList.remove('active');
-                 mobileWishlistButton.classList.remove('active');
-                 if(wishlistOrderAllBtn) wishlistOrderAllBtn.disabled = true; // Disable order all button
-            }
+            const hasItems = count > 0;
+            wishlistCountSpan.classList.toggle('visually-hidden', !hasItems);
+            mobileWishlistCountSpan.classList.toggle('visually-hidden', !hasItems);
+            wishlistButton.classList.toggle('active', hasItems);
+            mobileWishlistButton.classList.toggle('active', hasItems);
+            if(wishlistOrderAllBtn) wishlistOrderAllBtn.disabled = !hasItems;
         }
 
         function isWished(productId) {
@@ -1043,49 +914,38 @@
             localStorage.setItem('wishlist', JSON.stringify(wishlist));
             updateWishlistCount();
 
-             // --- Update ALL relevant heart icons ---
+             // Update UI feedback
              if (buttonElement) {
                  const isNowWished = index === -1;
                  buttonElement.classList.toggle('active', isNowWished);
                  const icon = buttonElement.querySelector('i');
-                 if (icon) {
-                     icon.className = isNowWished ? 'fas fa-heart' : 'far fa-heart';
-                 }
+                 if (icon) icon.className = isNowWished ? 'fas fa-heart' : 'far fa-heart';
             }
             document.querySelectorAll(`.wishlist-btn[data-id="${numProductId}"]`).forEach(btn => {
                 const isWishedState = isWished(numProductId);
                 btn.classList.toggle('active', isWishedState);
                 const icon = btn.querySelector('i');
-                 if (icon && btn !== buttonElement) {
-                     icon.className = isWishedState ? 'fas fa-heart' : 'far fa-heart';
-                 }
+                 if (icon && btn !== buttonElement) icon.className = isWishedState ? 'fas fa-heart' : 'far fa-heart';
             });
 
             if (wishlistModalOverlay.classList.contains('active')) {
-                renderWishlistItems(); // Re-render wishlist modal content if open
+                renderWishlistItems(); // Re-render wishlist modal if open
             }
         }
 
         // --- Theme Toggle Functions ---
         function applyTheme(theme) {
-            if (theme === 'light') {
-                body.classList.add('light-theme');
-                themeToggleButton.innerHTML = '<i class="fas fa-moon"></i>';
-                mobileThemeToggleButton.innerHTML = '<i class="fas fa-moon"></i>';
-            } else {
-                body.classList.remove('light-theme');
-                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i>';
-                mobileThemeToggleButton.innerHTML = '<i class="fas fa-sun"></i>';
-            }
+             body.classList.toggle('light-theme', theme === 'light');
+             const iconClass = theme === 'light' ? 'fa-moon' : 'fa-sun';
+             if(themeToggleButton) themeToggleButton.innerHTML = `<i class="fas ${iconClass}"></i>`;
+             if(mobileThemeToggleButton) mobileThemeToggleButton.innerHTML = `<i class="fas ${iconClass}"></i>`;
         }
 
         function toggleTheme() {
-            const currentTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            const newTheme = body.classList.contains('light-theme') ? 'dark' : 'light';
             localStorage.setItem('theme', newTheme);
             applyTheme(newTheme);
         }
-
 
         // --- Create Card Function ---
         function createProductCard(product) {
@@ -1096,85 +956,47 @@
             card.dataset.base_size = product.base_size;
             card.dataset.id = product.id;
 
-            // Image Container
-             const imageContainer = document.createElement('div');
-             imageContainer.className = 'product-image-container';
-             imageContainer.onclick = (e) => {
-                  if (!e.target.closest('.product-card-actions button')) {
-                      openQuickView(product.id);
-                  }
-             };
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'product-image-container';
+            imageContainer.onclick = (e) => { if (!e.target.closest('.product-card-actions button')) openQuickView(product.id); };
             const img = document.createElement('img');
-            img.src = product.image;
-            img.alt = product.title;
-            img.loading = 'lazy';
+            img.src = product.image; img.alt = product.title; img.loading = 'lazy';
             imageContainer.appendChild(img);
 
-            // Badges
             const badgesContainer = document.createElement('div');
             badgesContainer.className = 'product-badges';
-            if (product.availability === 'in stock') {
-                 const b = document.createElement('span'); b.className = 'badge available';
-                 b.innerHTML = '<i class="fas fa-check"></i> متوفر'; badgesContainer.appendChild(b);
-            }
-             if (product.is_new) {
-                 const b = document.createElement('span'); b.className = 'badge new-arrival';
-                 b.innerHTML = '<i class="fas fa-star"></i> جديد'; badgesContainer.appendChild(b);
-             }
+            if (product.availability === 'in stock') badgesContainer.innerHTML += '<span class="badge available"><i class="fas fa-check"></i> متوفر</span>';
+            if (product.is_new) badgesContainer.innerHTML += '<span class="badge new-arrival"><i class="fas fa-star"></i> جديد</span>';
             imageContainer.appendChild(badgesContainer);
 
-            // Info Container
-            const infoContainer = document.createElement('div');
-            infoContainer.className = 'product-info';
-            const title = document.createElement('h3');
-            title.textContent = product.title;
-            infoContainer.appendChild(title);
-            const price = document.createElement('p');
-            price.className = 'price-card';
-            price.innerHTML = `${product.price} <span class="currency">د.ع</span>`;
-            infoContainer.appendChild(price);
+            const infoContainer = document.createElement('div'); infoContainer.className = 'product-info';
+            infoContainer.innerHTML = `
+                <h3>${product.title}</h3>
+                <p class="price-card">${product.price} <span class="currency">د.ع</span></p>
+                <div class="product-card-actions">
+                    <button class="icon-button wishlist-btn ${isWished(product.id) ? 'active' : ''}" data-id="${product.id}" aria-label="إضافة للمفضلة">
+                        <i class="${isWished(product.id) ? 'fas fa-heart' : 'far fa-heart'}"></i>
+                    </button>
+                    <button class="icon-button quick-order-btn" data-id="${product.id}" aria-label="طلب سريع">
+                        <i class="fas fa-cart-plus"></i>
+                    </button>
+                </div>
+            `;
+            // Add listeners AFTER setting innerHTML
+            infoContainer.querySelector('.wishlist-btn').onclick = (e) => { e.stopPropagation(); toggleWishlist(product.id, e.currentTarget); };
+            infoContainer.querySelector('.quick-order-btn').onclick = (e) => { e.stopPropagation(); openOrderModal(product.id); };
 
-            // Action Buttons Container
-            const actionsContainer = document.createElement('div');
-            actionsContainer.className = 'product-card-actions';
-
-            // Wishlist Button
-            const wishButton = document.createElement('button');
-             const productIsWished = isWished(product.id);
-             wishButton.className = `icon-button wishlist-btn ${productIsWished ? 'active' : ''}`;
-            wishButton.dataset.id = product.id;
-            wishButton.setAttribute('aria-label', 'إضافة للمفضلة');
-             wishButton.innerHTML = `<i class="${productIsWished ? 'fas fa-heart' : 'far fa-heart'}"></i>`;
-             wishButton.onclick = (e) => {
-                 e.stopPropagation();
-                 toggleWishlist(product.id, wishButton);
-             };
-            actionsContainer.appendChild(wishButton);
-
-            // Quick Order Button
-            const quickOrderButton = document.createElement('button');
-            quickOrderButton.className = 'icon-button quick-order-btn';
-            quickOrderButton.setAttribute('aria-label', 'طلب سريع');
-            quickOrderButton.innerHTML = '<i class="fas fa-cart-plus"></i>';
-             quickOrderButton.onclick = (e) => {
-                 e.stopPropagation();
-                 openOrderModal(product.id); // Pass ID for single item order
-             };
-            actionsContainer.appendChild(quickOrderButton);
-            infoContainer.appendChild(actionsContainer);
-
-            card.appendChild(imageContainer);
-            card.appendChild(infoContainer);
-            allCards.push(card);
-            return card;
+            card.appendChild(imageContainer); card.appendChild(infoContainer);
+            allCards.push(card); return card;
         }
 
         // --- Modal Functions ---
         function openModal(modalOverlay) {
             if (!modalOverlay) return;
-            // Close any existing zoomed image before opening a new modal
-            if (modalImageContainer && modalImageContainer.classList.contains('zoomed')) {
-                 modalImageContainer.classList.remove('zoomed');
+            // Destroy existing Panzoom before opening a new modal (except if opening QuickView itself)
+            if (currentPanzoomInstance && modalOverlay !== quickViewModalOverlay) {
+                 currentPanzoomInstance.destroy();
+                 currentPanzoomInstance = null;
             }
             modalOverlay.classList.add('active');
             body.style.overflow = 'hidden';
@@ -1183,23 +1005,23 @@
         function closeModal(modalOverlay) {
              if (!modalOverlay) return;
             modalOverlay.classList.remove('active');
-             // Close zoomed image if closing QuickView modal
-            if (modalOverlay === quickViewModalOverlay && modalImageContainer && modalImageContainer.classList.contains('zoomed')) {
-                 modalImageContainer.classList.remove('zoomed');
+            // Destroy Panzoom instance when QuickView modal is closed
+            if (modalOverlay === quickViewModalOverlay && currentPanzoomInstance) {
+                 currentPanzoomInstance.destroy();
+                 currentPanzoomInstance = null;
+                 // console.log("Panzoom destroyed");
             }
             const anyModalActive = document.querySelector('.modal-overlay.active');
-            if (!anyModalActive) {
-                body.style.overflow = '';
-            }
+            if (!anyModalActive) body.style.overflow = '';
         }
 
         function openQuickView(productId) {
             const product = products.find(p => p.id === Number(productId));
             if (!product) return;
 
-            currentProductIdForOrder = productId; // Set for proceed button
-            modalImage.src = product.image;
-            modalImage.alt = product.title;
+            currentProductIdForOrder = productId;
+            modalImageElement.src = product.image; // Set image source FIRST
+            modalImageElement.alt = product.title;
             modalTitle.textContent = product.title;
             modalSize.textContent = product.size;
             modalPrice.textContent = product.price;
@@ -1214,346 +1036,247 @@
                  modalAvailabilityInfo.style.color = 'var(--error-color)';
                   modalAvailabilityInfo.querySelector('i').className = 'fas fa-times-circle';
             }
-            // Ensure image is not zoomed initially
-            if (modalImageContainer) modalImageContainer.classList.remove('zoomed');
+
             openModal(quickViewModalOverlay);
+
+             // Initialize Panzoom AFTER the modal is potentially visible and image loaded
+             // Use setTimeout to allow rendering and ensure element dimensions are available
+             setTimeout(() => {
+                 if (currentPanzoomInstance) { // Destroy previous instance if any lingered
+                     currentPanzoomInstance.destroy();
+                     // console.log("Destroyed lingering Panzoom");
+                 }
+                 if (modalImageElement && typeof Panzoom === 'function') { // Check if Panzoom library loaded
+                      // console.log("Initializing Panzoom on:", modalImageElement);
+                     currentPanzoomInstance = Panzoom(modalImageElement, {
+                         maxScale: 4,
+                         minScale: 1,
+                         contain: 'inside', // Keep within the .modal-image bounds
+                         canvas: true,      // Recommended for performance
+                         // panOnlyWhenZoomed: true, // Might be desired
+                         // pinchAndPan: true, // Enable pinch zoom
+                         handleStartEvent: e => { // Prevent page scroll on touch
+                            e.preventDefault();
+                            // e.stopPropagation(); // Optional, might interfere with modal closing
+                          }
+                     });
+                     // Enable wheel zoom on the container
+                    const parentContainer = modalImageElement.parentElement;
+                    if(parentContainer) {
+                         parentContainer.addEventListener('wheel', function(event) {
+                              if (!currentPanzoomInstance) return;
+                             // Only zoom if the event target is the panzoom element or its parent
+                             if (event.target === modalImageElement || event.target === parentContainer) {
+                                  currentPanzoomInstance.zoomWithWheel(event);
+                             }
+                         });
+                     }
+                     // console.log("Panzoom initialized:", currentPanzoomInstance);
+                 } else {
+                     console.error("Panzoom library not loaded or image element not found.");
+                 }
+             }, 100); // Small delay
+
         }
 
         function closeQuickView() {
-            closeModal(quickViewModalOverlay);
+            closeModal(quickViewModalOverlay); // This will also destroy Panzoom via closeModal logic
         }
 
         function openOrderModal(productId = null) {
-             // Clear any previous multi-order state
-             wishlistItemsForOrder = [];
-
-             // Determine if it's a single item order
+             wishlistItemsForOrder = []; // Clear multi-order state initially
              const targetProductId = productId || currentProductIdForOrder;
              const isSingleItemOrder = !!targetProductId;
 
              if (isSingleItemOrder) {
                 const product = products.find(p => p.id === Number(targetProductId));
                 if (!product) return;
-
-                // Populate single item summary
                 orderSummaryMainTitle.innerHTML = '<i class="fas fa-box-open"></i> المنتج المطلوب';
                 orderSummaryTitle.textContent = product.title;
                 orderSummarySize.textContent = product.size;
                 orderSummaryPrice.textContent = product.price;
-                orderFormProductId.value = product.id; // Set hidden fields
+                orderFormProductId.value = product.id;
                 orderFormProductTitle.value = product.title;
                 orderFormProductSize.value = product.size;
                 orderFormProductPrice.value = product.price;
-
-                // Show single item details, hide multi-item list
                 orderSummarySingleItemDetails.classList.remove('display-none');
                 orderSummaryItemsList.classList.add('display-none');
-                orderSummaryItemsList.innerHTML = ''; // Clear list just in case
+                orderSummaryItemsList.innerHTML = '';
+             } else { console.error("openOrderModal called without a product ID."); return; }
 
-             } else {
-                // This case should ideally be handled by prepareOrderForAllWishlistItems
-                // If called without product ID and not from wishlist, maybe show error or default state
-                console.error("openOrderModal called without a product ID or wishlist context.");
-                return;
-             }
-
-
-             // Close other modals if open
              if (quickViewModalOverlay.classList.contains('active')) closeQuickView();
              if (wishlistModalOverlay.classList.contains('active')) closeWishlistModal();
-
              orderForm.reset();
              formErrorMessage.style.display = 'none';
              openModal(orderFormModalOverlay);
         }
 
-         // New function to prepare the order modal for ALL wishlist items
          function prepareOrderForAllWishlistItems() {
-             if (wishlist.length === 0) return; // Should be disabled, but double-check
-
-             wishlistItemsForOrder = [...wishlist]; // Store the IDs for final submission
-
-             orderSummaryMainTitle.innerHTML = '<i class="fas fa-boxes-stacked"></i> المنتجات المطلوبة'; // Change title
-             orderSummaryItemsList.innerHTML = ''; // Clear previous list
+             if (wishlist.length === 0) return;
+             wishlistItemsForOrder = [...wishlist];
+             orderSummaryMainTitle.innerHTML = '<i class="fas fa-boxes-stacked"></i> المنتجات المطلوبة';
+             orderSummaryItemsList.innerHTML = '';
              let itemsHtml = '';
-
              wishlistItemsForOrder.forEach(id => {
                  const product = products.find(p => p.id === id);
-                 if (product) {
-                     itemsHtml += `<li>${product.title} (مقاس: ${product.size}) - <span>${product.price} د.ع</span></li>`;
-                 }
+                 if (product) itemsHtml += `<li>${product.title} (مقاس: ${product.size}) - <span>${product.price} د.ع</span></li>`;
              });
-
              orderSummaryItemsList.innerHTML = itemsHtml;
-
-             // Hide single item details, show multi-item list
              orderSummarySingleItemDetails.classList.add('display-none');
              orderSummaryItemsList.classList.remove('display-none');
-
-             // Clear hidden fields for single item (not strictly necessary but good practice)
-             orderFormProductId.value = '';
-             orderFormProductTitle.value = '';
-             orderFormProductSize.value = '';
-             orderFormProductPrice.value = '';
-
-             // Close wishlist modal first
+             orderFormProductId.value = ''; orderFormProductTitle.value = ''; orderFormProductSize.value = ''; orderFormProductPrice.value = '';
              closeWishlistModal();
-
-             // Reset form and open order modal
              orderForm.reset();
              formErrorMessage.style.display = 'none';
              openModal(orderFormModalOverlay);
          }
 
-
         function closeOrderModal() {
             closeModal(orderFormModalOverlay);
             currentProductIdForOrder = null;
-             wishlistItemsForOrder = []; // Clear multi-order state on close
+             wishlistItemsForOrder = [];
         }
 
         // --- Wishlist Modal Functions ---
         function renderWishlistItems() {
-             wishlistItemsContainer.innerHTML = ''; // Clear previous items
+             wishlistItemsContainer.innerHTML = '';
              const orderAllButton = document.getElementById('wishlist-order-all-btn');
+             const hasItems = wishlist.length > 0;
 
-             if (wishlist.length === 0) {
-                 wishlistEmptyMessage.style.display = 'block';
-                  if (orderAllButton) orderAllButton.disabled = true; // Disable button
-             } else {
-                 wishlistEmptyMessage.style.display = 'none';
-                 if (orderAllButton) orderAllButton.disabled = false; // Enable button
+             wishlistEmptyMessage.style.display = hasItems ? 'none' : 'block';
+             if (orderAllButton) orderAllButton.disabled = !hasItems;
 
+             if(hasItems) {
                  wishlist.forEach(productId => {
                      const product = products.find(p => p.id === productId);
                      if (product) {
                          const itemDiv = document.createElement('div');
                          itemDiv.className = 'wishlist-item';
                          itemDiv.innerHTML = `
-                             <div class="wishlist-item-image">
-                                 <img src="${product.image}" alt="${product.title}" loading="lazy">
-                             </div>
-                             <div class="wishlist-item-details">
-                                 <h4>${product.title}</h4>
-                                 <p>${product.price} <span class="currency">د.ع</span></p>
-                             </div>
+                             <div class="wishlist-item-image"><img src="${product.image}" alt="${product.title}" loading="lazy"></div>
+                             <div class="wishlist-item-details"><h4>${product.title}</h4><p>${product.price} <span class="currency">د.ع</span></p></div>
                              <div class="wishlist-item-actions">
-                                 <button class="icon-button wishlist-remove-item-btn" data-id="${product.id}" title="إزالة من الأمنيات">
-                                     <i class="fas fa-trash-alt"></i>
-                                 </button>
-                                  </div>
-                         `;
-                         // Add event listener for the remove button
-                         itemDiv.querySelector('.wishlist-remove-item-btn').addEventListener('click', (e) => {
-                             e.stopPropagation();
-                             toggleWishlist(product.id, e.currentTarget);
-                         });
-
+                                 <button class="icon-button wishlist-remove-item-btn" data-id="${product.id}" title="إزالة من الأمنيات"><i class="fas fa-trash-alt"></i></button>
+                             </div>`;
+                         itemDiv.querySelector('.wishlist-remove-item-btn').addEventListener('click', (e) => { e.stopPropagation(); toggleWishlist(product.id, e.currentTarget); });
                          wishlistItemsContainer.appendChild(itemDiv);
                      }
                  });
              }
          }
 
-        function openWishlistModal() {
-            renderWishlistItems();
-            openModal(wishlistModalOverlay);
-        }
-
-        function closeWishlistModal() {
-            closeModal(wishlistModalOverlay);
-        }
-
-         // --- Image Zoom (In-Place) ---
-         // Event listener is added in setupEventListeners
+        function openWishlistModal() { renderWishlistItems(); openModal(wishlistModalOverlay); }
+        function closeWishlistModal() { closeModal(wishlistModalOverlay); }
 
         // --- Filter and Display Function ---
         function filterAndDisplayProducts(trigger = 'load') {
             const isMobile = window.innerWidth <= 992;
             const searchTerm = (isMobile ? mobileSearchInput.value : desktopSearchInput.value).toLowerCase().trim();
             const selectedSize = (isMobile ? mobileSizeSelect.value : desktopSizeSelect.value);
-            let visibleCount = 0;
-            let visibleIndex = 0;
-
+            let visibleCount = 0; let visibleIndex = 0;
             const activeLink = document.querySelector('.nav-link.active') || document.querySelector('.nav-link-mobile.active');
             categoryTitleMain.textContent = activeLink ? activeLink.textContent.replace(/<[^>]*>/g, '').trim() : "جميع المنتجات";
-
-             if (!productGrid) return;
-             const currentCards = productGrid.querySelectorAll('.product-card');
-
+            if (!productGrid) return;
+            const currentCards = productGrid.querySelectorAll('.product-card');
             currentCards.forEach(card => {
-                const title = card.dataset.title;
-                const category = card.dataset.category;
-                const baseSize = card.dataset.base_size;
-
-                const categoryMatch = activeCategory === 'all' || category === activeCategory;
-                const searchMatch = !searchTerm || title.includes(searchTerm);
-                const sizeMatch = selectedSize === 'all' || baseSize === selectedSize;
+                const categoryMatch = activeCategory === 'all' || card.dataset.category === activeCategory;
+                const searchMatch = !searchTerm || card.dataset.title.includes(searchTerm);
+                const sizeMatch = selectedSize === 'all' || card.dataset.base_size === selectedSize;
                 const isVisible = categoryMatch && searchMatch && sizeMatch;
-
                 if (isVisible) {
-                    card.style.display = 'flex';
-                    card.style.setProperty('--card-index', visibleIndex);
-                    card.style.animation = 'none';
-                    void card.offsetWidth;
-                    card.style.animation = '';
+                    card.style.display = 'flex'; card.style.setProperty('--card-index', visibleIndex++);
+                    card.style.animation = 'none'; void card.offsetWidth; card.style.animation = '';
                     visibleCount++;
-                    visibleIndex++;
-                } else {
-                    card.style.display = 'none';
-                    card.style.animation = 'none';
-                }
+                } else { card.style.display = 'none'; card.style.animation = 'none'; }
             });
             noResultsDiv.style.display = visibleCount === 0 ? 'block' : 'none';
         }
 
-
-        // --- Handle Final Order Form Submission (Updated for Multi-Item) ---
+        // --- Handle Final Order Form Submission ---
         orderForm.addEventListener('submit', function(event) {
             event.preventDefault();
             const customerName = document.getElementById('customer-name').value.trim();
             const customerPhone = document.getElementById('customer-phone').value.trim();
             const customerAddress = document.getElementById('customer-address').value.trim();
 
-            // Basic Validation
             if (!customerName || !customerPhone || !customerAddress) {
-                formErrorMessage.textContent = 'يرجى ملء جميع حقول معلومات التوصيل.';
-                formErrorMessage.style.display = 'block';
-                return;
+                formErrorMessage.textContent = 'يرجى ملء جميع حقول معلومات التوصيل.'; formErrorMessage.style.display = 'block'; return;
             }
-            const phonePattern = /^(07[5789][0-9]{8})$/;
-            if (!phonePattern.test(customerPhone)) {
-                formErrorMessage.textContent = 'يرجى إدخال رقم هاتف عراقي صحيح (مثال: 077xxxxxxxx).';
-                formErrorMessage.style.display = 'block';
-                return;
+            if (!/^(07[5789][0-9]{8})$/.test(customerPhone)) {
+                formErrorMessage.textContent = 'يرجى إدخال رقم هاتف عراقي صحيح (مثال: 077xxxxxxxx).'; formErrorMessage.style.display = 'block'; return;
             }
-
             formErrorMessage.style.display = 'none';
 
             let message = '';
             const intro = `👋 *طلب جديد من Master Quality* 👋\n\n`;
             const outro = `\n---\n*بيانات الزبون:*\n*الاسم:* ${customerName}\n*الهاتف:* ${customerPhone}\n*العنوان:* ${customerAddress}\n---\n(الدفع عند الاستلام)\n\n✨ شكراً لطلبكم! ✨`;
 
-            // Check if it's a multi-item order
             if (wishlistItemsForOrder && wishlistItemsForOrder.length > 0) {
-                message += intro;
-                message += "*المنتجات المطلوبة:*\n";
-                let itemNumber = 1;
+                message += intro + "*المنتجات المطلوبة:*\n"; let itemNumber = 1;
                 wishlistItemsForOrder.forEach(id => {
                      const product = products.find(p => p.id === id);
-                     if (product) {
-                         message += `${itemNumber}. ${product.title} (مقاس: ${product.size}) - ${product.price} د.ع\n`;
-                         itemNumber++;
-                     }
+                     if (product) message += `${itemNumber++}. ${product.title} (مقاس: ${product.size}) - ${product.price} د.ع\n`;
                 });
-                 message += outro;
-                 // Clear the multi-order state *after* generating the message
-                 wishlistItemsForOrder = [];
-
-            } else { // Single item order
-                 // Get product details from hidden fields
-                const productId = orderFormProductId.value;
-                const productTitle = orderFormProductTitle.value;
-                const productSize = orderFormProductSize.value;
-                const productPrice = orderFormProductPrice.value;
-
-                 if (!productId) { // Safety check if hidden fields are empty
-                     console.error("Cannot send single order: Product details missing.");
-                     formErrorMessage.textContent = 'حدث خطأ، يرجى محاولة الطلب مرة أخرى.';
-                      formErrorMessage.style.display = 'block';
-                     return;
-                 }
-
-                 message += intro;
-                 message += `*المنتج:* ${productTitle}\n`;
-                 message += `*المقاس:* ${productSize}\n`;
-                 message += `*السعر:* ${productPrice} د.ع\n`;
-                 message += outro;
+                 message += outro; wishlistItemsForOrder = []; // Clear state AFTER message generation
+            } else {
+                const productId = orderFormProductId.value, productTitle = orderFormProductTitle.value, productSize = orderFormProductSize.value, productPrice = orderFormProductPrice.value;
+                 if (!productId) { console.error("Single order details missing."); formErrorMessage.textContent = 'خطأ في تفاصيل المنتج.'; formErrorMessage.style.display = 'block'; return; }
+                 message += intro + `*المنتج:* ${productTitle}\n*المقاس:* ${productSize}\n*السعر:* ${productPrice} د.ع` + outro;
             }
-
 
             const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message.trim())}`;
             window.open(whatsappUrl, '_blank');
-            closeOrderModal(); // Close the modal after preparing the message
+            closeOrderModal();
         });
-
 
         // --- Navigation & Filter Logic ---
         function setActiveCategory(category, clickedLinkElement = null) {
             activeCategory = category;
             desktopNavLinks.forEach(link => link.classList.toggle('active', link.dataset.category === category));
             mobileNavLinks.forEach(link => link.classList.toggle('active', link.dataset.category === category));
-
             if (clickedLinkElement) {
-                desktopSizeSelect.value = 'all';
-                desktopSearchInput.value = '';
-                mobileSizeSelect.value = 'all';
-                mobileSearchInput.value = '';
-                closeModal(mobileFilterOverlay);
-                closeModal(mobileSearchOverlay);
+                desktopSizeSelect.value = 'all'; desktopSearchInput.value = '';
+                mobileSizeSelect.value = 'all'; mobileSearchInput.value = '';
+                closeModal(mobileFilterOverlay); closeModal(mobileSearchOverlay);
             }
             filterAndDisplayProducts('categoryChange');
             const targetElement = document.getElementById('category-header');
-             if (targetElement && clickedLinkElement) {
-                 targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-             }
+             if (targetElement && clickedLinkElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         // --- Event Listeners Setup ---
         function setupEventListeners() {
-            // Desktop Controls
-            desktopSearchInput.addEventListener('input', () => filterAndDisplayProducts('search'));
-            desktopSizeSelect.addEventListener('change', () => filterAndDisplayProducts('size'));
-            desktopNavLinks.forEach(link => {
-                link.addEventListener('click', (e) => { e.preventDefault(); setActiveCategory(e.target.dataset.category, e.target); });
-            });
+            // Desktop
+            desktopSearchInput?.addEventListener('input', () => filterAndDisplayProducts('search'));
+            desktopSizeSelect?.addEventListener('change', () => filterAndDisplayProducts('size'));
+            desktopNavLinks.forEach(link => link.addEventListener('click', (e) => { e.preventDefault(); setActiveCategory(e.target.dataset.category, e.target); }));
 
-            // Mobile Controls & Overlays
-             mobileSearchBtn.addEventListener('click', () => openModal(mobileSearchOverlay));
-             closeSearchOverlayBtn.addEventListener('click', () => closeModal(mobileSearchOverlay));
-             mobileFilterBtn.addEventListener('click', () => openModal(mobileFilterOverlay));
-             closeFilterOverlayBtn.addEventListener('click', () => closeModal(mobileFilterOverlay));
-             applyMobileFiltersBtn.addEventListener('click', () => { closeModal(mobileFilterOverlay); filterAndDisplayProducts('size'); });
-            mobileSearchInput.addEventListener('input', () => filterAndDisplayProducts('search'));
-             mobileSearchOverlay.addEventListener('click', (e) => { if (e.target === mobileSearchOverlay) closeModal(mobileSearchOverlay); });
-             mobileFilterOverlay.addEventListener('click', (e) => { if (e.target === mobileFilterOverlay) closeModal(mobileFilterOverlay); });
-             mobileNavLinks.forEach(link => {
-                 link.addEventListener('click', (e) => {
-                     e.preventDefault(); const targetLink = e.target.closest('a');
-                     if (!targetLink) return; setActiveCategory(targetLink.dataset.category, targetLink);
-                 });
-             });
+            // Mobile
+            mobileSearchBtn?.addEventListener('click', () => openModal(mobileSearchOverlay));
+            closeSearchOverlayBtn?.addEventListener('click', () => closeModal(mobileSearchOverlay));
+            mobileFilterBtn?.addEventListener('click', () => openModal(mobileFilterOverlay));
+            closeFilterOverlayBtn?.addEventListener('click', () => closeModal(mobileFilterOverlay));
+            applyMobileFiltersBtn?.addEventListener('click', () => { closeModal(mobileFilterOverlay); filterAndDisplayProducts('size'); });
+            mobileSearchInput?.addEventListener('input', () => filterAndDisplayProducts('search'));
+            mobileSearchOverlay?.addEventListener('click', (e) => { if (e.target === mobileSearchOverlay) closeModal(mobileSearchOverlay); });
+            mobileFilterOverlay?.addEventListener('click', (e) => { if (e.target === mobileFilterOverlay) closeModal(mobileFilterOverlay); });
+            mobileNavLinks.forEach(link => link.addEventListener('click', (e) => { e.preventDefault(); const t = e.target.closest('a'); if (t) setActiveCategory(t.dataset.category, t); }));
 
             // Modals
-            quickViewModalCloseButton.addEventListener('click', closeQuickView);
-            quickViewModalOverlay.addEventListener('click', (event) => {
-                // Close only if clicking overlay, not the zoomed image wrapper or its contents
-                if (event.target === quickViewModalOverlay) closeQuickView();
-            });
-            proceedButton.addEventListener('click', () => openOrderModal());
-            orderFormModalCloseButton.addEventListener('click', closeOrderModal);
-            orderFormModalOverlay.addEventListener('click', (event) => { if (event.target === orderFormModalOverlay) closeOrderModal(); });
+            quickViewModalCloseButton?.addEventListener('click', closeQuickView);
+            quickViewModalOverlay?.addEventListener('click', (e) => { if (e.target === quickViewModalOverlay) closeQuickView(); }); // Close on overlay click
+            proceedButton?.addEventListener('click', () => openOrderModal());
+            orderFormModalCloseButton?.addEventListener('click', closeOrderModal);
+            orderFormModalOverlay?.addEventListener('click', (e) => { if (e.target === orderFormModalOverlay) closeOrderModal(); });
+            wishlistModalCloseButton?.addEventListener('click', closeWishlistModal);
+            wishlistModalOverlay?.addEventListener('click', (e) => { if (e.target === wishlistModalOverlay) closeWishlistModal(); });
+            wishlistButton?.addEventListener('click', openWishlistModal);
+            mobileWishlistButton?.addEventListener('click', openWishlistModal);
+            wishlistOrderAllBtn?.addEventListener('click', prepareOrderForAllWishlistItems);
 
-            // Wishlist Modal Listeners
-            wishlistModalCloseButton.addEventListener('click', closeWishlistModal);
-            wishlistModalOverlay.addEventListener('click', (event) => { if (event.target === wishlistModalOverlay) closeWishlistModal(); });
-             wishlistButton.addEventListener('click', openWishlistModal);
-             mobileWishlistButton.addEventListener('click', openWishlistModal);
-             if(wishlistOrderAllBtn) wishlistOrderAllBtn.addEventListener('click', prepareOrderForAllWishlistItems); // Listener for Order All button
-
-             // In-Place Image Zoom Listener (Quick View)
-             if (modalImageContainer) {
-                 modalImageContainer.addEventListener('click', (e) => {
-                      // Prevent zoom action if proceed button or other details are clicked accidentally through overlay
-                      if (e.target.closest('.modal-details')) return;
-                      e.stopPropagation();
-                      modalImageContainer.classList.toggle('zoomed');
-                 });
-             }
-
-            // Theme Toggle Buttons
-            themeToggleButton.addEventListener('click', toggleTheme);
-            mobileThemeToggleButton.addEventListener('click', toggleTheme);
+            // Theme Toggle
+            themeToggleButton?.addEventListener('click', toggleTheme);
+            mobileThemeToggleButton?.addEventListener('click', toggleTheme);
 
             // Footer Year
             document.getElementById('year').textContent = new Date().getFullYear();
@@ -1561,18 +1284,19 @@
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            const storedTheme = localStorage.getItem('theme') || 'dark';
+            const storedTheme = localStorage.getItem('theme') || 'dark'; // Default theme
             applyTheme(storedTheme);
 
-            productGrid.innerHTML = '';
-            products.forEach(product => {
-                const cardElement = createProductCard(product);
-                productGrid.appendChild(cardElement);
-            });
+            if(productGrid) {
+                productGrid.innerHTML = ''; // Clear placeholders
+                products.forEach(product => productGrid.appendChild(createProductCard(product)));
+            } else {
+                console.error("Product grid not found!");
+            }
 
-            updateWishlistCount(); // Update count and potentially disable Order All button
+            updateWishlistCount(); // Initial count and button state
             setupEventListeners();
-            setActiveCategory('all');
+            setActiveCategory('all'); // Initial display
         });
 
     </script>
