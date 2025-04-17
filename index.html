@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Quality - تسوق الأناقة الفاخرة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        /* --- Base & Variables --- */
+        :root {
+            --bg-color: #0d0d0d; /* Very Dark */
+            --card-bg: #1a1a1a; /* Dark Card */
+            --primary-gold: #d4af37; /* Classic Gold */
+            --dark-gold: #b8860b; /* Darker Gold */
+            --light-gold-text: #f5eaaa; /* Lighter Gold Text */
+            --white-text: #f0f0f0;
+            --grey-text: #b0b0b0;
+            --shadow-dark: rgba(0, 0, 0, 0.7);
+            --glow-gold: rgba(212, 175, 55, 0.5); /* Gold glow */
+            --available-green: #4caf50;
+            --new-blue: #2196F3;
+            --error-red: #f44336;
+            --scroll-behavior: smooth;
+            --transition-main: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bounce out */
+             --transition-smooth: 0.4s ease;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: var(--scroll-behavior); }
+        body {
+            font-family: 'Almarai', sans-serif;
+            background: linear-gradient(to bottom, #1f1f1f, var(--bg-color));
+            color: var(--white-text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1700px; margin: 0 auto; padding: 0 40px; }
+
+        /* --- Header --- */
+        header {
+            position: sticky; top: 0; z-index: 1000;
+            background-color: rgba(10, 10, 10, 0.95); backdrop-filter: blur(22px);
+            padding: 12px 0; box-shadow: 0 6px 25px var(--shadow-dark);
+            border-bottom: 1px solid var(--dark-gold);
+        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; max-width: 1700px; margin: 0 auto; padding: 0 40px; }
+        .logo img { max-height: 65px; transition: var(--transition-smooth); }
+        .logo img:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px var(--glow-gold)); }
+        .controls-area { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+
+        /* Filters & Search */
+        .filter-control select, #search-input {
+            padding: 10px 15px; border-radius: 25px; border: 1px solid var(--dark-gold);
+            background-color: var(--card-bg); color: var(--white-text); font-family: 'Almarai', sans-serif;
+            font-size: 0.9rem; transition: all var(--transition-smooth);
+        }
+        .filter-control select {
+            padding-left: 35px; /* Space for arrow */
+             cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23d4af37" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat; background-position: left 10px center; min-width: 140px;
+        }
+        .filter-control select:hover, #search-input:hover { border-color: var(--primary-gold); }
+        .filter-control select:focus, #search-input:focus {
+             outline: none; border-color: var(--primary-gold);
+             background-color: #303030; box-shadow: 0 0 15px var(--shadow-light);
+        }
+        .search-container { position: relative; }
+        #search-input { width: 220px; padding-right: 45px; /* RTL space for icon */ }
+        #search-input:focus { width: 280px; }
+        #search-input::placeholder { color: var(--grey-text); opacity: 0.7; }
+        .search-container .search-icon {
+             position: absolute; right: 18px; /* RTL position */ top: 50%; transform: translateY(-50%);
+             color: var(--grey-text); pointer-events: none; transition: color 0.3s ease; font-size: 1.1rem;
+        }
+        #search-input:focus + .search-icon { color: var(--primary-gold); }
+
+        /* --- Main Content --- */
+        main { padding: 50px 0; }
+        .product-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 55px; perspective: 3000px; position: relative;
+        }
+        .product-card {
+            background: var(--card-bg); border-radius: 25px; overflow: hidden;
+            box-shadow: 0 15px 40px var(--shadow-dark), inset 0 0 10px rgba(0,0,0,0.6);
+            transition: transform var(--transition-main), box-shadow var(--transition-main);
+            transform-style: preserve-3d; border: 1px solid #333;
+            display: flex; flex-direction: column; position: relative;
+            opacity: 0; transform: translateY(70px) scale(0.9);
+            animation: fadeInUpCard 0.9s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+            animation-delay: calc(var(--card-index) * 0.06s);
+        }
+        .product-card:hover {
+            transform: translateY(-35px) translateZ(120px) rotateY(14deg) rotateX(4deg) scale(1.05);
+            box-shadow: 0 35px 70px var(--shadow-dark), 0 0 60px var(--glow-gold), inset 0 0 15px rgba(0,0,0,0.4);
+        }
+        .product-image-container {
+            aspect-ratio: 1 / 1; width: 100%; overflow: hidden;
+            background-color: #252525; position: relative; transform-style: preserve-3d;
+            border-bottom: 2px solid var(--dark-gold); padding: 15px; border-radius: 25px 25px 0 0;
+        }
+        .product-card img {
+            display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 15px;
+            transition: transform 0.7s cubic-bezier(0.165, 0.84, 0.44, 1), filter 0.4s ease;
+            transform: translateZ(60px) scale(1.0); box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+        }
+        .product-card:hover img { transform: translateZ(100px) scale(1.18) rotateY(-6deg); filter: brightness(1.2); }
+
+        /* Badges */
+        .badges { position: absolute; top: 25px; left: 25px; /* RTL Position */ display: flex; flex-direction: column; gap: 8px; z-index: 3; }
+        .badge {
+            color: white; font-size: 0.8rem; font-weight: bold; padding: 5px 12px;
+            border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            text-align: center; opacity: 0.95; display: flex; align-items: center; gap: 5px;
+        }
+        .badge i { font-size: 0.75rem; }
+        .badge.available { background-color: var(--available-green); }
+        .badge.new-arrival { background-color: var(--new-blue); }
+
+        /* Product Info inside Card */
+        .product-info {
+            padding: 25px 30px 30px 30px; text-align: center; flex-grow: 1;
+            display: flex; flex-direction: column; justify-content: space-between;
+            transform: translateZ(50px) translateY(5px); transition: transform var(--transition-main);
+            background: linear-gradient(to top, #1f1f1f, var(--card-bg));
+        }
+        .product-card:hover .product-info { transform: translateZ(80px) translateY(0px); }
+        .product-card h3 {
+            font-family: 'Almarai', sans-serif; font-size: 1.35rem; font-weight: 700;
+            color: var(--primary-gold); margin-bottom: 20px; line-height: 1.5; min-height: 60px;
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+        }
+        .product-card .price-card { /* Price display on card */
+             font-size: 1.5rem; font-weight: 700; color: var(--white-text);
+             margin-bottom: 25px; letter-spacing: 1px;
+        }
+         .product-card .price-card i { color: var(--dark-gold); margin-left: 5px;}
+         .product-card .price-card .currency { font-size: 1rem; font-weight: 400; color: var(--grey-text); margin-right: 3px; }
+
+        /* Details Button */
+        .details-button {
+            display: inline-block; background: none; border: 2px solid var(--dark-gold);
+            color: var(--primary-gold); padding: 12px 28px; border-radius: 10px;
+            text-decoration: none; font-weight: 700; font-size: 1rem;
+            font-family: 'Almarai', sans-serif; cursor: pointer;
+            transition: all var(--transition-smooth); margin-top: auto;
+            transform: translateZ(60px);
+        }
+        .details-button:hover {
+            background-color: var(--dark-gold); color: var(--bg-color);
+            box-shadow: 0 0 15px var(--glow-gold); transform: scale(1.03) translateZ(65px);
+        }
+
+        /* --- Modal Styles --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--modal-bg);
+            backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: all 0.5s ease-in-out; z-index: 2000; padding: 20px;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: linear-gradient(145deg, #222, var(--card-bg)); color: var(--white-text);
+            padding: 30px 40px; border-radius: 25px; position: relative; max-width: 950px; /* Wider for QV */
+            width: 95%; max-height: 90vh; overflow-y: auto; border: 1px solid var(--primary-gold);
+            box-shadow: 0 20px 60px var(--shadow-dark); transform: scale(0.8) translateY(-30px);
+            transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
+        .modal-close {
+            position: absolute; top: 18px; left: 25px; background: none; border: none; color: var(--grey-text);
+            font-size: 2.5rem; cursor: pointer; transition: color 0.3s ease, transform 0.3s ease; line-height: 1;
+        }
+        .modal-close:hover { color: var(--primary-gold); transform: rotate(180deg) scale(1.1); }
+
+        /* Quick View Modal Specifics */
+        #quick-view-modal .modal-body { display: flex; gap: 35px; flex-wrap: wrap; }
+        #quick-view-modal .modal-image { flex: 1 1 350px; min-width: 300px; cursor: zoom-in; border-radius: 15px; overflow: hidden; }
+        #quick-view-modal .modal-image img { display: block; width: 100%; height: auto; max-height: 480px; object-fit: contain; border-radius: 15px; transition: transform 0.3s ease; }
+        #quick-view-modal .modal-image:hover img { transform: scale(1.3); } /* Simple zoom */
+        #quick-view-modal .modal-details { flex: 1 1 400px; min-width: 300px; }
+        #quick-view-modal .modal-details h2 { font-family: 'Almarai', sans-serif; font-size: 2.2rem; color: var(--primary-gold); margin-bottom: 25px; border-bottom: 1px solid var(--dark-gold); padding-bottom: 15px; text-shadow: 0 0 10px var(--glow-gold); }
+        #quick-view-modal .info-item { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; justify-content: flex-start; }
+        #quick-view-modal .info-item i { color: var(--dark-gold); font-size: 1.3rem; width: 25px; text-align: center; }
+        #quick-view-modal .info-item .label { font-size: 1rem; color: var(--grey-text); }
+        #quick-view-modal .info-item .value { font-size: 1.2rem; color: var(--white-text); font-weight: 700; }
+        #quick-view-modal .info-item .currency { font-size: 0.95rem; margin-right: 3px; }
+        #quick-view-modal .description { color: var(--grey-text); margin: 25px 0 35px 0; font-size: 1.05rem; line-height: 1.9; }
+        #proceed-button { /* Button in Quick View */
+            display: block; width: 100%; text-align: center;
+            background: linear-gradient(145deg, var(--primary-gold), var(--dark-gold)); color: #111;
+            padding: 16px 35px; border: none; border-radius: 12px; text-decoration: none;
+            font-weight: 700; font-size: 1.1rem; font-family: 'Almarai', sans-serif; cursor: pointer;
+            transition: all var(--transition-smooth); box-shadow: 0 7px 15px rgba(0, 0, 0, 0.6); letter-spacing: 0.8px; margin-top: 20px;
+        }
+        #proceed-button i { margin-left: 10px; }
+        #proceed-button:hover { background: linear-gradient(145deg, var(--dark-gold), var(--primary-gold)); color: var(--white-text); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7), 0 0 25px var(--glow-gold); transform: scale(1.03); }
+
+         /* Order Form Modal Specifics */
+        #order-form-modal .modal-content { max-width: 700px; border-color: var(--available-green); /* Green border */ }
+        #order-form-modal .modal-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--dark-gold);}
+        #order-form-modal .modal-header i { font-size: 3rem; color: var(--primary-gold); margin-bottom: 15px; display: block; text-shadow: 0 0 15px var(--glow-gold);}
+        #order-form-modal .modal-header h2 { font-family: 'Cinzel Decorative', serif; font-size: 2rem; color: var(--primary-gold); margin-bottom: 8px; letter-spacing: 1px;}
+        #order-form-modal .modal-header p { font-size: 1.1rem; color: var(--grey-text); }
+
+         /* Order Summary in Order Modal */
+         .order-summary {
+             background-color: rgba(0,0,0,0.25); padding: 20px; margin-bottom: 30px;
+             border-radius: 15px; border: 1px solid #444; text-align: center;
+             box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+         }
+         .order-summary h4 {
+             color: var(--light-gold-text); margin-bottom: 15px; font-size: 1.2rem; font-weight: 700;
+             border-bottom: 1px dashed var(--dark-gold); padding-bottom: 10px; letter-spacing: 0.5px;
+         }
+          .order-summary p { font-size: 1rem; color: var(--white-text); margin-bottom: 8px; }
+          .order-summary span { font-weight: bold; color: var(--primary-gold); }
+          .order-summary .currency { font-size: 0.85rem; }
+
+
+        #order-form label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--light-gold-text); font-size: 1rem; text-align: right; }
+        #order-form input[type="text"],
+        #order-form input[type="tel"],
+        #order-form textarea {
+            width: 100%; padding: 15px 20px; margin-bottom: 22px; border-radius: 10px;
+            border: 1px solid var(--dark-gold); background-color: #282828; color: var(--white-text);
+            font-family: 'Almarai', sans-serif; font-size: 1rem; transition: border-color 0.3s, box-shadow 0.3s;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+        }
+        #order-form input[type="text"]:focus,
+        #order-form input[type="tel"]:focus,
+        #order-form textarea:focus { outline: none; border-color: var(--primary-gold); box-shadow: 0 0 12px var(--shadow-light), inset 0 2px 4px rgba(0,0,0,0.2); }
+        #order-form textarea { min-height: 100px; resize: vertical; }
+        #form-error-message {
+            color: var(--error-red); background-color: rgba(244, 67, 54, 0.1); border: 1px solid var(--error-red);
+            font-size: 0.95rem; margin-top: -10px; margin-bottom: 20px; display: none;
+            text-align: center; font-weight: bold; padding: 10px; border-radius: 8px;
+        }
+
+        #modal-whatsapp-button-final { /* Final Submit Button Styling */
+             display: block; background: linear-gradient(145deg, var(--available-green), #388E3C); /* Green gradient */
+             color: white; padding: 18px 40px; border: none; border-radius: 15px; text-decoration: none;
+             font-weight: 700; font-size: 1.2rem; font-family: 'Almarai', sans-serif; cursor: pointer;
+             transition: all 0.4s ease; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7); letter-spacing: 1px;
+             margin-top: 30px; width: 100%; text-align: center; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+        }
+         #modal-whatsapp-button-final i { margin-left: 12px; }
+         #modal-whatsapp-button-final:hover {
+             background: linear-gradient(145deg, #388E3C, #5cb860); /* Lighter green on hover */
+             box-shadow: 0 12px 25px rgba(0, 0, 0, 0.8), 0 0 25px rgba(76, 175, 80, 0.5);
+             transform: scale(1.03) translateY(-2px);
+         }
+
+        /* --- Footer --- */
+        footer { text-align: center; margin-top: 80px; padding: 50px 20px; background: #080808; color: var(--grey-text); font-size: 1rem; border-top: 2px solid var(--dark-gold); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+        footer p { margin-bottom: 10px; }
+        footer a { color: var(--primary-gold); text-decoration: none; font-weight: 700; transition: color 0.3s ease, text-shadow 0.3s ease; }
+        footer a:hover { color: var(--white-text); text-shadow: 0 0 10px var(--glow-gold); }
+        footer a i { margin-left: 5px; }
+
+        /* --- Animations --- */
+        @keyframes fadeInUpCard { from { opacity: 0; transform: translateY(70px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1.0); } }
+
+        /* --- No Results --- */
+        #no-results { text-align: center; font-size: 1.5rem; color: var(--grey-text); display: none; margin: 80px 0; padding: 40px; background-color: var(--card-bg); border-radius: 15px; border: 1px solid var(--dark-gold); box-shadow: 0 5px 20px var(--shadow-dark); }
+        #no-results i { color: var(--primary-gold); margin-left: 15px; font-size: 1.8rem; }
+
+        /* --- Responsive --- */
+         /* Add other media queries from previous version here, adjusted as needed */
+          @media (max-width: 1400px) { .container, .header-content { padding: 0 25px; } .product-grid { grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 45px; } }
+          @media (max-width: 1200px) { .product-grid { grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 35px; } .category-title { font-size: 3rem; } }
+          @media (max-width: 992px) {
+             .filter-control select, #search-input { font-size: 0.8rem; padding: 8px 12px; padding-left: 30px; min-width: 110px;}
+             #search-input { width: 150px; padding-right: 35px;} #search-input:focus { width: 180px; }
+             .controls-area { gap: 8px; }
+             .product-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+             .modal-content { padding: 25px 30px; max-width: 90%;} /* Wider modal on medium */
+             #order-form-modal .modal-content { max-width: 600px; }
+             .modal-details h2 { font-size: 1.8rem; }
+             .modal-whatsapp-button, #proceed-button, #modal-whatsapp-button-final { font-size: 1rem; padding: 14px 30px;}
+         }
+          @media (max-width: 768px) {
+             body { font-size: 15px; } .container, .header-content { padding: 0 15px; } header { padding: 10px 0; }
+             .header-content { flex-direction: column; gap: 12px; } .logo img { max-height: 50px; }
+             .controls-area { width: 100%; justify-content: space-between; flex-wrap: nowrap; }
+             .filter-control { flex-grow: 1; } .filter-control select { width: 100%;}
+             .search-container { flex-shrink: 0; } #search-input { width: 140px; } #search-input:focus { width: 160px; }
+             main { padding: 30px 0; } .product-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px; }
+             .category-title { font-size: 2.2rem; margin-bottom: 40px;} .product-info { padding: 20px 20px 25px 20px; transform: translateZ(30px); }
+             .product-card h3 { font-size: 1.1rem; min-height: 45px;} .product-card .price-card { font-size: 1.3rem; margin-bottom: 20px;}
+             .info-line { gap: 8px; margin-bottom: 20px;} .info-item i { font-size: 1rem; } .info-item .value { font-size: 1rem; }
+             .details-button { padding: 10px 25px; font-size: 0.9rem;}
+             .badges { top: 15px; left: 15px; gap: 5px;} .badge { font-size: 0.7rem; padding: 3px 8px; }
+             .modal-content { padding: 20px 25px; max-height: 85vh; width: 95%;}
+             .modal-body { flex-direction: column; gap: 20px; } .modal-image img { max-height: 300px;}
+             .modal-details h2 { font-size: 1.5rem; } .modal-details .description { font-size: 0.9rem; margin-bottom: 20px;}
+             #order-form input, #order-form textarea { padding: 10px 12px; font-size: 0.95rem; margin-bottom: 15px;}
+             .modal-whatsapp-button, #proceed-button, #modal-whatsapp-button-final { font-size: 1rem; padding: 12px 30px;}
+             #order-form-modal .modal-header i { font-size: 2rem; } #order-form-modal .modal-header h2 { font-size: 1.5rem;}
+         }
+          @media (max-width: 500px) {
+             .product-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+             .product-info { padding: 15px; transform: translateZ(20px);}
+             .product-card h3 { font-size: 1rem; min-height: 40px; } .product-card .price-card { font-size: 1.2rem; }
+             .info-item .label { font-size: 0.85rem; } .info-item .value { font-size: 0.9rem; }
+             .details-button { padding: 9px 20px; font-size: 0.85rem;}
+             .category-title { font-size: 1.8rem; } footer { padding: 30px 15px; font-size: 0.9rem;}
+             .controls-area { flex-direction: column; gap: 10px; width: 95%; margin: 0 auto; }
+             .filter-control select, #search-input { width: 100%; } #search-input:focus { width: 100%; }
+         }
+
+    </style>
+</head>
+<body>
+
+    <header>
+       <div class="header-content">
+            <div class="logo">
+                 <a href="#"><img src="logo.png" alt="Master Quality Logo"></a>
+            </div>
+            <div class="controls-area">
+                 <div class="filter-control">
+                    <select id="category-select" title="اختر الفئة">
+                        <option value="all">جميع الفئات</option>
+                        <option value="trousers">بناطيل وجينزات</option>
+                        <option value="maternity">ملابس حوامل</option>
+                        <option value="tops">توبات وبلوزات</option>
+                    </select>
+                </div>
+                 <div class="filter-control">
+                     <select id="size-select" title="اختر المقاس">
+                         <option value="all">جميع المقاسات</option>
+                         <option value="XS">XS</option>
+                         <option value="S">S</option>
+                         <option value="M">M</option>
+                         <option value="L">L</option>
+                         <option value="XL">XL</option>
+                         <option value="XXL">XXL</option>
+                         <option value="2XL">2XL</option>
+                     </select>
+                 </div>
+                <div class="search-container">
+                    <input type="search" id="search-input" placeholder="ابحث في المنتجات...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="product-grid" id="product-grid-main">
+            </div>
+        <div id="no-results">
+            <i class="fas fa-heart-crack"></i> لا توجد منتجات تطابق المعايير المختارة. حاول تغيير الفلتر أو البحث!
+        </div>
+    </main>
+
+    <div id="quick-view-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="modal-close-button-qv" class="modal-close" title="إغلاق">&times;</button>
+            <div class="modal-body">
+                <div class="modal-image">
+                    <img id="modal-product-image" src="" alt="صورة المنتج" loading="lazy">
+                </div>
+                <div class="modal-details">
+                    <h2 id="modal-product-title">اسم المنتج</h2>
+                     <div class="info-item">
+                        <i class="fas fa-ruler-combined"></i>
+                        <span class="label">المقاس:</span>
+                        <span class="value" id="modal-product-size"></span>
+                    </div>
+                    <div class="info-item">
+                         <i class="fas fa-tag"></i>
+                         <span class="label">السعر:</span>
+                         <span class="value" id="modal-product-price"></span>&nbsp;<span class="currency">د.ع</span>
+                    </div>
+                    <p class="description" id="modal-product-description">وصف المنتج...</p>
+                    <button id="proceed-button" class="details-button" style="width: 100%; margin-top: 20px; transform: translateZ(0);">
+                        <i class="fas fa-arrow-circle-left"></i> إكمال الطلب (بيانات التوصيل)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="order-form-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="modal-close-button-order" class="modal-close" title="إغلاق">&times;</button>
+            <div class="modal-header">
+                 <i class="fas fa-truck-fast"></i>
+                 <h2>تأكيد الطلب وبيانات التوصيل</h2>
+                 <p>خطوتك الأخيرة لتأكيد الطلب - الدفع عند الاستلام</p>
+            </div>
+
+             <div class="order-summary">
+                 <h4><i class="fas fa-box-open"></i> المنتج المطلوب</h4>
+                 <p id="order-summary-title">اسم المنتج</p>
+                 <p>
+                     <i class="fas fa-ruler-combined" style="color: var(--grey-text)"></i> المقاس: <span id="order-summary-size"></span> |
+                     <i class="fas fa-tag" style="color: var(--grey-text)"></i> السعر: <span id="order-summary-price"></span> <span class="currency">د.ع</span>
+                 </p>
+                 <input type="hidden" id="order-form-product-id">
+                 <input type="hidden" id="order-form-product-title">
+                 <input type="hidden" id="order-form-product-size">
+                 <input type="hidden" id="order-form-product-price">
+            </div>
+
+            <form id="order-form">
+                 <div id="form-error-message"></div>
+                 <div>
+                     <label for="customer-name"><i class="fas fa-user"></i> الاسم الكامل:</label>
+                     <input type="text" id="customer-name" name="customerName" required placeholder="الرجاء إدخال الاسم الثلاثي...">
+                 </div>
+                 <div>
+                     <label for="customer-phone"><i class="fas fa-phone"></i> رقم الهاتف (مفعل واتساب):</label>
+                     <input type="tel" id="customer-phone" name="customerPhone" required pattern="^(07[5789][0-9]{8})$" placeholder="مثال: 07712345678">
+                 </div>
+                 <div>
+                     <label for="customer-address"><i class="fas fa-map-marker-alt"></i> العنوان الكامل:</label>
+                     <textarea id="customer-address" name="customerAddress" rows="3" required placeholder="الرجاء ذكر: المحافظة - المدينة - المنطقة/الحي - أقرب نقطة دالة معروفة..."></textarea>
+                 </div>
+                 <button type="submit" id="modal-whatsapp-button-final" class="modal-whatsapp-button-final">
+                     <i class="fab fa-whatsapp"></i> تأكيد وإرسال الطلب عبر واتساب
+                 </button>
+             </form>
+        </div>
+    </div>
+
+
+    <footer>
+        <p>&copy; <span id="year"></span> Master Quality. عنوانك الأول للأناقة الفاخرة.</p>
+        <p>للتواصل و الطلب: <a href="https://wa.me/9647711359997" target="_blank" rel="noopener noreferrer"> <i class="fab fa-whatsapp"></i> تواصل معنا عبر واتساب</a></p>
+    </footer>
+
+    <script>
+        // --- Product Data (Ensure 'image' uses .png and 'base_size' is added) ---
+        const products = [
+            // --- Trousers/Jeggings ---
+            { id: 1, title: "بنطلون جيجنز Master Quality أزرق مريح", image: "1.png", price: "12,000", size: "S (كمر 36)", base_size: "S", category: "trousers", availability: "in stock", description: "جيجنز مريح وعملي بلون أزرق جذاب، مثالي للارتداء اليومي.", is_new: false },
+            { id: 4, title: "بنطلون جيجنز Master Quality أزرق عملي", image: "4.png", price: "12,000", size: "M (كمر 40)", base_size: "M", category: "trousers", availability: "in stock", description: "جيجنز بقصة عملية ومريحة للاستخدام اليومي.", is_new: false },
+            { id: 5, title: "بنطلون Master Quality مطبع بألوان زاهية", image: "5.png", price: "14,000", size: "L (كمر 42)", base_size: "L", category: "trousers", availability: "in stock", description: "بنطلون قماش خفيف بنقشة بيزلي زاهية ومميزة.", is_new: true },
+            { id: 7, title: "بنطلون Master Quality خصر عالي جملي", image: "7.png", price: "15,000", size: "XXL (كمر 48)", base_size: "XXL", category: "trousers", availability: "in stock", description: "بنطلون أنيق بلون جملي دافئ وخصر عالي مع أزرار زينة.", is_new: false },
+            { id: 8, title: "بنطلون Master Quality مقلم أرجل واسعة رمادي", image: "8.png", price: "14,000", size: "M (كمر 38)", base_size: "M", category: "trousers", availability: "in stock", description: "بنطلون عصري مقلم بقصة أرجل واسعة ومريحة.", is_new: false },
+            { id: 9, title: "بنطلون Master Quality أسود بحزام وكسرات", image: "9.png", price: "14,000", size: "M (كمر 38)", base_size: "M", category: "trousers", availability: "in stock", description: "بنطلون أسود كلاسيكي مع حزام أنيق وكسرات أمامية لإطلالة رسمية.", is_new: false },
+            { id: 10, title: "بنطلون Master Quality بيج أرجل واسعة", image: "10.png", price: "14,000", size: "M (كمر 38)", base_size: "M", category: "trousers", availability: "in stock", description: "بنطلون بيج فاتح بقصة أرجل واسعة وخامة مريحة للصيف.", is_new: false },
+            { id: 11, title: "بنطلون Master Quality أصفر خردلي برباط خصر", image: "11.png", price: "12,000", size: "L (كمر 42)", base_size: "L", category: "trousers", availability: "in stock", description: "بنطلون كاجوال مريح بلون أصفر خردلي جذاب وخصر مطاطي مع رباط.", is_new: false },
+            { id: 12, title: "بنطلون Master Quality أبيض قصة مرتبة", image: "12.png", price: "14,000", size: "S (كمر 34)", base_size: "S", category: "trousers", availability: "in stock", description: "بنطلون أبيض أساسي بقصة كلاسيكية مرتبة لمختلف المناسبات.", is_new: true },
+            { id: 13, title: "بنطلون Master Quality دانتيل أبيض", image: "13.png", price: "18,000", size: "L (كمر 42)", base_size: "L", category: "trousers", availability: "in stock", description: "بنطلون أنيق من الدانتيل الأبيض الفاخر لإطلالة مميزة وجذابة.", is_new: false },
+            { id: 14, title: "بنطلون Master Quality ليجنز زيتي مطبع", image: "14.png", price: "14,000", size: "M (كمر 37)", base_size: "M", category: "trousers", availability: "in stock", description: "ليجنز مريح بلون زيتي عملي ونقشة هادئة.", is_new: false },
+             // --- Maternity Wear ---
+            { id: 2, title: "بنطلون جينز حوامل Master Quality أزرق فاتح", image: "2.png", price: "18,000", size: "XL (كمر 44)", base_size: "XL", category: "maternity", availability: "in stock", description: "جينز حوامل بقصة مريحة ولون فاتح مع حزام بطن قماشي عريض ومرن.", is_new: false },
+            { id: 3, title: "بنطلون جينز حوامل Master Quality أزرق فاتح", image: "3.png", price: "18,000", size: "L (كمر 40)", base_size: "L", category: "maternity", availability: "in stock", description: "جينز حوامل بقصة مريحة ولون فاتح مع حزام بطن قماشي عريض ومرن.", is_new: false },
+            // --- Tops ---
+            { id: 15, title: "توب تانك Master Quality مضلع رمادي غامق", image: "15.png", price: "4,000", size: "XL", base_size: "XL", category: "tops", availability: "in stock", description: "توب أساسي مضلع ومريح بلون رمادي غامق للاستخدام اليومي.", is_new: false },
+            { id: 16, title: "توب كروب Master Quality مضلع أخضر ليموني", image: "16.png", price: "4,000", size: "L", base_size: "L", category: "tops", availability: "in stock", description: "توب كروب عصري مضلع بلون نيون منعش وحافة مكشكشة.", is_new: true },
+            { id: 17, title: "توب تانك Master Quality مخطط فوشي/أبيض", image: "17.png", price: "4,000", size: "XL", base_size: "XL", category: "tops", availability: "in stock", description: "توب مخطط كلاسيكي بألوان صيفية زاهية وحواف بيضاء.", is_new: false },
+            { id: 18, title: "توب تانك Master Quality مضلع أبيض", image: "18.png", price: "4,000", size: "XL", base_size: "XL", category: "tops", availability: "in stock", description: "توب أبيض أساسي مضلع لا غنى عنه في أي خزانة.", is_new: false },
+            { id: 19, title: "توب تانك Master Quality أخضر زاهي", image: "19.png", price: "4,000", size: "XL", base_size: "XL", category: "tops", availability: "in stock", description: "توب أساسي مريح وعملي بلون أخضر منعش.", is_new: false },
+            { id: 20, title: "توب تانك Master Quality تركوازي", image: "20.png", price: "4,000", size: "M", base_size: "M", category: "tops", availability: "in stock", description: "توب أساسي ناعم بلون تركوازي هادئ ومريح.", is_new: false },
+            { id: 21, title: "توب تانك Master Quality أسود", image: "21.png", price: "4,000", size: "XS", base_size: "XS", category: "tops", availability: "in stock", description: "توب أسود أساسي عملي لكل الإطلالات برقبة واسعة قليلاً.", is_new: false },
+            { id: 22, title: "كاميصول Master Quality تركوازي بحواف دانتيل", image: "22.png", price: "4,000", size: "S", base_size: "S", category: "tops", availability: "in stock", description: "كاميصول ناعم بلون تركوازي مع لمسة دانتيل أنثوية على الحافة.", is_new: false },
+            { id: 23, title: "كاميصول Master Quality تركوازي بحواف دانتيل", image: "23.png", price: "4,000", size: "2XL", base_size: "2XL", category: "tops", availability: "in stock", description: "كاميصول ناعم بلون تركوازي مع لمسة دانتيل أنثوية على الحافة.", is_new: false },
+            { id: 24, title: "توب تانك Master Quality رمادي فاتح ميلانج", image: "24.png", price: "4,000", size: "2XL", base_size: "2XL", category: "tops", availability: "in stock", description: "توب أساسي مريح وعملي بلون رمادي فاتح ميلانج.", is_new: false },
+            { id: 25, title: "كاميصول Master Quality أخضر فاتح بحواف دانتيل", image: "25.png", price: "4,000", size: "2XL", base_size: "2XL", category: "tops", availability: "in stock", description: "كاميصول ناعم بلون أخضر باستيل ولمسة دانتيل رقيقة.", is_new: false },
+            { id: 26, title: "توب كروب Master Quality أخضر فاتح بملمس مميز", image: "26.png", price: "4,000", size: "XS", base_size: "XS", category: "tops", availability: "in stock", description: "توب كروب عصري بملمس مجعد (سموكيد) ورقبة V.", is_new: true },
+            { id: 27, title: "توب تانك Master Quality مخطط أخضر/أبيض مضلع", image: "27.png", price: "4,000", size: "2XL", base_size: "2XL", category: "tops", availability: "in stock", description: "توب مضلع مخطط بقصة مريحة وألوان منعشة.", is_new: false },
+            { id: 28, title: "كاميصول Master Quality أوف وايت/كريمي", image: "28.png", price: "4,000", size: "2XL", base_size: "2XL", category: "tops", availability: "in stock", description: "كاميصول أساسي ناعم بلون أوف وايت هادئ ومريح.", is_new: false },
+            { id: 29, title: "توب كروب Master Quality خوخي/مرجاني بملمس مميز", image: "29.png", price: "4,000", size: "2XL", base_size: "2XL", category: "tops", availability: "in stock", description: "توب كروب عصري بملمس مجعد (سموكيد) ورقبة V بلون خوخي.", is_new: false },
+            { id: 30, title: "توب/فيست Master Quality محبوك بنقشة مموجة", image: "30.png", price: "4,000", size: "L", base_size: "L", category: "tops", availability: "in stock", description: "فيست محبوك بنقشة مموجة جريئة وألوان زاهية (أزرق وأصفر).", is_new: true },
+            { id: 31, title: "توب تانك Master Quality أخضر ليموني نيون", image: "31.png", price: "4,000", size: "L", base_size: "L", category: "tops", availability: "in stock", description: "توب رياضي أو كاجوال بلون نيون منعش وقصة مريحة.", is_new: false },
+            { id: 32, title: "توب كروب Master Quality أخضر بقصة غير متماثلة", image: "32.png", price: "4,000", size: "XL", base_size: "XL", category: "tops", availability: "in stock", description: "توب كروب عصري بقصة كتف غير متماثلة وجريئة.", is_new: false },
+            { id: 33, title: "توب تانك Master Quality مخطط كحلي/أبيض", image: "33.png", price: "4,000", size: "XL", base_size: "XL", category: "tops", availability: "in stock", description: "توب مخطط كلاسيكي بستايل بحري أنيق (كحلي وأبيض).", is_new: false },
+            { id: 34, title: "توب كروب Master Quality مضلع بيج", image: "34.png", price: "4,000", size: "XS", base_size: "XS", category: "tops", availability: "in stock", description: "توب كروب أساسي مضلع بلون بيج محايد وعصري.", is_new: false },
+            { id: 35, title: "كاميصول Master Quality فوشي بحواف دانتيل", image: "35.png", price: "4,000", size: "2XL", base_size: "2XL", category: "tops", availability: "in stock", description: "كاميصول أنثوي بلون فوشي جذاب ولمسة دانتيل رقيقة.", is_new: false },
+            { id: 37, title: "توب كروب Master Quality مخطط أخضر فاتح/أبيض مضلع", image: "37.png", price: "4,000", size: "S", base_size: "S", category: "tops", availability: "in stock", description: "توب كروب مضلع ومخطط بألوان هادئة (أخضر فاتح وأبيض).", is_new: false },
+            { id: 38, title: "توب كروب Master Quality أسود بكشكشة", image: "38.png", price: "4,000", size: "S", base_size: "S", category: "tops", availability: "in stock", description: "توب كروب أسود أنيق بتصميم كشكشة أمامي للمناسبات.", is_new: true }
+        ];
+
+        // --- DOM Elements ---
+        const productGrid = document.getElementById('product-grid-main');
+        const allCards = [];
+        const noResultsDiv = document.getElementById('no-results');
+        const searchInput = document.getElementById('search-input');
+        const categorySelect = document.getElementById('category-select');
+        const sizeSelect = document.getElementById('size-select');
+        const quickViewModalOverlay = document.getElementById('quick-view-modal');
+        const quickViewModalCloseButton = document.getElementById('modal-close-button-qv');
+        const orderFormModalOverlay = document.getElementById('order-form-modal');
+        const orderFormModalCloseButton = document.getElementById('modal-close-button-order');
+        const modalImage = document.getElementById('modal-product-image');
+        const modalTitle = document.getElementById('modal-product-title');
+        const modalSize = document.getElementById('modal-product-size');
+        const modalPrice = document.getElementById('modal-product-price');
+        const modalDescription = document.getElementById('modal-product-description');
+        const proceedButton = document.getElementById('proceed-button');
+        const orderForm = document.getElementById('order-form');
+        const formErrorMessage = document.getElementById('form-error-message');
+        const orderSummaryTitle = document.getElementById('order-summary-title');
+        const orderSummarySize = document.getElementById('order-summary-size');
+        const orderSummaryPrice = document.getElementById('order-summary-price');
+        const orderFormProductId = document.getElementById('order-form-product-id');
+        const orderFormProductTitle = document.getElementById('order-form-product-title');
+        const orderFormProductSize = document.getElementById('order-form-product-size');
+        const orderFormProductPrice = document.getElementById('order-form-product-price');
+        const whatsappNumber = '9647711359997';
+        let currentProductIdForOrder = null;
+
+        // --- Create Card Function ---
+        function createProductCard(product, index) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.style = `--card-index: ${index};`;
+            card.dataset.title = product.title.toLowerCase();
+            card.dataset.category = product.category;
+            card.dataset.base_size = product.base_size;
+            card.dataset.id = product.id;
+
+            const badgesContainer = document.createElement('div');
+            badgesContainer.className = 'badges';
+            if (product.availability === 'in stock') {
+                const availableBadge = document.createElement('span');
+                availableBadge.className = 'badge available';
+                availableBadge.innerHTML = '<i class="fas fa-check-circle"></i> متوفر';
+                badgesContainer.appendChild(availableBadge);
+            }
+            if (product.is_new) {
+                const newBadge = document.createElement('span');
+                newBadge.className = 'badge new-arrival';
+                newBadge.innerHTML = '<i class="fas fa-star"></i> جديد';
+                badgesContainer.appendChild(newBadge);
+            }
+            card.appendChild(badgesContainer);
+
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'product-image-container';
+            const img = document.createElement('img');
+            img.src = product.image;
+            img.alt = product.title;
+            img.loading = 'lazy';
+            imageContainer.appendChild(img);
+
+            const infoContainer = document.createElement('div');
+            infoContainer.className = 'product-info';
+
+            const title = document.createElement('h3');
+            title.textContent = product.title;
+
+            const price = document.createElement('p');
+            price.className = 'price-card';
+            price.innerHTML = `<i class="fas fa-tag"></i> ${product.price} <span class="currency">د.ع</span>`;
+
+            const detailsButton = document.createElement('button');
+            detailsButton.className = 'details-button';
+            detailsButton.textContent = 'عرض التفاصيل والطلب';
+            detailsButton.onclick = () => openQuickView(product.id);
+
+            infoContainer.appendChild(title);
+            infoContainer.appendChild(price);
+            infoContainer.appendChild(detailsButton);
+
+            card.appendChild(imageContainer);
+            card.appendChild(infoContainer);
+
+            return card;
+        }
+
+        // --- Open Quick View Modal ---
+        function openQuickView(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            currentProductIdForOrder = productId;
+            modalImage.src = product.image;
+            modalImage.alt = product.title;
+            modalTitle.textContent = product.title;
+            modalSize.textContent = product.size;
+            modalPrice.textContent = product.price;
+            modalDescription.textContent = product.description || "تصميم مميز وعصري من أجود الخامات المتوفرة.";
+            quickViewModalOverlay.classList.add('active');
+        }
+
+        // --- Close Quick View Modal ---
+        function closeQuickView() {
+            quickViewModalOverlay.classList.remove('active');
+            // currentProductIdForOrder = null; // Keep ID until order modal is closed or new QV opens
+        }
+
+        // --- Open Order Form Modal ---
+        function openOrderModal() {
+            if (!currentProductIdForOrder) return;
+            const product = products.find(p => p.id === currentProductIdForOrder);
+            if (!product) return;
+
+            closeQuickView(); // Close Quick View
+
+            orderSummaryTitle.textContent = product.title;
+            orderSummarySize.textContent = product.size;
+            orderSummaryPrice.textContent = product.price;
+            orderFormProductId.value = product.id;
+            orderFormProductTitle.value = product.title;
+            orderFormProductSize.value = product.size;
+            orderFormProductPrice.value = product.price;
+
+            orderForm.reset();
+            formErrorMessage.style.display = 'none';
+            orderFormModalOverlay.classList.add('active');
+        }
+
+        // --- Close Order Form Modal ---
+        function closeOrderModal() {
+            orderFormModalOverlay.classList.remove('active');
+            currentProductIdForOrder = null; // Clear product ID now
+        }
+
+        // --- Filter and Display ---
+        function filterAndDisplayProducts() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const selectedCategory = categorySelect.value;
+            const selectedSize = sizeSelect.value;
+            let visibleCount = 0;
+
+            allCards.forEach(card => {
+                const title = card.dataset.title;
+                const category = card.dataset.category;
+                const baseSize = card.dataset.base_size;
+                const categoryMatch = selectedCategory === 'all' || category === selectedCategory;
+                const searchMatch = !searchTerm || title.includes(searchTerm);
+                const sizeMatch = selectedSize === 'all' || baseSize === selectedSize;
+                const isVisible = categoryMatch && searchMatch && sizeMatch;
+                card.style.display = isVisible ? 'flex' : 'none';
+                if (isVisible) visibleCount++;
+            });
+            noResultsDiv.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        // --- Handle Final Order Form Submission ---
+        orderForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const customerName = document.getElementById('customer-name').value.trim();
+            const customerPhone = document.getElementById('customer-phone').value.trim();
+            const customerAddress = document.getElementById('customer-address').value.trim();
+
+            if (!customerName || !customerPhone || !customerAddress) {
+                formErrorMessage.textContent = 'يرجى ملء جميع حقول معلومات التوصيل.';
+                formErrorMessage.style.display = 'block'; return;
+            }
+            const phonePattern = /^(07[5789][0-9]{8})$/;
+            if (!phonePattern.test(customerPhone)) {
+                formErrorMessage.textContent = 'يرجى إدخال رقم هاتف عراقي صحيح (مثال: 077xxxxxxxx).';
+                formErrorMessage.style.display = 'block'; return;
+            }
+            formErrorMessage.style.display = 'none';
+
+            const productId = orderFormProductId.value;
+            const productTitle = orderFormProductTitle.value;
+            const productSize = orderFormProductSize.value;
+            const productPrice = orderFormProductPrice.value;
+
+            const message = `
+=========================
+      🌟 طلب جديـد 🌟
+=========================
+
+المنتج المطلوب:
+* ${productTitle}
+* الرقم التعريفي: ${productId}
+* المقاس: ${productSize}
+* السعر: ${productPrice} د.ع
+
+=========================
+     👤 بيانات الزبـون 👤
+=========================
+
+* الاسم: ${customerName}
+* رقم الهاتف: ${customerPhone}
+* العنوان: ${customerAddress}
+
+=========================
+   (الدفع عند الاستـلام)
+    ✨ شكراً لطلبكـم ✨
+=========================
+            `;
+
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message.trim())}`;
+            window.open(whatsappUrl, '_blank');
+            closeOrderModal();
+        });
+
+        // --- Populate Initial Grid ---
+        products.forEach((product, index) => {
+            const cardElement = createProductCard(product, index);
+            productGrid.appendChild(cardElement);
+            allCards.push(cardElement);
+        });
+
+        // --- Event Listeners ---
+        searchInput.addEventListener('input', filterAndDisplayProducts);
+        categorySelect.addEventListener('change', filterAndDisplayProducts);
+        sizeSelect.addEventListener('change', filterAndDisplayProducts);
+        quickViewModalCloseButton.addEventListener('click', closeQuickView);
+        quickViewModalOverlay.addEventListener('click', (event) => { if (event.target === quickViewModalOverlay) closeQuickView(); });
+        proceedButton.addEventListener('click', openOrderModal);
+        orderFormModalCloseButton.addEventListener('click', closeOrderModal);
+        orderFormModalOverlay.addEventListener('click', (event) => { if (event.target === orderFormModalOverlay) closeOrderModal(); });
+
+        // --- Footer Year ---
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // --- Initial Display ---
+        filterAndDisplayProducts();
+
+    </script>
+
+</body>
+</html>
