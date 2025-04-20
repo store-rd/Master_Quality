@@ -85,7 +85,7 @@
         .button-secondary { background-color: transparent; color: var(--primary-accent); border: 1px solid var(--primary-accent); }
         .button-secondary:hover { background-color: var(--button-active-bg); border-color: var(--primary-accent-hover); color: var(--primary-accent-hover); }
         .button-secondary:active { background-color: var(--button-active-bg); border-color: var(--primary-accent-darker); transform: scale(0.97); }
-        .icon-button { background: none; color: var(--text-secondary); font-size: 1.3rem; padding: 8px; border-radius: 50%; }
+        .icon-button { background: none; color: var(--text-secondary); font-size: 1.3rem; padding: 8px; border-radius: 50%; } /* Base size 1.3rem */
         .icon-button:hover { color: var(--primary-accent); background-color: rgba(255, 255, 255, 0.05); }
         body.light-theme .icon-button:hover { background-color: rgba(0, 0, 0, 0.05); }
         .icon-button:active { color: var(--primary-accent-darker); transform: scale(0.95); }
@@ -113,7 +113,7 @@
         #wishlist-count, #mobile-wishlist-count { position: absolute; top: 0px; right: 0px; background-color: var(--wishlist-heart); color: white; font-size: 0.6rem; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; line-height: 1; padding-bottom: 1px; border: 1px solid var(--surface-color); transition: transform 0.2s ease-in-out, background-color 0.2s ease; }
         #wishlist-button.active i, #mobile-wishlist-button.active i { color: var(--wishlist-heart); }
         #wishlist-button.active #wishlist-count, #mobile-wishlist-button.active #mobile-wishlist-count { transform: scale(1.1); background-color: darken(var(--wishlist-heart), 10%); }
-        #theme-toggle-button, #mobile-theme-toggle-button { font-size: 1.2rem; }
+        /* Theme toggle buttons will inherit size from .icon-button */
         .mobile-controls { display: none; gap: 8px; }
 
         /* Hero Section */
@@ -376,16 +376,16 @@
         #no-results { text-align: center; font-size: 1.2rem; color: var(--text-secondary); display: none; margin: 80px auto; padding: 40px; background-color: var(--surface-color); border-radius: var(--border-radius-md); border: 1px solid var(--border-color); max-width: 600px; }
         #no-results i { color: var(--primary-accent); margin-bottom: 20px; font-size: 2.5rem; display: block; }
 
-        /* --- Bottom Navigation (Icon/Text Size Increased) --- */
+        /* --- Bottom Navigation --- */
         .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height); background-color: var(--surface-color); box-shadow: 0 -6px 18px var(--shadow-light); border-top: 1px solid var(--border-color); z-index: 1001; transition: background-color var(--transition-medium), border-color var(--transition-medium); }
         .bottom-nav ul { list-style: none; display: flex; justify-content: space-around; align-items: stretch; height: 100%; }
         .bottom-nav ul li { flex: 1; }
-        .bottom-nav ul li a { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); /* Ensure contrast */ font-size: 0.85rem; /* Increased text size */ font-weight: 600; padding: 4px 0; /* Adjusted padding slightly */ transition: color var(--transition-fast), transform 0.2s ease; position: relative; }
-        .bottom-nav ul li a i { font-size: 1.6rem; /* Increased icon size */ margin-bottom: 3px; /* Adjusted margin */ display: block; transition: transform 0.2s ease; }
+        .bottom-nav ul li a { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); /* Ensure contrast */ font-size: 0.85rem; /* Default mobile text size */ font-weight: 600; padding: 4px 0; transition: color var(--transition-fast), transform 0.2s ease; position: relative; text-align: center; }
+        .bottom-nav ul li a i { font-size: 1.6rem; /* Default mobile icon size */ margin-bottom: 3px; display: block; transition: transform 0.2s ease; }
         .bottom-nav ul li a.active { color: var(--primary-accent); /* Ensure contrast */ }
         .bottom-nav ul li a.active i { transform: scale(1.15); }
         .bottom-nav ul li a:active { transform: scale(0.95); background-color: var(--button-active-bg); }
-        .bottom-nav ul li a .nav-text { display: block; line-height: 1.2; /* Added line-height */ }
+        .bottom-nav ul li a .nav-text { display: block; line-height: 1.2; }
 
         /* Mobile Overlays */
         .mobile-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1500; display: flex; justify-content: center; align-items: flex-start; padding-top: calc(var(--header-height) + 30px); opacity: 0; visibility: hidden; transition: opacity var(--transition-medium), visibility 0s linear var(--transition-medium); }
@@ -413,7 +413,24 @@
 
         /* Responsive Adjustments */
         @media (max-width: 1200px) { .container { width: 95%; } .product-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; } h1 { font-size: clamp(2.2rem, 4.5vw, 3rem); } h2 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); } }
-        @media (max-width: 992px) { nav.desktop-nav { display: none; } .header-controls .filter-control, .header-controls .search-container { display: none; } .mobile-controls { display: flex; } .product-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 25px; } #quick-view-modal .modal-body { grid-template-columns: 1fr; gap: 25px; } #quick-view-modal .modal-image { aspect-ratio: 1 / 1; min-height: 320px; } #quick-view-modal .modal-details h2 { font-size: 1.8rem; text-align: center; } .hero-section { min-height: 55vh; padding: 60px 0; } #wishlist-modal .modal-content { max-width: 90%; } .category-browser-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 20px; } .category-card i { font-size: 2.2rem; } .category-card span { font-size: 0.9rem; } }
+
+        @media (max-width: 992px) {
+            nav.desktop-nav { display: none; }
+            /* --- MODIFICATION START: Hide ALL desktop header controls --- */
+            .header-controls { display: none; }
+            /* --- MODIFICATION END --- */
+            .mobile-controls { display: flex; } /* Show mobile controls */
+            .product-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 25px; }
+            #quick-view-modal .modal-body { grid-template-columns: 1fr; gap: 25px; }
+            #quick-view-modal .modal-image { aspect-ratio: 1 / 1; min-height: 320px; }
+            #quick-view-modal .modal-details h2 { font-size: 1.8rem; text-align: center; }
+            .hero-section { min-height: 55vh; padding: 60px 0; }
+            #wishlist-modal .modal-content { max-width: 90%; }
+            .category-browser-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 20px; }
+            .category-card i { font-size: 2.2rem; }
+            .category-card span { font-size: 0.9rem; }
+        }
+
         @media (max-width: 768px) {
             :root { --header-height: 65px; --bottom-nav-height: 60px; }
             body { padding-bottom: var(--bottom-nav-height); font-size: 15px; line-height: 1.65; }
@@ -438,9 +455,14 @@
             .wishlist-item { flex-direction: row; align-items: center; gap: 12px; padding: 12px; }
             .wishlist-item-image { width: 65px; height: 65px; } .wishlist-item-details h4 { font-size: 1rem; } .wishlist-item-details p { font-size: 0.95rem; }
             .category-browser-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
-            /* Bottom Nav Size Adjustment for Mid-size Mobile */
-             .bottom-nav ul li a { font-size: 0.8rem; }
-             .bottom-nav ul li a i { font-size: 1.55rem; }
+            /* --- MODIFICATION START: Bottom Nav Size Adjustment for Mid-size Mobile --- */
+             .bottom-nav ul li a {
+                 font-size: 0.85rem; /* Slightly larger text */
+             }
+             .bottom-nav ul li a i {
+                 font-size: 1.7rem; /* Slightly larger icon */
+             }
+             /* --- MODIFICATION END --- */
         }
         @media (max-width: 500px) {
             :root { --header-height: 60px; --bottom-nav-height: 55px; }
@@ -448,9 +470,20 @@
             h1 { font-size: clamp(1.8rem, 7vw, 2.2rem); }
             .hero-section { min-height: 45vh; }
             footer { padding: 40px 15px calc(var(--bottom-nav-height) + 20px) 15px; font-size: 0.9rem; }
-            /* Bottom Nav Size Adjustment for Small Mobile */
-            .bottom-nav ul li a { font-size: 0.75rem; padding: 3px 0; } /* Increased */
-            .bottom-nav ul li a i { font-size: 1.5rem; margin-bottom: 2px;} /* Increased */
+            /* --- MODIFICATION START: Bottom Nav Size Adjustment for Small Mobile --- */
+            .bottom-nav ul li a {
+                font-size: 0.9rem; /* Increased significantly */
+                padding: 2px 0;
+            }
+            .bottom-nav ul li a i {
+                font-size: 1.8rem; /* Increased significantly */
+                margin-bottom: 4px; /* Increased space */
+            }
+             .bottom-nav ul li a .nav-text {
+                 text-align: center;
+                 line-height: 1.1;
+             }
+            /* --- MODIFICATION END --- */
             #wishlist-modal .modal-content { padding: 20px 15px; }
             .wishlist-item { padding: 10px; } .wishlist-item-image { width: 55px; height: 55px; } .wishlist-item-details h4 { font-size: 0.9rem; } .wishlist-item-details p { font-size: 0.9rem; } .wishlist-item-actions .wishlist-remove-item-btn { font-size: 1.1rem; padding: 5px; } #wishlist-order-all-btn { font-size: 1rem; padding: 12px 20px; }
             #quick-view-modal .modal-body { gap: 20px; } #quick-view-modal .modal-image { min-height: 240px; }
@@ -479,8 +512,7 @@
                      <li><a href="#product-section" data-category="tops" class="nav-link" onclick="setActiveCategory('tops', this); scrollToProducts(); return false;">توبات</a></li>
                 </ul>
             </nav>
-            <div class="header-controls">
-                <div class="filter-control">
+            <div class="header-controls"> <div class="filter-control">
                      <select id="size-select" aria-label="فلترة حسب المقاس">
                          <option value="all">كل المقاسات</option>
                          <option value="XS">XS</option> <option value="S">S</option> <option value="M">M</option>
@@ -497,19 +529,16 @@
                      <span id="wishlist-count" class="visually-hidden">0</span>
                  </button>
                  <button id="theme-toggle-button" class="icon-button" aria-label="تبديل الوضع المظلم/الفاتح">
-                     <i class="fas fa-sun"></i>
-                 </button>
+                     <i class="fas fa-sun"></i> </button>
             </div>
-             <div class="mobile-controls">
-                 <button class="icon-button" id="mobile-filter-btn" aria-label="فتح خيارات الفلترة"><i class="fas fa-filter"></i></button>
+             <div class="mobile-controls"> <button class="icon-button" id="mobile-filter-btn" aria-label="فتح خيارات الفلترة"><i class="fas fa-filter"></i></button>
                  <button class="icon-button" id="mobile-search-btn" aria-label="فتح البحث"><i class="fas fa-search"></i></button>
                  <button id="mobile-wishlist-button" class="icon-button" aria-label="فتح قائمة الأمنيات">
                      <i class="far fa-heart"></i>
                      <span id="mobile-wishlist-count" class="visually-hidden">0</span>
                  </button>
                  <button id="mobile-theme-toggle-button" class="icon-button" aria-label="تبديل الوضع المظلم/الفاتح">
-                     <i class="fas fa-sun"></i>
-                 </button>
+                     <i class="fas fa-sun"></i> </button>
              </div>
         </div>
     </header>
@@ -900,7 +929,13 @@
         const newAriaLabel = theme === 'light' ? 'تفعيل الوضع المظلم' : 'تفعيل الوضع الفاتح';
         [themeToggleButton, mobileThemeToggleButton].forEach(btn => {
             if(btn) {
-                btn.innerHTML = `<i class="fas ${iconClass}"></i>`;
+                // Ensure the button only contains the icon
+                const iconElement = btn.querySelector('i');
+                if (iconElement) {
+                    iconElement.className = `fas ${iconClass}`; // Update existing icon
+                } else {
+                    btn.innerHTML = `<i class="fas ${iconClass}"></i>`; // Set icon if somehow missing
+                }
                 btn.setAttribute('aria-label', newAriaLabel);
             }
         });
@@ -987,8 +1022,12 @@
             safelyDestroyPanzoom();
             currentProductIdForQuickView = null; // Reset ID when closing Quick View
          }
-         // Restore body scroll only if NO modals are active
-         const anyModalActive = document.querySelector('.modal-overlay.active');
+         // Specific cleanup for mobile overlays
+         if (modalOverlay === mobileFilterOverlay || modalOverlay === mobileSearchOverlay) {
+            // No specific cleanup needed now, but good place for it
+         }
+         // Restore body scroll only if NO modals or mobile overlays are active
+         const anyModalActive = document.querySelector('.modal-overlay.active, .mobile-overlay.active');
          if (!anyModalActive) {
              body.style.overflow = '';
          }
@@ -997,10 +1036,6 @@
      function safelyDestroyPanzoom() {
          if (currentPanzoomInstance) {
              try {
-                 // Remove event listeners manually if needed (Panzoom might do this)
-                 // modalImageElement.removeEventListener('panzoomstart', ...);
-                 // modalImageElement.removeEventListener('panzoomend', ...);
-                 // modalImageElement.removeEventListener('wheel', ...);
                  currentPanzoomInstance.destroy();
              } catch (e) {
                  console.error("Error destroying Panzoom instance:", e);
