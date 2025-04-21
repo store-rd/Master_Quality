@@ -117,8 +117,8 @@
         .mobile-controls { display: none; gap: 8px; }
 
         /* Hero Section */
-        .hero-section { min-height: 65vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.75)), url('https://via.placeholder.com/1920x1080/333333/666666?text=Modern+Fashion+Background') no-repeat center center / cover; padding: 80px 0; text-align: center; position: relative; overflow: hidden; border-bottom: 1px solid var(--border-color); color: #fff; }
-        body.light-theme .hero-section { background: linear-gradient(rgba(255,255,255,0.3), rgba(240, 240, 240, 0.6)), url('https://via.placeholder.com/1920x1080/eeeeee/cccccc?text=Modern+Fashion+Background') no-repeat center center / cover; color: var(--light-text-primary); }
+        .hero-section { min-height: 65vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.75)), url('https://placehold.co/1920x1080/333333/666666?text=Modern+Fashion') no-repeat center center / cover; padding: 80px 0; text-align: center; position: relative; overflow: hidden; border-bottom: 1px solid var(--border-color); color: #fff; }
+        body.light-theme .hero-section { background: linear-gradient(rgba(255,255,255,0.3), rgba(240, 240, 240, 0.6)), url('https://placehold.co/1920x1080/eeeeee/cccccc?text=Modern+Fashion') no-repeat center center / cover; color: var(--light-text-primary); }
         .hero-content { max-width: 750px; animation: fadeInHero 1.2s ease-out 0.2s both; }
         .hero-title { color: #fff; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); margin-bottom: 10px; }
         body.light-theme .hero-title { color: var(--primary-accent); text-shadow: 1px 1px 4px rgba(0,0,0,0.1); }
@@ -501,7 +501,7 @@
         <div class="header-content container">
             <div class="logo">
                 <a href="#" onclick="setActiveCategory('all', this); scrollToProducts(); return false;" aria-label="الصفحة الرئيسية Master Quality">
-                    <img src="logo.png" alt="Master Quality Logo">
+                    <img src="logo.png" alt="Master Quality Logo" onerror="this.src='https://placehold.co/150x45/2f2f2f/e4c17a?text=Logo'; this.onerror=null;">
                 </a>
             </div>
             <nav class="desktop-nav">
@@ -654,7 +654,8 @@
             <button id="modal-close-button-qv" class="modal-close" title="إغلاق" aria-label="إغلاق نافذة العرض السريع">&times;</button>
             <div class="modal-body">
                 <div class="modal-image">
-                     <img id="modal-product-image" src="" alt="صورة المنتج" loading="lazy"> <span class="zoom-hint"><i class="fas fa-search-plus"></i> قرّب الصورة</span>
+                     <img id="modal-product-image" src="" alt="صورة المنتج" loading="lazy" onerror="this.src='https://placehold.co/400x450/cccccc/999999?text=Image+Not+Found'; this.onerror=null;">
+                     <span class="zoom-hint"><i class="fas fa-search-plus"></i> قرّب الصورة</span>
                 </div>
                  <div class="modal-details">
                     <h2 id="modal-product-title">اسم المنتج</h2>
@@ -677,7 +678,10 @@
                 <h4 id="order-summary-main-title"><i class="fas fa-box-open"></i> المنتج/المنتجات المطلوبة</h4>
                 <div id="order-summary-single-item-details"> <p id="order-summary-title">اسم المنتج</p> <p> <i class="fas fa-ruler-combined"></i> المقاس: <span id="order-summary-size"></span> | <i class="fas fa-tag"></i> السعر: <span id="order-summary-price"></span> <span class="currency">د.ع</span> </p> </div>
                 <ul id="order-summary-items-list" class="display-none"></ul>
-                <input type="hidden" id="order-form-product-id"> <input type="hidden" id="order-form-product-title"> <input type="hidden" id="order-form-product-size"> <input type="hidden" id="order-form-product-price">
+                <input type="hidden" id="order-form-product-id">
+                <input type="hidden" id="order-form-product-title">
+                <input type="hidden" id="order-form-product-size">
+                <input type="hidden" id="order-form-product-price">
             </div>
             <form id="order-form" novalidate>
                 <div id="form-error-message"></div>
@@ -695,7 +699,7 @@
              <div class="modal-header"> <i class="fas fa-heart-circle-check"></i> <h2>قائمة الأمنيات</h2> <p>المنتجات التي نالت إعجابك</p> </div>
              <div id="wishlist-items-container">
                  <div id="wishlist-empty-message" style="display: none;"> <i class="fas fa-heart-crack"></i> <p>قائمة أمنياتك فارغة حالياً.</p> <p>أضف المنتجات التي تعجبك بالضغط على أيقونة القلب <i class="far fa-heart"></i> في صفحة المنتج!</p> </div>
-                 </div>
+             </div>
              <button id="wishlist-order-all-btn" class="button-base" disabled> <i class="fas fa-shopping-cart"></i> إرسال طلب بجميع المنتجات عبر واتساب </button>
         </div>
      </div>
@@ -711,17 +715,19 @@
 
     <footer>
         <div class="container">
-            <div class="footer-logo"> <img src="logo.png" alt="Master Quality Logo Footer"> </div>
+            <div class="footer-logo">
+                <img src="logo.png" alt="Master Quality Logo Footer" onerror="this.src='https://placehold.co/150x40/2f2f2f/a0a0a0?text=Logo'; this.onerror=null;">
+            </div>
             <p>&copy; <span id="year"></span> Master Quality. جميع الحقوق محفوظة.</p>
             <p>تصاميم عصرية بجودة تستحقينها.</p>
-            <p style="margin-top: 15px;"> للتواصل والطلبات السريعة: <a href="https://wa.me/07711359997" target="_blank" rel="noopener noreferrer"> <i class="fab fa-whatsapp"></i> راسلنا على واتساب </a> </p>
+            <p style="margin-top: 15px;"> للتواصل والطلبات السريعة: <a href="https://wa.me/964778076465" target="_blank" rel="noopener noreferrer"> <i class="fab fa-whatsapp"></i> راسلنا على واتساب </a> </p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-    // --- Product Data (Same as provided) ---
+    // --- Product Data (Sample - Replace with your actual data source) ---
     const products = [
         // --- Trousers/Jeggings ---
         { id: 1, title: "بنطلون جيجنز Master Quality أزرق مريح", image: "1.png", price: "12,000", size: "S (كمر 36)", base_size: "S", category: "trousers", availability: "in stock", description: "جيجنز مريح وعملي بلون أزرق جذاب، مثالي للارتداء اليومي.", is_new: false },
@@ -845,17 +851,18 @@
     const orderFormProductPrice = document.getElementById('order-form-product-price');
 
     // --- State & Constants ---
-    const whatsappNumber = '07711359997'; // Replace with your actual WhatsApp number
-    let currentProductIdForOrder = null;
+    const whatsappNumber = '964778076465'; // Replace with your actual WhatsApp number (تأكد من أن هذا هو رقم الواتساب الصحيح)
+    let currentProductIdForOrder = null; // Legacy, might remove later
     let currentProductIdForQuickView = null;
     let activeCategory = 'all';
     let wishlist = JSON.parse(localStorage.getItem('mqWishlist')) || [];
-    let wishlistItemsForOrder = [];
+    let wishlistItemsForOrder = []; // Used for multi-item orders via wishlist modal
     let currentPanzoomInstance = null;
     let displayedProductCount = 0;
-    const productsPerLoad = 8;
-    let currentFilteredProducts = [];
+    const productsPerLoad = 8; // Number of products to load each time
+    let currentFilteredProducts = []; // Holds the currently filtered list of products
 
+    // Category descriptions (for display)
     const categoryDescriptions = {
         all: "تصفحي جميع منتجاتنا المختارة بعناية.",
         trousers: "تشكيلة واسعة من البناطيل المريحة والأنيقة لجميع المناسبات.",
@@ -864,6 +871,7 @@
     };
 
     // --- Utility Functions ---
+    // Debounce function to limit the rate at which a function can fire.
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -877,6 +885,7 @@
     }
 
     // --- Wishlist Functions ---
+    // Update the visual count on wishlist buttons
     function updateWishlistCount() {
         const count = wishlist.length;
         const hasItems = count > 0;
@@ -888,48 +897,53 @@
              if (btn) {
                 btn.classList.toggle('active', hasItems);
                 const icon = btn.querySelector('i');
-                if (icon) icon.className = hasItems ? 'fas fa-heart' : 'far fa-heart';
+                if (icon) icon.className = hasItems ? 'fas fa-heart' : 'far fa-heart'; // Solid heart if items exist
              }
         });
-        if(wishlistOrderAllBtn) wishlistOrderAllBtn.disabled = !hasItems;
+        if(wishlistOrderAllBtn) wishlistOrderAllBtn.disabled = !hasItems; // Enable/disable order all button
     }
+    // Check if a product is in the wishlist
     function isWished(productId) {
         return wishlist.includes(Number(productId));
     }
+    // Add or remove a product from the wishlist
     function toggleWishlist(productId, buttonElement = null) {
         const numProductId = Number(productId);
         const index = wishlist.indexOf(numProductId);
         const wasWished = index > -1;
 
-        if (wasWished) { wishlist.splice(index, 1); } else { wishlist.push(numProductId); }
-        localStorage.setItem('mqWishlist', JSON.stringify(wishlist));
-        updateWishlistCount();
+        if (wasWished) { wishlist.splice(index, 1); } // Remove if exists
+        else { wishlist.push(numProductId); } // Add if doesn't exist
+        localStorage.setItem('mqWishlist', JSON.stringify(wishlist)); // Save to local storage
+        updateWishlistCount(); // Update UI
 
+        // Update all relevant wishlist buttons on the page
         document.querySelectorAll(`.wishlist-btn[data-id="${numProductId}"], #modal-add-to-wishlist-button`).forEach(btn => {
              if (!btn) return;
             const isNowWished = !wasWished;
             const icon = btn.querySelector('i');
              btn.classList.toggle('active', isNowWished);
 
-             if (btn.id === 'modal-add-to-wishlist-button') {
+             if (btn.id === 'modal-add-to-wishlist-button') { // Specific update for modal button text
                  if (icon) icon.className = isNowWished ? 'fas fa-heart-circle-check' : 'far fa-heart';
                  btn.childNodes[2].nodeValue = isNowWished ? ' تمت الإضافة للأمنيات' : ' إضافة إلى قائمة الأمنيات';
-             } else if (icon) {
+             } else if (icon) { // Update icon for card buttons
                  icon.className = isNowWished ? 'fas fa-heart' : 'far fa-heart';
              }
         });
 
+        // If the wishlist modal is open, re-render its content
         if (wishlistModalOverlay.classList.contains('active')) { renderWishlistItems(); }
     }
 
     // --- Theme Toggle Functions ---
+    // Apply the selected theme (light/dark)
     function applyTheme(theme) {
         body.classList.toggle('light-theme', theme === 'light');
-        const iconClass = theme === 'light' ? 'fa-moon' : 'fa-sun';
+        const iconClass = theme === 'light' ? 'fa-moon' : 'fa-sun'; // Moon for light theme, Sun for dark
         const newAriaLabel = theme === 'light' ? 'تفعيل الوضع المظلم' : 'تفعيل الوضع الفاتح';
         [themeToggleButton, mobileThemeToggleButton].forEach(btn => {
             if(btn) {
-                // Ensure the button only contains the icon
                 const iconElement = btn.querySelector('i');
                 if (iconElement) {
                     iconElement.className = `fas ${iconClass}`; // Update existing icon
@@ -939,44 +953,59 @@
                 btn.setAttribute('aria-label', newAriaLabel);
             }
         });
-        localStorage.setItem('mqTheme', theme);
+        localStorage.setItem('mqTheme', theme); // Save preference
     }
+    // Toggle between light and dark themes
     function toggleTheme() {
         const currentTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         applyTheme(newTheme);
     }
 
-    // --- Create Card Function ---
+    // --- Create Product Card Function ---
+    // Generates the HTML for a single product card
     function createProductCard(product, isCarousel = false) {
-        const card = document.createElement('div');
-        const cardContent = document.createElement('div');
+        const card = document.createElement('div'); // Wrapper div for carousel slide
+        const cardContent = document.createElement('div'); // The actual product card content
         cardContent.className = 'product-card';
-        cardContent.dataset.title = product.title.toLowerCase();
-        cardContent.dataset.category = product.category;
-        cardContent.dataset.base_size = product.base_size;
-        cardContent.dataset.id = product.id;
+        cardContent.dataset.title = product.title.toLowerCase(); // For search filtering
+        cardContent.dataset.category = product.category;       // For category filtering
+        cardContent.dataset.base_size = product.base_size;     // For size filtering
+        cardContent.dataset.id = product.id;                   // Store product ID
          if (!isCarousel) {
+            // Apply fade-in animation for grid cards
             cardContent.style.animation = 'fadeInUpCard 0.5s ease-out forwards';
-            // Animation delay will be added when appending
          }
 
+        // Image container
         const imageContainer = document.createElement('div');
         imageContainer.className = 'product-image-container';
+        // Open quick view when image area (not buttons) is clicked
         imageContainer.onclick = (e) => { if (!e.target.closest('.product-card-actions button')) openQuickView(product.id); };
         const img = document.createElement('img');
-        img.src = product.image; img.alt = product.title; img.loading = 'lazy'; // Use native lazy loading
-        img.onerror = () => { img.src = 'https://via.placeholder.com/300x350/cccccc/999999?text=Image+Not+Found'; };
+        img.src = product.image;
+        img.alt = product.title;
+        img.loading = 'lazy'; // Use native browser lazy loading
+        // Fallback image if the original fails to load
+        img.onerror = () => { img.src = 'https://placehold.co/300x350/cccccc/999999?text=Image+Not+Found'; img.onerror = null; };
         imageContainer.appendChild(img);
 
+        // Badges (Availability, New Arrival)
         const badgesContainer = document.createElement('div');
         badgesContainer.className = 'product-badges';
-        if (product.availability === 'in stock') badgesContainer.innerHTML += `<span class="badge available"><i class="fas fa-check"></i> متوفر</span>`;
-        else badgesContainer.innerHTML += `<span class="badge out-of-stock" style="background-color: var(--text-secondary);"><i class="fas fa-times"></i> غير متوفر</span>`;
-        if (product.is_new) badgesContainer.innerHTML += `<span class="badge new-arrival"><i class="fas fa-star"></i> وصل حديثاً</span>`;
+        if (product.availability === 'in stock') {
+            badgesContainer.innerHTML += `<span class="badge available"><i class="fas fa-check"></i> متوفر</span>`;
+        } else {
+            badgesContainer.innerHTML += `<span class="badge out-of-stock" style="background-color: var(--text-secondary);"><i class="fas fa-times"></i> غير متوفر</span>`;
+        }
+        if (product.is_new) {
+            badgesContainer.innerHTML += `<span class="badge new-arrival"><i class="fas fa-star"></i> وصل حديثاً</span>`;
+        }
         imageContainer.appendChild(badgesContainer);
 
-        const infoContainer = document.createElement('div'); infoContainer.className = 'product-info';
+        // Product info (title, price, action buttons)
+        const infoContainer = document.createElement('div');
+        infoContainer.className = 'product-info';
         infoContainer.innerHTML = `
             <h3>${product.title}</h3>
             <p class="price-card">${product.price} <span class="currency">د.ع</span></p>
@@ -989,50 +1018,56 @@
                 </button>
             </div>
         `;
+        // Add event listeners to action buttons
         infoContainer.querySelector('.wishlist-btn').onclick = (e) => { e.stopPropagation(); toggleWishlist(product.id, e.currentTarget); };
         infoContainer.querySelector('.quick-order-btn').onclick = (e) => { e.stopPropagation(); openOrderModal(product.id); };
 
-        cardContent.appendChild(imageContainer); cardContent.appendChild(infoContainer);
+        // Assemble the card content
+        cardContent.appendChild(imageContainer);
+        cardContent.appendChild(infoContainer);
 
+        // Return either the slide wrapper or the card content directly
         if (isCarousel) {
             card.className = 'swiper-slide';
             card.appendChild(cardContent);
-            return card;
+            return card; // Return the swiper-slide div
         } else {
-            return cardContent;
+            return cardContent; // Return the product-card div directly
         }
     }
 
     // --- Modal Functions ---
+    // Generic function to open any modal/overlay
      function openModal(modalOverlay) {
          if (!modalOverlay) return;
-         // Close Panzoom only if opening a DIFFERENT modal
+         // Close Panzoom only if opening a DIFFERENT modal than Quick View
          if (currentPanzoomInstance && modalOverlay !== quickViewModalOverlay) {
              safelyDestroyPanzoom();
          }
          modalOverlay.classList.add('active');
-         setTimeout(() => { body.style.overflow = 'hidden'; }, 50); // Delay slightly to allow transition
+         // Prevent body scroll when modal is open (slight delay for transition)
+         setTimeout(() => { body.style.overflow = 'hidden'; }, 50);
      }
-
+     // Generic function to close any modal/overlay
      function closeModal(modalOverlay) {
          if (!modalOverlay || !modalOverlay.classList.contains('active')) return;
          modalOverlay.classList.remove('active');
-         // Specific cleanup for Quick View modal
+         // Specific cleanup for Quick View modal (destroy Panzoom)
          if (modalOverlay === quickViewModalOverlay) {
             safelyDestroyPanzoom();
             currentProductIdForQuickView = null; // Reset ID when closing Quick View
          }
-         // Specific cleanup for mobile overlays
+         // Specific cleanup for mobile filter/search overlays
          if (modalOverlay === mobileFilterOverlay || modalOverlay === mobileSearchOverlay) {
-            // No specific cleanup needed now, but good place for it
+            // No specific cleanup needed currently
          }
-         // Restore body scroll only if NO modals or mobile overlays are active
+         // Restore body scroll only if NO modals or mobile overlays remain active
          const anyModalActive = document.querySelector('.modal-overlay.active, .mobile-overlay.active');
          if (!anyModalActive) {
              body.style.overflow = '';
          }
      }
-
+     // Safely destroy the Panzoom instance if it exists
      function safelyDestroyPanzoom() {
          if (currentPanzoomInstance) {
              try {
@@ -1041,35 +1076,39 @@
                  console.error("Error destroying Panzoom instance:", e);
              } finally {
                  currentPanzoomInstance = null;
+                 // Reset image style and cursor
                  if (modalImageElement) {
-                     modalImageElement.style.transform = ''; // Reset style
-                     modalImageElement.style.cursor = 'grab'; // Reset cursor
+                     modalImageElement.style.transform = '';
+                     modalImageElement.style.cursor = 'grab';
                  }
-                 if (zoomHint) zoomHint.style.display = 'none';
+                 if (zoomHint) zoomHint.style.display = 'none'; // Hide zoom hint
              }
          }
      }
 
-     // --- Panzoom Initialization (Modified) ---
+     // --- Panzoom Initialization ---
+     // Initialize Panzoom library on the Quick View modal image
      function initPanzoom() {
-         safelyDestroyPanzoom(); // Ensure any previous instance is destroyed
+         safelyDestroyPanzoom(); // Ensure any previous instance is destroyed first
+         // Check if Panzoom library is loaded, image element exists, and is visible
          if (modalImageElement && typeof Panzoom === 'function' && modalImageElement.offsetParent !== null) {
-             // Check if the image has loaded and is visible
+             // Check if the image has loaded its dimensions
              if (modalImageElement.naturalWidth === 0) {
-                 console.warn("Panzoom target image not loaded yet.");
-                 return; // Don't initialize if image dimensions aren't available
+                 console.warn("Panzoom target image not fully loaded yet.");
+                 // Optionally, retry after a short delay or wait for onload event
+                 return;
              }
              try {
                  currentPanzoomInstance = Panzoom(modalImageElement, {
-                     maxScale: 3,
-                     minScale: 1,
-                     contain: 'inside', // Or 'outside' if preferred
-                     canvas: true, // Improves rendering performance
-                     handleStartEvent: e => { e.preventDefault(); }, // Prevents text selection, etc.
-                     cursor: 'grab'
+                     maxScale: 3,       // Max zoom level
+                     minScale: 1,       // Min zoom level (original size)
+                     contain: 'inside', // Keep zoomed image within its container
+                     canvas: true,      // Improves rendering performance
+                     handleStartEvent: e => { e.preventDefault(); }, // Prevents text selection during pan
+                     cursor: 'grab'     // Set initial cursor
                  });
 
-                 // Add event listeners for visual feedback
+                 // Add event listeners for cursor changes during pan/zoom
                  modalImageElement.addEventListener('panzoomstart', () => {
                      modalImageElement.style.cursor = 'grabbing';
                  });
@@ -1077,14 +1116,14 @@
                      modalImageElement.style.cursor = 'grab';
                  });
 
-                 // Optional: Enable wheel zooming
+                 // Enable zooming with mouse wheel
                  modalImageElement.addEventListener('wheel', function(event) {
                      if (currentPanzoomInstance) {
                          currentPanzoomInstance.zoomWithWheel(event);
                      }
                  });
 
-                 // Show zoom hint briefly
+                 // Show the zoom hint briefly
                  if (zoomHint) {
                      zoomHint.style.display = 'inline-block';
                      setTimeout(() => { if (zoomHint) zoomHint.style.display = 'none'; }, 2500);
@@ -1094,49 +1133,51 @@
                  safelyDestroyPanzoom(); // Clean up if initialization failed
              }
          } else {
+             // Log errors if Panzoom cannot be initialized
              if (!modalImageElement) console.error("Panzoom target image element not found.");
              if (typeof Panzoom !== 'function') console.error("Panzoom library not loaded.");
              if (modalImageElement && modalImageElement.offsetParent === null) console.warn("Panzoom target not visible.");
          }
      }
 
-     // --- Quick View Modal (Modified for Panzoom Init on Load) ---
+     // --- Quick View Modal ---
+     // Open the Quick View modal and populate it with product details
      function openQuickView(productId) {
          const product = products.find(p => p.id === Number(productId));
          if (!product) { console.error("Product not found for Quick View:", productId); return; }
-         currentProductIdForQuickView = productId; // Set ID immediately
+         currentProductIdForQuickView = productId; // Store the ID of the product being viewed
 
          // Reset panzoom state before changing image
          safelyDestroyPanzoom();
          modalImageElement.style.transform = ''; // Reset any previous transform
-         modalImageElement.src = ""; // Clear src first to ensure onload triggers for cached images too
+         modalImageElement.src = ""; // Clear src first to ensure onload triggers reliably
 
          // Set new image source and handle potential load errors
          modalImageElement.alt = product.title;
          modalImageElement.onerror = () => {
-             modalImageElement.src = 'https://via.placeholder.com/400x450/cccccc/999999?text=Image+Not+Found';
-             // Optionally try to init panzoom on the placeholder
+             modalImageElement.src = 'https://placehold.co/400x450/cccccc/999999?text=Image+Not+Found';
+             modalImageElement.onerror = null; // Prevent infinite loop if placeholder fails
+             // Optionally try to init panzoom on the placeholder, though less useful
              // initPanzoom();
          };
 
-         // *** Modification: Initialize Panzoom only after the image is loaded ***
+         // Initialize Panzoom *after* the new image has loaded
          modalImageElement.onload = () => {
-             // Only initialize if the modal is still open for THIS product
+             // Only initialize if the modal is still open for THIS specific product
              if (quickViewModalOverlay.classList.contains('active') && currentProductIdForQuickView === productId) {
                  initPanzoom();
-             } else {
-                  console.log("Modal closed or product changed before image loaded, skipping Panzoom init.");
              }
          };
 
-         // Set the src AFTER defining onload/onerror
+         // Set the src AFTER defining onload/onerror to trigger loading
          modalImageElement.src = product.image;
 
          // Populate other modal details
          modalTitle.textContent = product.title;
          modalSize.textContent = product.size;
          modalPrice.textContent = product.price;
-         modalDescription.textContent = product.description || "تصميم مميز وعصري من أجود الخامات المتوفرة.";
+         modalDescription.textContent = product.description || "تصميم مميز وعصري من أجود الخامات المتوفرة."; // Fallback description
+         // Update availability status and style
          if (product.availability === 'in stock') {
              modalAvailability.textContent = "متوفر حالياً";
              modalAvailabilityInfo.style.color = 'var(--success-color)';
@@ -1146,100 +1187,116 @@
              modalAvailabilityInfo.style.color = 'var(--error-color)';
              modalAvailabilityInfo.querySelector('i').className = 'fas fa-times-circle';
          }
+         // Update the "Add to Wishlist" button state and text
          const isInWishlist = isWished(productId);
          const modalWishlistIcon = modalAddToWishlistButton.querySelector('i');
          if (modalWishlistIcon) modalWishlistIcon.className = isInWishlist ? 'fas fa-heart-circle-check' : 'far fa-heart';
-         modalAddToWishlistButton.childNodes[2].nodeValue = isInWishlist ? ' تمت الإضافة للأمنيات' : ' إضافة إلى قائمة الأمنيات';
+         modalAddToWishlistButton.childNodes[2].nodeValue = isInWishlist ? ' تمت الإضافة للأمنيات' : ' إضافة إلى قائمة الأمنيات'; // Update text node
 
          openModal(quickViewModalOverlay); // Open the modal
-         // *** Panzoom initialization is now handled by img.onload ***
      }
+     // Close the Quick View modal
      function closeQuickView() { closeModal(quickViewModalOverlay); }
 
      // --- Order Modal Functions ---
+     // Open the order form modal for a single product
      function openOrderModal(productId = null) {
-         wishlistItemsForOrder = []; // Reset the list for multi-item orders
-         const targetProductId = productId || currentProductIdForQuickView; // Use passed ID or fallback to QV ID
-         const isSingleItemOrder = !!targetProductId && !Array.isArray(targetProductId); // Check if it's a single ID
+         wishlistItemsForOrder = []; // Ensure multi-item list is clear for single orders
+         const targetProductId = productId || currentProductIdForQuickView; // Use passed ID or fallback to the one in Quick View
+         const isSingleItemOrder = !!targetProductId && !Array.isArray(targetProductId);
 
          if (isSingleItemOrder) {
              const product = products.find(p => p.id === Number(targetProductId));
              if (!product) { console.error("Product not found for Order:", targetProductId); return; }
+             // Populate summary for single item
              orderSummaryMainTitle.innerHTML = '<i class="fas fa-box-open"></i> المنتج المطلوب';
              orderSummaryTitle.textContent = product.title;
              orderSummarySize.textContent = product.size;
              orderSummaryPrice.textContent = product.price;
-             orderFormProductId.value = product.id; // Store details for submission
+             // Store details in hidden fields for form submission
+             orderFormProductId.value = product.id;
              orderFormProductTitle.value = product.title;
              orderFormProductSize.value = product.size;
              orderFormProductPrice.value = product.price;
+             // Show single item details, hide multi-item list
              orderSummarySingleItemDetails.classList.remove('display-none');
              orderSummaryItemsList.classList.add('display-none');
-             orderSummaryItemsList.innerHTML = '';
+             orderSummaryItemsList.innerHTML = ''; // Clear list just in case
          } else {
-             // This case should now be handled by prepareOrderForAllWishlistItems
+             // This case should not happen via this function anymore
              console.error("Cannot open single order modal without a valid product ID.");
-             return; // Don't open if it's not a single valid product
+             return;
          }
 
-         // Close other modals if open
+         // Close other modals if they are open
          if (quickViewModalOverlay.classList.contains('active')) closeQuickView();
          if (wishlistModalOverlay.classList.contains('active')) closeWishlistModal();
 
-         orderForm.reset(); // Clear form fields
-         formErrorMessage.textContent = '';
+         orderForm.reset(); // Clear any previous form input
+         formErrorMessage.textContent = ''; // Clear any previous error message
          formErrorMessage.style.display = 'none';
-         openModal(orderFormModalOverlay);
+         openModal(orderFormModalOverlay); // Open the order form modal
      }
+     // Prepare the order form modal for ordering all items from the wishlist
      function prepareOrderForAllWishlistItems() {
-         if (wishlist.length === 0) return;
-         wishlistItemsForOrder = [...wishlist]; // Set the global list for submission
+         if (wishlist.length === 0) return; // Do nothing if wishlist is empty
+         wishlistItemsForOrder = [...wishlist]; // Copy wishlist IDs to the list used for submission
 
+         // Populate summary for multiple items
          orderSummaryMainTitle.innerHTML = `<i class="fas fa-boxes-stacked"></i> المنتجات المطلوبة (${wishlistItemsForOrder.length})</span>`;
          let itemsHtml = '';
          let totalPrice = 0;
          wishlistItemsForOrder.forEach(id => {
              const product = products.find(p => p.id === id);
              if (product) {
+                 // Add list item for each product
                  itemsHtml += `<li>${product.title} (مقاس: ${product.size}) - <span>${product.price} د.ع</span></li>`;
-                 try { totalPrice += parseInt(product.price.replace(/,/g, ''), 10) || 0; } catch(e) {}
+                 // Calculate total price (handle potential parsing errors)
+                 try { totalPrice += parseInt(product.price.replace(/,/g, ''), 10) || 0; } catch(e) { console.warn("Error parsing price:", product.price); }
              }
          });
-         orderSummaryItemsList.innerHTML = itemsHtml;
-         orderSummarySingleItemDetails.classList.add('display-none'); // Hide single item details
-         orderSummaryItemsList.classList.remove('display-none'); // Show list
+         orderSummaryItemsList.innerHTML = itemsHtml; // Add items to the list element
+         // Hide single item details, show multi-item list
+         orderSummarySingleItemDetails.classList.add('display-none');
+         orderSummaryItemsList.classList.remove('display-none');
 
          // Clear single product hidden fields as this is a multi-item order
-         orderFormProductId.value = ''; orderFormProductTitle.value = ''; orderFormProductSize.value = ''; orderFormProductPrice.value = '';
+         orderFormProductId.value = '';
+         orderFormProductTitle.value = '';
+         orderFormProductSize.value = '';
+         orderFormProductPrice.value = '';
 
-         closeWishlistModal(); // Close wishlist modal
+         closeWishlistModal(); // Close wishlist modal first
          orderForm.reset(); // Clear form fields
-         formErrorMessage.textContent = '';
+         formErrorMessage.textContent = ''; // Clear errors
          formErrorMessage.style.display = 'none';
-         openModal(orderFormModalOverlay); // Open order modal
+         openModal(orderFormModalOverlay); // Open the order modal
      }
+     // Close the order form modal
      function closeOrderModal() {
          closeModal(orderFormModalOverlay);
-         currentProductIdForOrder = null; // Reset legacy variable if needed
-         wishlistItemsForOrder = []; // Clear the list on close
+         wishlistItemsForOrder = []; // Clear the multi-item list when closing
      }
 
 
     // --- Wishlist Modal Functions ---
+    // Render the items currently in the wishlist inside the wishlist modal
      function renderWishlistItems() {
-         wishlistItemsContainer.innerHTML = '';
+         wishlistItemsContainer.innerHTML = ''; // Clear previous items
          const hasItems = wishlist.length > 0;
-         wishlistEmptyMessage.style.display = hasItems ? 'none' : 'block';
-         if (wishlistOrderAllBtn) wishlistOrderAllBtn.disabled = !hasItems;
+         wishlistEmptyMessage.style.display = hasItems ? 'none' : 'block'; // Show/hide empty message
+         if (wishlistOrderAllBtn) wishlistOrderAllBtn.disabled = !hasItems; // Enable/disable order all button
+
          if(hasItems) {
              wishlist.forEach(productId => {
                  const product = products.find(p => p.id === productId);
                  if (product) {
+                     // Create HTML for each wishlist item
                      const itemDiv = document.createElement('div');
                      itemDiv.className = 'wishlist-item';
                      itemDiv.innerHTML = `
                          <div class="wishlist-item-image">
-                             <img src="${product.image}" alt="${product.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/80x80/cccccc/999999?text=N/A'">
+                              <img src="${product.image}" alt="${product.title}" loading="lazy" onerror="this.src='https://placehold.co/80x80/cccccc/999999?text=N/A'; this.onerror=null;">
                          </div>
                          <div class="wishlist-item-details">
                              <h4>${product.title}</h4>
@@ -1253,26 +1310,34 @@
                                  <i class="fas fa-trash-alt"></i>
                              </button>
                          </div>`;
+                     // Add event listeners for remove and quick order buttons within the wishlist item
                      itemDiv.querySelector('.wishlist-remove-item-btn').addEventListener('click', (e) => { e.stopPropagation(); toggleWishlist(product.id); });
-                     itemDiv.querySelector('.quick-order-btn').addEventListener('click', (e) => { e.stopPropagation(); openOrderModal(product.id); }); // Use openOrderModal for single item
+                     itemDiv.querySelector('.quick-order-btn').addEventListener('click', (e) => { e.stopPropagation(); openOrderModal(product.id); });
                      wishlistItemsContainer.appendChild(itemDiv);
                  } else {
+                     // Handle case where a wishlist item ID doesn't match any product (data inconsistency)
                      console.warn("Wishlist item not found in products data:", productId);
+                     // Remove the invalid ID from wishlist and update storage/UI
                      const index = wishlist.indexOf(productId);
                      if (index > -1) { wishlist.splice(index, 1); localStorage.setItem('mqWishlist', JSON.stringify(wishlist)); updateWishlistCount(); }
                  }
              });
          }
      }
+     // Open the wishlist modal
      function openWishlistModal() { renderWishlistItems(); openModal(wishlistModalOverlay); }
+     // Close the wishlist modal
      function closeWishlistModal() { closeModal(wishlistModalOverlay); }
 
 
     // --- Filter and Display Products ---
+    // Apply current filters (category, size, search) and update the product grid
     function applyFilters() {
+        // Get filter values from appropriate controls based on screen size
         const searchTerm = (window.innerWidth <= 992 ? mobileSearchInput.value : desktopSearchInput.value).toLowerCase().trim();
         const selectedSize = (window.innerWidth <= 992 ? mobileSizeSelect.value : desktopSizeSelect.value);
 
+        // Filter the main products array
         currentFilteredProducts = products.filter(product => {
             const categoryMatch = activeCategory === 'all' || product.category === activeCategory;
             const searchMatch = !searchTerm || product.title.toLowerCase().includes(searchTerm);
@@ -1280,48 +1345,54 @@
             return categoryMatch && searchMatch && sizeMatch;
         });
 
-        productGrid.innerHTML = '';
-        displayedProductCount = 0;
-        noResultsDiv.style.display = currentFilteredProducts.length === 0 ? 'block' : 'none';
-        loadMoreProducts(); // Load initial batch
+        // Prepare grid for new content
+        productGrid.innerHTML = ''; // Clear the grid
+        displayedProductCount = 0; // Reset the count of displayed products
+        noResultsDiv.style.display = currentFilteredProducts.length === 0 ? 'block' : 'none'; // Show/hide 'no results' message
+        loadMoreProducts(); // Load the first batch of filtered products
 
-        // Update category title/description
+        // Update category title and description display
         const categoryData = categoryDescriptions[activeCategory];
-         const activeLinkText = document.querySelector(`.nav-link[data-category="${activeCategory}"], .nav-link-mobile[data-category="${activeCategory}"]`)?.textContent;
-         categoryTitleMain.textContent = activeLinkText ? activeLinkText.replace(/<[^>]*>/g, '').trim() : "المنتجات";
-        if(categoryDescription) categoryDescription.textContent = categoryData || "";
+        // Get category name from the active navigation link text
+        const activeLinkText = document.querySelector(`.nav-link[data-category="${activeCategory}"], .nav-link-mobile[data-category="${activeCategory}"]`)?.textContent;
+        categoryTitleMain.textContent = activeLinkText ? activeLinkText.replace(/<[^>]*>/g, '').trim() : "المنتجات"; // Use link text or default
+        if(categoryDescription) categoryDescription.textContent = categoryData || ""; // Set description or clear it
     }
 
+    // Load the next batch of products into the grid
     function loadMoreProducts() {
-        if (!productGrid || !loadMoreButton) return;
+        if (!productGrid || !loadMoreButton) return; // Safety check
 
         const nextBatch = currentFilteredProducts.slice(displayedProductCount, displayedProductCount + productsPerLoad);
-        let animationDelayCounter = 0;
+        let animationDelayCounter = 0; // For staggered animation effect
 
         nextBatch.forEach(product => {
-            const card = createProductCard(product, false);
-             card.style.animationDelay = `${animationDelayCounter * 0.06}s`;
-             productGrid.appendChild(card);
-             // Trigger reflow to ensure animation plays - might not be strictly necessary with 'forwards'
-             // void card.offsetWidth;
+            const card = createProductCard(product, false); // Create card HTML
+             card.style.animationDelay = `${animationDelayCounter * 0.06}s`; // Apply animation delay
+             productGrid.appendChild(card); // Add card to the grid
              animationDelayCounter++;
         });
 
-        displayedProductCount += nextBatch.length;
+        displayedProductCount += nextBatch.length; // Update displayed count
 
+        // Show/hide the "Load More" button based on whether all products are displayed
         if (displayedProductCount >= currentFilteredProducts.length) {
             loadMoreButton.classList.add('hidden');
         } else {
             loadMoreButton.classList.remove('hidden');
         }
-         loadMoreButton.disabled = false; // Re-enable after loading
+         loadMoreButton.disabled = false; // Re-enable button after loading
     }
 
+    // Create a debounced version of applyFilters for search input to avoid excessive calls
     const debouncedApplyFilters = debounce(applyFilters, 300);
 
     // --- WhatsApp Order Submission ---
+    // Handle the order form submission
     orderForm.addEventListener('submit', function(event) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default form submission
+
+        // Get form elements and values
         const customerNameInput = document.getElementById('customer-name');
         const customerPhoneInput = document.getElementById('customer-phone');
         const customerAddressInput = document.getElementById('customer-address');
@@ -1329,24 +1400,42 @@
         const customerPhone = customerPhoneInput.value.trim();
         const customerAddress = customerAddressInput.value.trim();
         let isValid = true;
-        formErrorMessage.textContent = '';
+        formErrorMessage.textContent = ''; // Clear previous errors
         formErrorMessage.style.display = 'none';
-        [customerNameInput, customerPhoneInput, customerAddressInput].forEach(input => input.style.borderColor = ''); // Reset borders
+        // Reset input border colors
+        [customerNameInput, customerPhoneInput, customerAddressInput].forEach(input => input.style.borderColor = '');
 
-        // Validation
-        if (!customerName) { formErrorMessage.textContent += 'يرجى إدخال الاسم الكامل. '; customerNameInput.style.borderColor = 'var(--error-color)'; isValid = false; }
-        if (!customerPhone || !/^(07[5789][0-9]{8})$/.test(customerPhone)) { formErrorMessage.textContent += 'يرجى إدخال رقم هاتف عراقي صحيح (11 رقم يبدأ بـ 07). '; customerPhoneInput.style.borderColor = 'var(--error-color)'; isValid = false; }
-        if (!customerAddress) { formErrorMessage.textContent += 'يرجى إدخال العنوان الكامل. '; customerAddressInput.style.borderColor = 'var(--error-color)'; isValid = false; }
+        // --- Simple Validation ---
+        if (!customerName) {
+            formErrorMessage.textContent += 'يرجى إدخال الاسم الكامل. ';
+            customerNameInput.style.borderColor = 'var(--error-color)'; // Highlight error
+            isValid = false;
+        }
+        // Validate Iraqi phone number format (07 followed by 9 digits)
+        if (!customerPhone || !/^(07[5789][0-9]{8})$/.test(customerPhone)) {
+            formErrorMessage.textContent += 'يرجى إدخال رقم هاتف عراقي صحيح (11 رقم يبدأ بـ 07). ';
+            customerPhoneInput.style.borderColor = 'var(--error-color)'; // Highlight error
+            isValid = false;
+        }
+        if (!customerAddress) {
+            formErrorMessage.textContent += 'يرجى إدخال العنوان الكامل. ';
+            customerAddressInput.style.borderColor = 'var(--error-color)'; // Highlight error
+            isValid = false;
+        }
 
-        if (!isValid) { formErrorMessage.style.display = 'block'; return; }
+        // If validation fails, show error message and stop
+        if (!isValid) {
+            formErrorMessage.style.display = 'block';
+            return;
+        }
 
-        // Construct Message
+        // --- Construct WhatsApp Message ---
         let message = '';
         const intro = `👋 *طلب جديد من موقع Master Quality* 👋\n------------------------------------\n\n`;
         const outro = `\n------------------------------------\n*بيانات الزبون:*\n👤 *الاسم:* ${customerName}\n📱 *الهاتف:* ${customerPhone}\n📍 *العنوان:* ${customerAddress}\n\n💰 *(الدفع عند الاستلام)*\n\n✨ شكراً لاختياركم Master Quality! ✨`;
 
         if (wishlistItemsForOrder && wishlistItemsForOrder.length > 0) {
-            // Order from Wishlist (prepared by prepareOrderForAllWishlistItems)
+            // --- Message for Multiple Items (from Wishlist) ---
             message += intro + "*المنتجات المطلوبة:*\n";
             let itemNumber = 1;
             let totalPrice = 0;
@@ -1357,190 +1446,228 @@
                      try { totalPrice += parseInt(product.price.replace(/,/g, ''), 10) || 0; } catch(e){}
                  }
             });
-             message += `\n*إجمالي السعر التقريبي:* ${totalPrice.toLocaleString('ar-IQ')} د.ع`;
+             message += `\n*إجمالي السعر التقريبي:* ${totalPrice.toLocaleString('ar-IQ')} د.ع`; // Format total price
              message += outro;
-             // Clear the list after preparing message
+             // Clear the temporary list after preparing the message
              wishlistItemsForOrder = [];
         } else {
-            // Single item order (details from hidden fields)
+            // --- Message for Single Item ---
+            // Get details from hidden fields populated when the modal was opened
             const productId = orderFormProductId.value;
             const productTitle = orderFormProductTitle.value;
             const productSize = orderFormProductSize.value;
             const productPrice = orderFormProductPrice.value;
 
+             // Basic check if single product details are present
              if (!productId || !productTitle) {
                  console.error("Single order details missing from hidden fields.");
-                 formErrorMessage.textContent = 'حدث خطأ في تفاصيل المنتج المطلوب.';
+                 formErrorMessage.textContent = 'حدث خطأ في تفاصيل المنتج المطلوب. يرجى المحاولة مرة أخرى.';
                  formErrorMessage.style.display = 'block';
-                 return;
+                 return; // Stop submission
              }
              message += intro + `*المنتج:* ${productTitle}\n*المقاس:* ${productSize}\n*السعر:* ${productPrice} د.ع` + outro;
         }
 
-        // Send to WhatsApp
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message.trim())}`;
-        window.open(whatsappUrl, '_blank');
-        closeOrderModal(); // Close modal after attempting to send
+        // --- Send to WhatsApp ---
+        // *** MODIFICATION: Using api.whatsapp.com instead of wa.me as a potential fix for mobile issues ***
+        const encodedMessage = encodeURIComponent(message.trim());
+        const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
+        // Log the generated URL for debugging (optional)
+        // console.log("WhatsApp URL:", whatsappUrl);
+
+        // Attempt to open the WhatsApp link
+        try {
+             window.open(whatsappUrl, '_blank');
+        } catch (error) {
+            console.error("Error opening WhatsApp link:", error);
+            // Display a user-friendly message if window.open fails immediately (e.g., popup blocker)
+            formErrorMessage.textContent = 'لم نتمكن من فتح واتساب تلقائياً. قد يكون بسبب مانع النوافذ المنبثقة. يرجى المحاولة مرة أخرى أو نسخ تفاصيل الطلب يدوياً.';
+            formErrorMessage.style.display = 'block';
+            return; // Stop further execution
+        }
+
+        // Close the order modal after attempting to send
+        // Note: This doesn't guarantee the message was sent, only that the link was opened.
+        closeOrderModal();
     });
 
     // --- Navigation & Filter Logic ---
+    // Set the active category and update filters/UI
     function setActiveCategory(category, clickedLinkElement = null) {
-        activeCategory = category;
+        activeCategory = category; // Update global state
+        // Update active class on all navigation links (desktop and mobile)
         document.querySelectorAll('[data-category]').forEach(link => {
             link.classList.toggle('active', link.dataset.category === category);
         });
 
-        if (clickedLinkElement) { // Reset filters only if a category link/card was clicked
+        // If a category link/card was clicked, reset other filters (size, search)
+        if (clickedLinkElement) {
             if(desktopSizeSelect) desktopSizeSelect.value = 'all';
             if(desktopSearchInput) desktopSearchInput.value = '';
             if(mobileSizeSelect) mobileSizeSelect.value = 'all';
             if(mobileSearchInput) mobileSearchInput.value = '';
-            closeModal(mobileFilterOverlay); // Close overlays if open
+            // Close mobile filter/search overlays if open
+            closeModal(mobileFilterOverlay);
             closeModal(mobileSearchOverlay);
         }
-        applyFilters(); // Re-apply filters for the new category
+        applyFilters(); // Re-apply filters for the newly selected category
     }
 
+    // Scroll smoothly to the product section
     function scrollToProducts() {
         const targetElement = document.getElementById('product-section');
         if (targetElement) {
-            // Calculate offset considering the sticky header height
-            const headerOffset = document.querySelector('header')?.offsetHeight || 70;
+            // Calculate offset considering the sticky header height for accurate positioning
+            const headerOffset = document.querySelector('header')?.offsetHeight || 70; // Use actual height or fallback
             const elementPosition = targetElement.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset - 20; // Extra 20px buffer
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset - 20; // Add a small buffer
 
             window.scrollTo({
                  top: offsetPosition,
-                 behavior: "smooth"
+                 behavior: "smooth" // Use smooth scrolling
             });
-            // Fallback for browsers that don't support smooth scroll options
-            // targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 
-    // --- Swiper Initialization (Modified for Performance) ---
+    // --- Swiper Initialization (for New Arrivals Carousel) ---
     function initSwiper() {
+        // Check if Swiper library is loaded
         if (typeof Swiper === 'undefined') {
             console.error("Swiper library not loaded.");
             return;
         }
+        // Filter products marked as new
         const newArrivals = products.filter(p => p.is_new);
         if (newArrivalsWrapper && newArrivals.length > 0) {
-             newArrivalsWrapper.innerHTML = ''; // Clear existing
+             newArrivalsWrapper.innerHTML = ''; // Clear existing slides
+             // Create and append a card for each new arrival product
              newArrivals.forEach(product => {
-                 newArrivalsWrapper.appendChild(createProductCard(product, true));
+                 newArrivalsWrapper.appendChild(createProductCard(product, true)); // true indicates it's for a carousel
              });
 
+            // Initialize Swiper instance
             new Swiper('.new-arrivals-swiper', {
-                loop: newArrivals.length > 4, // Loop only if enough slides
-                slidesPerView: 'auto',
-                spaceBetween: 15,
-                centeredSlides: false,
-                grabCursor: true,
-                preloadImages: false, // Added: Don't preload all images at once
-                // Consider adding Swiper's lazy loading if native isn't enough
-                // lazy: { loadPrevNext: true, },
-                // watchSlidesProgress: true, // Needed for Swiper lazy loading
-
+                loop: newArrivals.length > 4, // Enable loop only if enough slides for it to make sense
+                slidesPerView: 'auto', // Let Swiper determine slides based on width/breakpoints
+                spaceBetween: 15,      // Space between slides
+                centeredSlides: false, // Don't center slides
+                grabCursor: true,      // Show grab cursor on hover
+                preloadImages: false,  // Don't preload all images at once (improves performance)
+                // Responsive breakpoints
                 breakpoints: {
                     320: { slidesPerView: 1.5, spaceBetween: 10 },
                     480: { slidesPerView: 2.2, spaceBetween: 15 },
                     768: { slidesPerView: 3.5, spaceBetween: 20 },
                     1024: { slidesPerView: 4.5, spaceBetween: 25 }
                 },
+                // Pagination dots
                 pagination: {
                     el: '.swiper-pagination',
                     clickable: true,
                 },
+                // Navigation arrows
                 navigation: {
                     nextEl: '.swiper-button-next',
                     prevEl: '.swiper-button-prev',
                 },
             });
         } else if(newArrivalsWrapper) {
+            // Hide the entire section if there are no new arrivals
             const arrivalsSection = newArrivalsWrapper.closest('.new-arrivals-section');
              if(arrivalsSection) arrivalsSection.style.display = 'none';
         }
     }
 
     // --- Event Listeners Setup ---
+    // Central function to attach all necessary event listeners
     function setupEventListeners() {
-        // Desktop Filters
-        desktopSearchInput?.addEventListener('input', debouncedApplyFilters);
-        desktopSizeSelect?.addEventListener('change', applyFilters);
-        // Desktop nav clicks handled by inline onclick + setActiveCategory
+        // --- Desktop Filters ---
+        desktopSearchInput?.addEventListener('input', debouncedApplyFilters); // Debounced search
+        desktopSizeSelect?.addEventListener('change', applyFilters); // Size filter change
+        // Desktop navigation link clicks handled by inline onclick + setActiveCategory
 
-        // Mobile Filters/Search Overlays
+        // --- Mobile Filters/Search Overlays ---
         mobileSearchBtn?.addEventListener('click', () => openModal(mobileSearchOverlay));
         closeSearchOverlayBtn?.addEventListener('click', () => closeModal(mobileSearchOverlay));
-        applyMobileSearchBtn?.addEventListener('click', () => { applyFilters(); closeModal(mobileSearchOverlay); scrollToProducts(); }); // Added scroll
+        applyMobileSearchBtn?.addEventListener('click', () => { applyFilters(); closeModal(mobileSearchOverlay); scrollToProducts(); }); // Apply and close
         mobileFilterBtn?.addEventListener('click', () => openModal(mobileFilterOverlay));
         closeFilterOverlayBtn?.addEventListener('click', () => closeModal(mobileFilterOverlay));
-        applyMobileFiltersBtn?.addEventListener('click', () => { applyFilters(); closeModal(mobileFilterOverlay); scrollToProducts(); }); // Added scroll
-        // Close overlay on backdrop click
+        applyMobileFiltersBtn?.addEventListener('click', () => { applyFilters(); closeModal(mobileFilterOverlay); scrollToProducts(); }); // Apply and close
+        // Close overlays on backdrop click
         mobileSearchOverlay?.addEventListener('click', (e) => { if (e.target === mobileSearchOverlay) closeModal(mobileSearchOverlay); });
         mobileFilterOverlay?.addEventListener('click', (e) => { if (e.target === mobileFilterOverlay) closeModal(mobileFilterOverlay); });
-        // Mobile nav clicks handled by inline onclick + setActiveCategory
+        // Mobile navigation link clicks handled by inline onclick + setActiveCategory
 
-        // Load More Button
+        // --- Load More Button ---
         loadMoreButton?.addEventListener('click', () => {
-             loadMoreButton.disabled = true; // Prevent multiple clicks
-             setTimeout(loadMoreProducts, 100); // Slight delay for visual feedback
+             loadMoreButton.disabled = true; // Prevent multiple clicks while loading
+             setTimeout(loadMoreProducts, 100); // Slight delay for visual feedback before loading
         });
 
-        // Modals - General Close Actions
+        // --- Modals - General Close Actions ---
         quickViewModalCloseButton?.addEventListener('click', closeQuickView);
-        quickViewModalOverlay?.addEventListener('click', (e) => { if (e.target === quickViewModalOverlay) closeQuickView(); });
+        quickViewModalOverlay?.addEventListener('click', (e) => { if (e.target === quickViewModalOverlay) closeQuickView(); }); // Close on backdrop click
         orderFormModalCloseButton?.addEventListener('click', closeOrderModal);
-        orderFormModalOverlay?.addEventListener('click', (e) => { if (e.target === orderFormModalOverlay) closeOrderModal(); });
+        orderFormModalOverlay?.addEventListener('click', (e) => { if (e.target === orderFormModalOverlay) closeOrderModal(); }); // Close on backdrop click
         wishlistModalCloseButton?.addEventListener('click', closeWishlistModal);
-        wishlistModalOverlay?.addEventListener('click', (e) => { if (e.target === wishlistModalOverlay) closeWishlistModal(); });
+        wishlistModalOverlay?.addEventListener('click', (e) => { if (e.target === wishlistModalOverlay) closeWishlistModal(); }); // Close on backdrop click
 
-        // Modals - Specific Action Buttons
+        // --- Modals - Specific Action Buttons ---
+        // "Proceed to Order" button in Quick View modal
         proceedButton?.addEventListener('click', () => openOrderModal()); // Uses currentProductIdForQuickView implicitly
+        // "Add to Wishlist" button in Quick View modal
         modalAddToWishlistButton?.addEventListener('click', (e) => { if(currentProductIdForQuickView) { toggleWishlist(currentProductIdForQuickView, e.currentTarget); } });
-        wishlistButton?.addEventListener('click', openWishlistModal); // Desktop wishlist button
-        mobileWishlistButton?.addEventListener('click', openWishlistModal); // Mobile wishlist button
-        wishlistOrderAllBtn?.addEventListener('click', prepareOrderForAllWishlistItems); // Order all from wishlist
+        // Wishlist buttons in header/mobile controls
+        wishlistButton?.addEventListener('click', openWishlistModal);
+        mobileWishlistButton?.addEventListener('click', openWishlistModal);
+        // "Order All" button in Wishlist modal
+        wishlistOrderAllBtn?.addEventListener('click', prepareOrderForAllWishlistItems);
 
-        // Theme Toggle
+        // --- Theme Toggle ---
         themeToggleButton?.addEventListener('click', toggleTheme);
         mobileThemeToggleButton?.addEventListener('click', toggleTheme);
 
-        // Footer Year
+        // --- Footer Year ---
         const yearSpan = document.getElementById('year');
-        if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+        if (yearSpan) yearSpan.textContent = new Date().getFullYear(); // Set current year
 
-        // Close modals on Escape key press
+        // --- Global Keydown Listener (for Escape key) ---
          document.addEventListener('keydown', (event) => {
              if (event.key === 'Escape') {
+                 // Close any active modal or mobile overlay
                  const activeModal = document.querySelector('.modal-overlay.active');
                  if (activeModal) {
                      closeModal(activeModal);
                  }
                  const activeMobileOverlay = document.querySelector('.mobile-overlay.active');
                   if (activeMobileOverlay) {
-                     closeModal(activeMobileOverlay); // closeModal works for mobile overlays too
+                     closeModal(activeMobileOverlay);
                  }
              }
          });
     }
 
     // --- Initialization ---
+    // Runs when the DOM is fully loaded and parsed
     document.addEventListener('DOMContentLoaded', () => {
-        const storedTheme = localStorage.getItem('mqTheme') || 'dark'; // Default to dark
+        // Apply stored theme or default to dark
+        const storedTheme = localStorage.getItem('mqTheme') || 'dark';
         applyTheme(storedTheme);
 
-        initSwiper(); // Init carousel
+        // Initialize the new arrivals carousel
+        initSwiper();
 
+        // Load initial products into the grid
         if(productGrid && loadMoreButton) {
-            applyFilters(); // Initial product load
+            applyFilters(); // Apply default filters ('all' category)
         } else {
             console.error("Product grid or load more button not found!");
         }
 
-        updateWishlistCount(); // Update based on localStorage
-        setupEventListeners(); // Setup all interactions
+        // Update wishlist count based on local storage
+        updateWishlistCount();
+        // Setup all event listeners for interactivity
+        setupEventListeners();
     });
 
     </script>
