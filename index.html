@@ -25,6 +25,7 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 h-full flex justify-between items-center">
             <!-- Logo -->
             <a href="#hero" class="logo flex-shrink-0 transition-opacity hover:opacity-80" aria-label="الصفحة الرئيسية">
+                 <!-- Eager load logo as it's above the fold -->
                  <img src="photo/logo.webp" alt="Master Quality Logo" class="max-h-9 md:max-h-10" loading="eager" onerror="this.src='https://placehold.co/150x40/F8FAFC/0891B2?text=Master+Quality&font=cairo'; this.onerror=null;">
             </a>
             <!-- Desktop Nav -->
@@ -123,6 +124,7 @@
                         <i class="fas fa-times-circle text-xs"></i> إزالة الفلاتر
                     </button>
                 </div>
+                 <!-- Optimized product grid for better rendering performance -->
                  <div class="product-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-7 lg:gap-8 mb-14 md:mb-20" id="product-grid-main">
                      <!-- Product Cards injected by JS -->
                      <!-- Placeholder for loading state -->
@@ -161,6 +163,7 @@
          <footer id="footer" class="section-animate">
              <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                  <div class="footer-logo mb-6">
+                    <!-- Lazy load footer logo -->
                     <img src="photo/logo.webp" alt="Master Quality Logo Footer" class="max-h-10 mx-auto opacity-80" loading="lazy" onerror="this.src='https://placehold.co/130x40/F8FAFC/6B7280?text=Master+Quality&font=cairo'; this.onerror=null;">
                 </div>
                 <p class="mb-5 text-sm md:text-base">&copy; <span id="year">2025</span> Master Quality. جميع الحقوق محفوظة.</p>
@@ -198,7 +201,7 @@
                   <h2 class="text-2xl md:text-3xl font-semibold font-heading mb-1.5">تأكيد الطلب</h2>
                  <p class="text-base text-light-text-secondary dark:text-dark-text-secondary">الدفع نقداً عند الاستلام</p>
             </div>
-            <div class="p-7 md:p-8"> <!-- This div is now scrollable -->
+            <div class="p-7 md:p-8"> <!-- Scrollable content area -->
                   <div class="order-summary">
                       <h4 id="order-summary-main-title" class="text-lg font-semibold text-primary dark:text-primary-light mb-4 pb-3 border-b border-primary/20 dark:border-primary-light/20 flex items-center gap-2.5"><i class="fas fa-receipt text-lg"></i> ملخص الطلب</h4>
                       <div id="order-summary-single-item-details" class="text-base space-y-3 mb-3">
@@ -412,9 +415,7 @@
     <!-- Your App Logic (JavaScript) -->
     <script>
     // --- Product Data ---
-    // COMMENT: Image loading issues might be due to large file sizes or network latency.
-    // Ensure images (e.g., "1.svg") are reasonably optimized (size & format) on the server.
-    // The `loading="lazy"` attribute helps, but doesn't solve slow downloads.
+    // COMMENT: Ensure images are reasonably optimized (size & format) on the server.
     const products = [
     { "id": 1, "title": "بنطلون جيجنز Master Quality أزرق مريح", "image": "photo/1.webp", "price": "10,000", "size": "S (كمر 36)", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "جيجنز مريح وعملي بلون أزرق جذاب، مثالي للارتداء اليومي.", "is_new": false, "stock_level": "low" },
     { "id": 4, "title": "بنطلون جيجنز Master Quality أزرق عملي", "image": "photo/4.webp", "price": "10,000", "size": "M (كمر 40)", "base_size": "M", "category": "trousers", "availability": "out stock", "description": "جيجنز بقصة عملية ومريحة للاستخدام اليومي.", "is_new": false },
@@ -491,12 +492,14 @@
     { "id": 1211, "title": "فستان ماكسي Master Quality أزرق بنقشة بيزلي مكرر", "image": "photo/121s.webp", "price": "12,000", "size": "S", "base_size": "S", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي فضفاض ومريح بنقشة بيزلي زاهية، يتميز بأكمام قصيرة وياقة V.", "is_new": true },
     { "id": 122, "title": "فستان Master Quality كاروهات بخصر مزموم", "image": "photo/122.webp", "price": "12,000", "size": "XL", "base_size": "XL", "category": "dresses", "availability": "in stock", "description": "فستان قصير بأكمام طويلة وقماش كاروهات، يتميز بخصر مزموم (مطاط) وياقة دائرية مع فتحة صغيرة.", "is_new": false, "stock_level": "low" },
     { "id": 124, "title": "فستان Master Quality خمري بأكمام طويلة وكشكشة ياقة", "image": "photo/124.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بلون خمري غني، يتميز بأكمام طويلة وياقة V مزينة بكشكشة وخصر مطاطي.", "is_new": false },
-    { "id": 127, "title": "فستان حوامل Master Quality أخضر مورد بخصر مزموم", "image": "photo/127.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان حوامل ميدي بنقشة موردة، يتميز بأكمام طويلة وياقة قميص وخصر مزموم (مطاط).", "is_new": false },
+    { "id": 127, "title": "فستان حوامل Master Quality أخضر مورد بخصر مزموم", "image": "photo/127.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان حوامل ميدي بنقشة موردة، يتميز بأكمام طويلة وياقة قميص وخصر مزموم (مطاط).", "is_new": false }, // Assume dresses can also be maternity
     { "id": 128, "title": "فستان Master Quality أخضر فاتح محكم بحزام", "image": "photo/128.webp", "price": "12,000", "size": "XXL", "base_size": "XXL", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بلون أخضر فاتح وقماش محكم، يتميز بأكمام قصيرة مكشكشة وياقة V وحزام قماشي.", "is_new": false },
     { "id": 143, "title": "فستان Master Quality وردي سادة بياقة V", "image": "photo/143.webp", "price": "12,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "فستان ميدي كاجوال بلون وردي، يتميز بأكمام قصيرة وياقة V وفتحة صغيرة بأزرار.", "is_new": false },
     { "id": 146, "title": "فستان ماكسي Master Quality وردي فاتح أكتاف مكشوفة", "image": "photo/146.webp", "price": "12,000", "size": "XL", "base_size": "XL", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي بلون وردي فاتح وتصميم أكتاف مكشوفة، يتميز بأكمام 3/4 وياقة مكشكشة.", "is_new": false },
     { "id": 151, "title": "فستان ماكسي Master Quality تركوازي بليسيه بياقة هالتر", "image": "photo/151.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي أنيق بلون تركوازي وقماش بليسيه، يتميز بياقة هالتر وحزام خصر معدني.", "is_new": false },
     { "id": 155, "title": "فستان Master Quality منقوش أزرق وأخضر بحزام", "image": "photo/155.webp", "price": "12,000", "size": "S", "base_size": "S", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بنقشة عصرية باللونين الأزرق والأخضر، يتميز بأكمام 3/4 واسعة وياقة V وحزام قماشي.", "is_new": false }
+    // Added maternity category to a dress for testing
+    // { "id": 200, "title": "فستان حوامل مريح", "image": "photo/maternity1.webp", "price": "15,000", "size": "L", "base_size": "L", "category": "maternity", "availability": "in stock", "description": "فستان خاص بالحوامل يوفر أقصى درجات الراحة.", "is_new": true }
 ];
 
     // --- DOM Elements ---
@@ -578,20 +581,35 @@
     let cart = JSON.parse(localStorage.getItem('mqCart_v4')) || [];
     let cartItemsForOrder = [];
     let displayedProductCount = 0;
-    const productsPerLoad = 12;
+    const productsPerLoad = 12; // Number of products to load each time
     let currentFilteredProducts = [];
     let currentSearchTerm = '';
     let currentSizeFilter = 'all';
     let isMobileMenuOpen = false;
     let activeModalOrOverlay = null;
-    let isPanelOpening = false;
-    let swiperInstance = null;
+    let isPanelOpening = false; // Flag to prevent double opening
+    let swiperInstance = null; // Hold the swiper instance
     const categoryDescriptions = { all: "تصفحي جميع منتجاتنا المختارة بعناية فائقة.", trousers: "تشكيلة واسعة من البناطيل المريحة والأنيقة لجميع إطلالاتك.", dresses: "فساتين أنيقة وعصرية لمختلف المناسبات، من الكاجوال إلى السهرة.", maternity: "ملابس حوامل مصممة لتوفير الراحة والأناقة خلال فترة الحمل.", tops: "مجموعة متنوعة من التوبات والبلوزات والقمصان العصرية والكلاسيكية.", };
     const MAX_RECENTLY_VIEWED = 8; // Max items in Recently Viewed
 
     // --- Utility Functions ---
-    const debounce = (func, wait) => { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait); }; };
-    const formatPrice = (priceString) => { try { return parseInt(String(priceString).replace(/,/g, ''), 10).toLocaleString('ar-IQ'); } catch { return priceString; } };
+    // Debounce function to limit the rate at which a function can fire
+    const debounce = (func, wait) => {
+      let timeout;
+      return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    };
+    // Format price string (e.g., "10,000") to localized number string
+    const formatPrice = (priceString) => {
+        try {
+            // Remove commas and parse, then format for Iraqi locale
+            return parseInt(String(priceString).replace(/,/g, ''), 10).toLocaleString('ar-IQ');
+        } catch {
+            return priceString; // Return original if parsing fails
+        }
+    };
 
     // --- Theme Management ---
     const applyTheme = (theme) => {
@@ -606,31 +624,34 @@
         if (icon) icon.className = 'fas fa-sun text-lg';
         localStorage.setItem('mqTheme_v2', 'light');
       }
-       // Update placeholder images
+       // Update placeholder images based on theme
         document.querySelectorAll('img[src^="https://placehold.co"]').forEach(img => {
             const currentSrc = img.getAttribute('src');
-            if (currentSrc && img.hasAttribute('onerror')) { // Only update if it was a placeholder
+            // Only update if it's a placeholder that might need theme change
+            if (currentSrc && img.hasAttribute('onerror')) {
                 let newSrc = currentSrc;
                 const urlParts = currentSrc.split('/');
                 let bgIndex = urlParts.findIndex(part => part.length === 6 && /^[0-9A-Fa-f]{6}$/.test(part));
                 let textIndex = bgIndex + 1;
 
                 if (bgIndex > -1 && textIndex < urlParts.length) {
+                    // Define color mappings
+                    const lightBg = 'F8FAFC'; const darkBg = '1E293B';
+                    const lightMuted = '6B7280'; const darkMuted = '9CA3AF';
+                    const primary = '0891B2'; const primaryLight = '67E8F9';
+
                     if (theme === 'dark') {
-                        if (urlParts[bgIndex].toUpperCase() === 'F8FAFC') urlParts[bgIndex] = '1E293B'; // Light bg -> Dark surface
-                        else if (urlParts[bgIndex].toUpperCase() === 'E5E7EB') urlParts[bgIndex] = '374151'; // Light border -> Dark border
-                        else if (urlParts[bgIndex].toUpperCase() === 'F3F4F6') urlParts[bgIndex] = '4B5563'; // Light gray-100 -> Dark gray-600
-                        if (urlParts[textIndex].toUpperCase() === '0891B2') urlParts[textIndex] = '67E8F9'; // Primary -> Primary Light
-                        else if (urlParts[textIndex].toUpperCase() === '6B7280') urlParts[textIndex] = '9CA3AF'; // Muted -> Dark Muted
-                    } else {
-                        if (urlParts[bgIndex].toUpperCase() === '1E293B') urlParts[bgIndex] = 'F8FAFC'; // Dark surface -> Light bg
-                        else if (urlParts[bgIndex].toUpperCase() === '374151') urlParts[bgIndex] = 'E5E7EB'; // Dark border -> Light border
-                        else if (urlParts[bgIndex].toUpperCase() === '4B5563') urlParts[bgIndex] = 'F3F4F6'; // Dark gray-600 -> Light gray-100
-                        if (urlParts[textIndex].toUpperCase() === '67E8F9') urlParts[textIndex] = '0891B2'; // Primary Light -> Primary
-                        else if (urlParts[textIndex].toUpperCase() === '9CA3AF') urlParts[textIndex] = '6B7280'; // Dark Muted -> Muted
+                        if (urlParts[bgIndex].toUpperCase() === lightBg) urlParts[bgIndex] = darkBg;
+                        if (urlParts[textIndex].toUpperCase() === primary) urlParts[textIndex] = primaryLight;
+                        if (urlParts[textIndex].toUpperCase() === lightMuted) urlParts[textIndex] = darkMuted;
+                    } else { // Light theme
+                        if (urlParts[bgIndex].toUpperCase() === darkBg) urlParts[bgIndex] = lightBg;
+                        if (urlParts[textIndex].toUpperCase() === primaryLight) urlParts[textIndex] = primary;
+                        if (urlParts[textIndex].toUpperCase() === darkMuted) urlParts[textIndex] = lightMuted;
                     }
                     newSrc = urlParts.join('/');
                 }
+                // Only update src if it changed to avoid unnecessary reloads
                 if (newSrc !== currentSrc) img.src = newSrc;
             }
         });
@@ -645,32 +666,38 @@
         if (!cartCountSpan || !cartButton) return;
         const count = cart.length;
         cartCountSpan.textContent = count;
-        cartCountSpan.classList.toggle('visible', count > 0);
+        // Use visibility/transform for smoother appearance/disappearance
+        cartCountSpan.style.transform = count > 0 ? 'scale(1)' : 'scale(0)';
+        cartCountSpan.style.opacity = count > 0 ? '1' : '0';
         cartButton.classList.toggle('has-items', count > 0);
     };
     const isInCart = (productId) => cart.includes(Number(productId));
 
+    // Update the visual state (icon, text, class) of Add/Remove to Cart buttons
     const updateCartButtonIcon = (btn, isNowInCart) => {
       if (!btn) return;
       const icon = btn.querySelector('i');
       if (icon) {
         const baseIconClass = btn.classList.contains('btn-icon') || btn.classList.contains('action-btn') ? 'text-base' : 'text-lg';
-        const checkIconClass = 'fas fa-check text-success';
+        const checkIconClass = 'fas fa-check-circle text-success'; // Use check-circle for success
         const addIconClass = 'fas fa-cart-plus';
         icon.className = `${baseIconClass} ${isNowInCart ? checkIconClass : addIconClass}`;
-        // Pop animation
+        // Simple scale animation on change
         icon.style.transition = 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)';
         requestAnimationFrame(() => {
-          icon.style.transform = 'scale(1.3)';
+          icon.style.transform = 'scale(1.2)';
           setTimeout(() => { icon.style.transform = 'scale(1)'; }, 200);
         });
       }
       const ariaLabel = isNowInCart ? 'إزالة من السلة' : 'إضافة للسلة';
       btn.setAttribute('aria-label', ariaLabel);
-      if (btn.title) btn.title = ariaLabel;
+      if (btn.title) btn.title = ariaLabel; // Update tooltip if present
+
+      // Specific updates for the detail panel button
       if (btn.id === 'detail-panel-cart-btn') {
           const textSpan = btn.querySelector('.button-text');
           if (textSpan) textSpan.textContent = isNowInCart ? 'تمت الإضافة (إزالة؟)' : 'إضافة للسلة';
+           // Change button style based on state
            if (isNowInCart) {
                btn.classList.remove('btn-secondary'); btn.classList.add('btn-success');
            } else {
@@ -680,6 +707,7 @@
       btn.classList.toggle('is-in-cart', isNowInCart);
     };
 
+     // Add/Remove item from cart, update UI and localStorage
      const toggleCart = (productId) => {
         const numProductId = Number(productId);
         const index = cart.indexOf(numProductId);
@@ -694,14 +722,16 @@
         localStorage.setItem('mqCart_v4', JSON.stringify(cart));
         updateCartCount();
 
-         document.querySelectorAll(`.cart-btn[data-id="${numProductId}"], .cart-remove-btn[data-id="${numProductId}"], #detail-panel-cart-btn[data-id="${numProductId}"]`)
+        // Update all relevant buttons instantly
+        document.querySelectorAll(`.cart-btn[data-id="${numProductId}"], .cart-remove-btn[data-id="${numProductId}"], #detail-panel-cart-btn[data-id="${numProductId}"]`)
              .forEach(btn => {
                 if (btn.classList.contains('cart-remove-btn')) {
-                    if (wasInCart) { // Animate removal
+                    // Animate removal in cart modal
+                    if (wasInCart) {
                         const cartItemDiv = btn.closest('.cart-item');
                         if (cartItemDiv) {
                             cartItemDiv.style.transition = 'opacity 0.3s ease, transform 0.3s ease, max-height 0.4s ease, padding 0.3s ease, margin 0.3s ease, border 0.3s ease';
-                            requestAnimationFrame(() => {
+                            requestAnimationFrame(() => { // Ensure transition applies
                                 cartItemDiv.style.opacity = '0';
                                 cartItemDiv.style.transform = 'translateX(20px) scale(0.95)';
                                 cartItemDiv.style.maxHeight = '0px';
@@ -711,50 +741,54 @@
                             });
                             setTimeout(() => {
                                 cartItemDiv.remove();
-                                renderCartItems(); // Re-render to update total and button state
-                            }, 400);
+                                renderCartItems(); // Re-render to update total and potentially show empty message
+                            }, 400); // Match max-height duration
                         }
                     }
                 } else {
-                    updateCartButtonIcon(btn, isNowInCart); // Update add/check icon
+                    updateCartButtonIcon(btn, isNowInCart); // Update add/check icon state
                 }
             });
 
+        // Refresh cart modal if it's open and an item was ADDED (removal is handled above)
         if (cartModalOverlay?.classList.contains('visible') && isNowInCart) {
-             renderCartItems(); // Refresh cart modal if open and item added
+             renderCartItems();
         }
     };
 
     // --- Create Product Card HTML ---
+    // Generates the HTML for a single product card
     const createProductCard = (product, isCarousel = false) => {
         if (!product) return null;
 
         const cardWrapper = document.createElement('div');
+        // Base classes, add specific class if it's for the Swiper carousel
         cardWrapper.className = `product-card group ${isCarousel ? 'swiper-product-card' : ''}`;
         cardWrapper.dataset.id = product.id;
         cardWrapper.dataset.category = product.category;
         cardWrapper.dataset.base_size = product.base_size;
-        cardWrapper.dataset.title = product.title.toLowerCase();
-        if (!isCarousel) cardWrapper.classList.add('section-animate');
+        cardWrapper.dataset.title = product.title.toLowerCase(); // For search filtering
+        if (!isCarousel) cardWrapper.classList.add('section-animate'); // Add animation class for grid items
 
         const isCurrentlyInCart = isInCart(product.id);
         const theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
-        const placeholderBg = theme === 'dark' ? '1E293B' : 'F8FAFC';
-        const placeholderText = theme === 'dark' ? '9CA3AF' : '6B7280';
+        // Define placeholder colors based on theme
+        const placeholderBg = theme === 'dark' ? '1E293B' : 'F8FAFC'; // Dark Surface vs Light Background
+        const placeholderText = theme === 'dark' ? '9CA3AF' : '6B7280'; // Dark Muted vs Light Muted
         const placeholderImg = `https://placehold.co/400x400/${placeholderBg}/${placeholderText}?text=لا+توجد+صورة&font=cairo`;
 
-        // Use loading="lazy" for performance on images below the fold
+        // Use native lazy loading for images below the fold
         cardWrapper.innerHTML = `
-            <div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
+            <div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700 rounded-t-lg">
                 <img src="${product.image || placeholderImg}" alt="${product.title}" loading="lazy" class="product-card-img" onerror="if(this.src !== '${placeholderImg}') { this.src='${placeholderImg}'; this.classList.add('img-error'); } this.onerror=null;">
                 <div class="badges-container">
                     ${product.availability === 'in stock' ? `<span class="badge badge-stock">متوفر</span>` : `<span class="badge badge-out-stock">غير متوفر</span>`}
-                    ${product.is_new ? `<span class="badge badge-new">جديد 🔥</span>` : ''}
-                    ${product.stock_level === 'low' ? `<span class="badge badge-low-stock">مخزون منخفض</span>` : ''}
+                    ${product.is_new ? `<span class="badge badge-new">جديد <i class="fas fa-fire text-xs"></i></span>` : ''}
+                    ${product.stock_level === 'low' ? `<span class="badge badge-low-stock">قطع أخيرة</span>` : ''}
                 </div>
                 <div class="product-card-actions">
                     <button class="cart-btn btn-icon" data-id="${product.id}" aria-label="${isCurrentlyInCart ? 'إزالة من السلة' : 'إضافة للسلة'}">
-                        <i class="text-base ${isCurrentlyInCart ? 'fas fa-check text-success' : 'fas fa-cart-plus'}"></i>
+                        <i class="text-base ${isCurrentlyInCart ? 'fas fa-check-circle text-success' : 'fas fa-cart-plus'}"></i>
                     </button>
                     <button class="view-details-btn btn-icon" data-id="${product.id}" aria-label="عرض التفاصيل">
                         <i class="fas fa-eye text-base"></i>
@@ -769,16 +803,20 @@
             </div>
         `;
 
+        // Add event listeners directly to the buttons within this card
         const cartBtn = cardWrapper.querySelector('.cart-btn');
         const detailsBtn = cardWrapper.querySelector('.view-details-btn');
+        // Use stopPropagation to prevent card click when button is clicked
         if (cartBtn) cartBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleCart(product.id); });
         if (detailsBtn) detailsBtn.addEventListener('click', (e) => { e.stopPropagation(); openDetailPanel(product.id); });
+        // Add listener to the card itself to open details, avoiding button clicks
         cardWrapper.addEventListener('click', (e) => { if (!e.target.closest('button')) openDetailPanel(product.id); });
 
+        // If it's for a carousel, wrap it in a swiper-slide div
         if (isCarousel) {
             const slide = document.createElement('div');
             slide.className = 'swiper-slide';
-             if(cardWrapper.classList.contains('product-card')) cardWrapper.style.maxWidth = '260px';
+             if(cardWrapper.classList.contains('product-card')) cardWrapper.style.maxWidth = '260px'; // Ensure max width for carousel items
              slide.appendChild(cardWrapper);
             return slide;
         } else {
@@ -788,31 +826,35 @@
 
 
     // --- Modal, Overlay & Panel Management ---
+    // Generic function to open modal/overlay/panel with animation
     const openOverlay = (overlayElement) => {
-        if (!overlayElement || activeModalOrOverlay === overlayElement) return;
-        if (activeModalOrOverlay) closeOverlay(true);
-        if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(true);
+        if (!overlayElement || activeModalOrOverlay === overlayElement) return; // Do nothing if already open or element doesn't exist
+        if (activeModalOrOverlay) closeOverlay(true); // Close any currently active overlay instantly
+        if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(true); // Close detail panel instantly if open
 
-        activeModalOrOverlay = overlayElement;
-        overlayElement.style.display = 'flex';
-        requestAnimationFrame(() => overlayElement.classList.add('visible'));
-        document.body.style.overflow = 'hidden';
-        overlayElement.dispatchEvent(new CustomEvent('overlayOpened'));
+        activeModalOrOverlay = overlayElement; // Set the currently active overlay
+        overlayElement.style.display = 'flex'; // Make it visible
+        requestAnimationFrame(() => overlayElement.classList.add('visible')); // Trigger transition
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        overlayElement.dispatchEvent(new CustomEvent('overlayOpened')); // Dispatch event for potential listeners
+        // Focus specific elements on open for accessibility/UX
         if (overlayElement.id === 'search-filter-overlay') overlaySearchInput?.focus();
     };
 
+    // Generic function to close the active modal/overlay/panel
     const closeOverlay = (instant = false) => {
         const overlayToClose = activeModalOrOverlay;
-        if (!overlayToClose) return;
-        activeModalOrOverlay = null;
-        const duration = instant ? 0 : 350;
-        overlayToClose.classList.remove('visible');
+        if (!overlayToClose) return; // Nothing to close
+        activeModalOrOverlay = null; // Clear the active overlay state
+        const duration = instant ? 0 : 350; // Use 0 duration for instant close
+        overlayToClose.classList.remove('visible'); // Start fade-out/slide-out animation
         setTimeout(() => {
-            overlayToClose.style.display = 'none';
+            overlayToClose.style.display = 'none'; // Hide after animation
+            // Restore body scroll only if no other overlay/panel is active
             if (!activeModalOrOverlay && !productDetailPanel?.classList.contains('visible')) {
                 document.body.style.overflow = '';
             }
-            overlayToClose.dispatchEvent(new CustomEvent('overlayClosed'));
+            overlayToClose.dispatchEvent(new CustomEvent('overlayClosed')); // Dispatch closed event
         }, duration);
     };
 
@@ -821,57 +863,59 @@
         if (!productId) return;
         try {
             let viewed = JSON.parse(localStorage.getItem('mqRecentlyViewed_v1')) || [];
-            // Remove if exists to add to front
-            viewed = viewed.filter(id => id !== productId);
-            viewed.unshift(productId); // Add to the beginning
+            const numProductId = Number(productId);
+            // Remove if already exists to move it to the front
+            viewed = viewed.filter(id => id !== numProductId);
+            viewed.unshift(numProductId); // Add to the beginning (most recent)
             // Limit the array size
-            if (viewed.length > MAX_RECENTLY_VIEWED) viewed.pop();
+            if (viewed.length > MAX_RECENTLY_VIEWED) viewed.pop(); // Remove the oldest if limit exceeded
             localStorage.setItem('mqRecentlyViewed_v1', JSON.stringify(viewed));
-            renderRecentlyViewed(); // Update display
+            renderRecentlyViewed(); // Update the displayed list
         } catch (e) {
             console.error("Error updating recently viewed:", e);
         }
     };
 
+    // Renders the recently viewed products section
     const renderRecentlyViewed = () => {
         if (!recentlyViewedWrapper || !recentlyViewedEmpty || !recentlyViewedSection) return;
 
         try {
             const viewedIds = JSON.parse(localStorage.getItem('mqRecentlyViewed_v1')) || [];
-            const viewedProducts = viewedIds.map(id => products.find(p => p && p.id === id)).filter(p => p); // Get valid products
+            // Map IDs to product objects, filtering out any invalid/missing products
+            const viewedProducts = viewedIds.map(id => products.find(p => p && p.id === id)).filter(p => p);
 
             if (viewedProducts.length > 0) {
-                recentlyViewedSection.classList.remove('hidden');
-                recentlyViewedEmpty.classList.add('hidden');
-                recentlyViewedWrapper.innerHTML = ''; // Clear old items
-                recentlyViewedWrapper.classList.add('simple-grid'); // Use grid layout
+                recentlyViewedSection.classList.remove('hidden'); // Show the section
+                recentlyViewedEmpty.classList.add('hidden'); // Hide the 'empty' message
+                recentlyViewedWrapper.innerHTML = ''; // Clear previous items
+                recentlyViewedWrapper.classList.add('simple-grid'); // Ensure grid layout class
 
-                const fragment = document.createDocumentFragment();
+                const fragment = document.createDocumentFragment(); // Use fragment for performance
                 viewedProducts.forEach((product, index) => {
-                    const card = createProductCard(product, false); // Create standard card
+                    const card = createProductCard(product, false); // Create standard card (not carousel)
                     if (card) {
-                        // Apply consistent entry animation
+                        // Apply consistent entry animation with delay
                         if (card.classList.contains('section-animate')) {
                            card.style.transitionDelay = `${index * 60}ms`;
                            // Observe new cards for animation if observer is active
                            if (sectionObserver) sectionObserver.observe(card);
-                           else card.classList.add('visible'); // Fallback visibility
+                           else card.classList.add('visible'); // Fallback if observer not supported/active
                         }
-                        // Apply specific styles if needed via CSS (.recently-viewed-card)
-                        card.classList.add('recently-viewed-card');
+                        card.classList.add('recently-viewed-card'); // Add specific class if needed for styling
                         fragment.appendChild(card);
                     }
                 });
-                recentlyViewedWrapper.appendChild(fragment);
+                recentlyViewedWrapper.appendChild(fragment); // Append all cards at once
 
-                 // Re-trigger animation observation for newly added items
+                 // Re-trigger animation observation for newly added items in case they were added dynamically
                  if (sectionObserver) {
                      recentlyViewedWrapper.querySelectorAll('.section-animate').forEach(el => {
-                        // Ensure element is visible if observer missed it somehow
+                        // Ensure element is marked visible if it's already in view but observer missed it
                         if(!el.classList.contains('visible')) {
                              const rect = el.getBoundingClientRect();
                              if(rect.top < window.innerHeight && rect.bottom >= 0) {
-                                el.classList.add('visible'); // Make visible if already in view
+                                el.classList.add('visible');
                              } else {
                                 sectionObserver.observe(el); // Re-observe if not in view
                              }
@@ -880,6 +924,7 @@
                  }
 
             } else {
+                // Hide section and show empty message if no recently viewed items
                 recentlyViewedSection.classList.add('hidden');
                 recentlyViewedEmpty.classList.remove('hidden');
                 recentlyViewedWrapper.classList.remove('simple-grid');
@@ -892,14 +937,15 @@
 
 
     // --- Product Detail Panel ---
+    // Opens the side panel with details for a specific product
     const openDetailPanel = (productId) => {
         const product = products.find(p => p && p.id === Number(productId));
         if (!product || !productDetailPanel || !productDetailContent || !productDetailBackdrop || isPanelOpening) return;
 
-        if (activeModalOrOverlay) closeOverlay(true); // Close modals first
+        if (activeModalOrOverlay) closeOverlay(true); // Close any open modal first
 
-        isPanelOpening = true;
-        currentProductIdForDetail = Number(productId); // Store numeric ID
+        isPanelOpening = true; // Set flag to prevent rapid re-opening
+        currentProductIdForDetail = Number(productId); // Store the ID
         const isCurrentlyInCart = isInCart(currentProductIdForDetail);
         const availabilityText = product.availability === 'in stock' ? "متوفر حالياً" : "غير متوفر حالياً";
         const availabilityClass = product.availability === 'in stock' ? 'availability-stock' : 'availability-out-stock';
@@ -909,6 +955,8 @@
         const placeholderText = theme === 'dark' ? '6B7280' : '9CA3AF';
         const placeholderImg = `https://placehold.co/600x450/${placeholderBg}/${placeholderText}?text=Image+Error&font=cairo`;
 
+        // Populate the detail panel content
+        // Eager load the main image as it becomes immediately visible
         productDetailContent.innerHTML = `
             <div class="detail-panel-image-container">
                 <img id="detail-panel-image" src="${product.image || placeholderImg}" alt="${product.title}" class="detail-panel-image" loading="eager" onerror="if(this.src !== '${placeholderImg}') { this.src='${placeholderImg}'; this.classList.add('img-error'); } this.onerror=null;">
@@ -934,13 +982,13 @@
                 <div class="info-row">
                     <span><i class="fas fa-box-open text-base text-accent"></i>التوفر:</span>
                     <span id="detail-panel-availability" class="info-value ${availabilityClass}">
-                        <i class="fas ${availabilityIcon} text-sm"></i> ${availabilityText}
+                        <i class="fas ${availabilityIcon} text-sm mr-1"></i> ${availabilityText}
                     </span>
                 </div>
                 ${product.stock_level === 'low' ? `
                 <div class="info-row low-stock-row">
                     <span><i class="fas fa-exclamation-triangle text-base text-warning"></i>الحالة:</span>
-                    <span class="info-value text-warning font-semibold">مخزون منخفض</span>
+                    <span class="info-value text-warning font-semibold">قطع أخيرة متوفرة</span>
                 </div>
                 ` : ''}
             </div>
@@ -959,55 +1007,64 @@
             </div>
         `;
 
+        // Add event listeners for buttons inside the panel
         const orderBtn = productDetailContent.querySelector('#detail-panel-order-btn');
         const cartBtn = productDetailContent.querySelector('#detail-panel-cart-btn');
         const sizeGuideBtn = productDetailContent.querySelector('#detail-panel-size-guide-btn');
 
         if (orderBtn && product.availability === 'in stock') orderBtn.addEventListener('click', (e) => { e.preventDefault(); openOrderModal(currentProductIdForDetail); });
-        else if (orderBtn) orderBtn.classList.add('btn-disabled-visual');
+        else if (orderBtn) orderBtn.classList.add('btn-disabled-visual'); // Visually disable if needed
         if (cartBtn) cartBtn.addEventListener('click', () => { toggleCart(currentProductIdForDetail); });
         if (sizeGuideBtn) sizeGuideBtn.addEventListener('click', openSizeGuideModal);
 
+        // Show the panel and backdrop with animation
         productDetailPanel.classList.remove('hidden');
         productDetailBackdrop.style.display = 'block';
-        requestAnimationFrame(() => {
+        requestAnimationFrame(() => { // Ensure display:block is applied before adding 'visible'
             productDetailPanel.classList.add('visible');
             productDetailBackdrop.classList.add('visible');
         });
-        document.body.style.overflow = 'hidden';
-        productDetailPanel.scrollTop = 0;
-        addRecentlyViewed(currentProductIdForDetail); // Add to recently viewed list
-        setTimeout(() => { isPanelOpening = false; }, 400);
+        document.body.style.overflow = 'hidden'; // Prevent background scroll
+        productDetailPanel.scrollTop = 0; // Scroll panel to top
+        addRecentlyViewed(currentProductIdForDetail); // Add item to recently viewed list
+
+        // Reset flag after animation duration
+        setTimeout(() => { isPanelOpening = false; }, 400); // Match CSS transition duration
     };
 
 
+    // Closes the product detail panel
     const closeDetailPanel = (instant = false) => {
         if (!productDetailPanel || !productDetailBackdrop || !productDetailPanel.classList.contains('visible') || isPanelOpening) return;
-        productDetailPanel.classList.remove('visible');
+        productDetailPanel.classList.remove('visible'); // Start animation
         productDetailBackdrop.classList.remove('visible');
-        const duration = instant ? 0 : 400;
+        const duration = instant ? 0 : 400; // Match CSS transition
         setTimeout(() => {
-            productDetailPanel.classList.add('hidden');
+            productDetailPanel.classList.add('hidden'); // Hide after animation
             productDetailBackdrop.style.display = 'none';
-            currentProductIdForDetail = null;
-            productDetailContent.innerHTML = '';
+            currentProductIdForDetail = null; // Clear stored ID
+            productDetailContent.innerHTML = ''; // Clear content
+            // Restore scroll only if no other modal is active
             if (!activeModalOrOverlay) document.body.style.overflow = '';
         }, duration);
     };
 
     // --- Order Modal ---
+    // Opens the order modal, either for a single product or all available cart items
     const openOrderModal = (productId = null) => {
-        if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(true);
-        if (activeModalOrOverlay) closeOverlay(true);
+        if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(true); // Close detail panel first
+        if (activeModalOrOverlay) closeOverlay(true); // Close any other active modal
 
         let orderTotal = 0;
         const currency = "د.ع";
+        // Reset visibility and content of summary sections
         orderSummarySingleItemDetails.classList.add('hidden');
         orderSummaryItemsList.classList.add('hidden');
         orderSummaryItemsList.innerHTML = '';
+        // Clear hidden form fields storing product info
         orderFormProductId.value = ''; orderFormProductTitle.value = '';
         orderFormProductSize.value = ''; orderFormProductPrice.value = '';
-        cartItemsForOrder = [];
+        cartItemsForOrder = []; // Reset the list of items being ordered
 
         if (productId) { // Single Product Order
             const product = products.find(p => p && p.id === Number(productId));
@@ -1016,15 +1073,19 @@
                 alert("عفواً، لا يمكن طلب هذا المنتج حالياً.");
                 return;
             }
+            // Show single item details
             orderSummarySingleItemDetails.classList.remove('hidden');
             orderSummaryMainTitle.innerHTML = `<i class="fas fa-receipt text-lg"></i> ملخص طلب لمنتج واحد`;
             orderSummaryTitle.textContent = product.title;
             orderSummarySize.textContent = product.size;
             orderSummaryPrice.textContent = formatPrice(product.price);
+            // Store single product info in hidden fields
             orderFormProductId.value = product.id; orderFormProductTitle.value = product.title;
             orderFormProductSize.value = product.size; orderFormProductPrice.value = product.price;
             try { orderTotal = parseInt(String(product.price).replace(/,/g, ''), 10); } catch { orderTotal = 0; }
-        } else { // Order from Cart
+
+        } else { // Order from Cart (all available items)
+             // Filter cart to get only available products
              cartItemsForOrder = cart.map(id => products.find(p => p.id === id))
                                      .filter(p => p && p.availability === 'in stock');
             if (cartItemsForOrder.length === 0) {
@@ -1032,8 +1093,10 @@
                 alert("عفواً، لا توجد منتجات متاحة للطلب في سلة التسوق.");
                 return;
             }
+            // Show the list of items
             orderSummaryItemsList.classList.remove('hidden');
             let listHtml = '';
+            // Calculate total and build list HTML
             orderTotal = cartItemsForOrder.reduce((sum, item) => {
                 const itemPrice = parseInt(String(item.price).replace(/,/g, ''), 10) || 0;
                 listHtml += `
@@ -1043,51 +1106,68 @@
                      </li>`;
                 return sum + itemPrice;
             }, 0);
-            orderSummaryItemsList.innerHTML = listHtml;
+            orderSummaryItemsList.innerHTML = listHtml; // Add items to the list
+            // Append the total price row
             const totalLi = document.createElement('li');
             totalLi.className = 'flex justify-between items-center pt-3 mt-3 border-t border-primary/20 dark:border-primary-light/20 font-bold text-lg';
             totalLi.innerHTML = `<span>الإجمالي:</span> <span class="text-primary dark:text-primary-light">${orderTotal.toLocaleString('ar-IQ')} ${currency}</span>`;
             orderSummaryItemsList.appendChild(totalLi);
+            // Update modal title
              orderSummaryMainTitle.innerHTML = `<i class="fas fa-receipt text-lg"></i> ملخص طلب (${cartItemsForOrder.length} منتجات)`;
         }
 
+        // Reset form state before showing
         orderForm?.reset();
         formErrorMessage?.classList.add('hidden');
         orderForm?.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
-        openOverlay(orderFormModalOverlay);
+        openOverlay(orderFormModalOverlay); // Finally, open the modal
     };
 
     const closeOrderModal = () => closeOverlay();
-    const prepareOrderForAllCartItems = () => openOrderModal(null);
+    // Specific function to trigger ordering all items from the cart
+    const prepareOrderForAllCartItems = () => {
+        closeCartModal(); // Close cart modal first
+        setTimeout(() => openOrderModal(null), 50); // Open order modal for cart items
+    }
+
 
     // --- Cart Modal ---
     const openCartModal = () => { renderCartItems(); openOverlay(cartModalOverlay); };
     const closeCartModal = () => closeOverlay();
 
+    // Renders the items currently in the cart modal
     const renderCartItems = () => {
         if (!cartItemsContainer || !cartEmptyMessage || !cartOrderAllBtn) return;
-        const fragment = document.createDocumentFragment();
+
+        const fragment = document.createDocumentFragment(); // Use fragment for efficient DOM updates
+        // Get product objects for items in cart
         const cartProducts = cart.map(id => products.find(p => p.id === id)).filter(p => p);
-        let availableItemsCount = 0;
-        cartItemsContainer.innerHTML = '';
+        let availableItemsCount = 0; // Count items that can actually be ordered
+        cartItemsContainer.innerHTML = ''; // Clear previous items
 
         if (cartProducts.length === 0) {
+            // Show empty message and disable order button
             cartEmptyMessage.classList.remove('hidden');
-            cartItemsContainer.classList.remove('has-items');
+            cartItemsContainer.classList.remove('has-items'); // Used for potential styling
             cartOrderAllBtn.disabled = true;
             cartOrderAllBtn.classList.add('opacity-50', 'cursor-not-allowed');
         } else {
+            // Hide empty message and enable order button (potentially)
             cartEmptyMessage.classList.add('hidden');
             cartItemsContainer.classList.add('has-items');
             cartProducts.forEach(product => {
-                if (!product) return;
+                if (!product) return; // Skip if product somehow not found
                 if (product.availability === 'in stock') availableItemsCount++;
+
                 const itemElement = document.createElement('div');
                 itemElement.className = `cart-item ${product.availability !== 'in stock' ? 'unavailable' : ''}`;
                 const theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
-                const placeholderBg = theme === 'dark' ? '374151' : 'E5E7EB';
-                const placeholderText = theme === 'dark' ? '9CA3AF' : '6B7280';
+                // Placeholder for cart item images
+                const placeholderBg = theme === 'dark' ? '374151' : 'E5E7EB'; // Dark/Light Border colors
+                const placeholderText = theme === 'dark' ? '9CA3AF' : '6B7280'; // Dark/Light Muted colors
                 const placeholderImg = `https://placehold.co/80x96/${placeholderBg}/${placeholderText}?text=Img&font=cairo`;
+
+                 // Add lazy loading for cart item images
                  itemElement.innerHTML = `
                      <img src="${product.image || placeholderImg}" alt="${product.title}" class="cart-item-image" loading="lazy" onerror="if(this.src !== '${placeholderImg}') { this.src='${placeholderImg}'; this.classList.add('img-error'); } this.onerror=null;">
                      <div class="cart-item-details">
@@ -1102,18 +1182,33 @@
                              <i class="fas fa-truck"></i>
                          </button>
                      </div>`;
+
+                // Add listeners for remove and order-single buttons
                 const removeBtn = itemElement.querySelector('.cart-remove-btn');
                 const orderSingleBtn = itemElement.querySelector('.cart-order-single-btn');
                 if (removeBtn) removeBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleCart(product.id); });
-                if (orderSingleBtn && product.availability === 'in stock') orderSingleBtn.addEventListener('click', (e) => { e.stopPropagation(); closeCartModal(); setTimeout(() => openOrderModal(product.id), 50); });
-                else if (orderSingleBtn) orderSingleBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                fragment.appendChild(itemElement);
+                // If order single is clicked, close cart and open order modal for this item
+                if (orderSingleBtn && product.availability === 'in stock') {
+                    orderSingleBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        closeCartModal();
+                        setTimeout(() => openOrderModal(product.id), 50); // Delay slightly to ensure modal closes first
+                    });
+                } else if (orderSingleBtn) {
+                    // Visually disable if item is out of stock
+                    orderSingleBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+                fragment.appendChild(itemElement); // Add the item element to the fragment
             });
-            cartItemsContainer.appendChild(fragment);
+            cartItemsContainer.appendChild(fragment); // Append all items at once
+
+            // Enable/disable the "Order All" button based on available items
             cartOrderAllBtn.disabled = availableItemsCount === 0;
             cartOrderAllBtn.classList.toggle('opacity-50', availableItemsCount === 0);
             cartOrderAllBtn.classList.toggle('cursor-not-allowed', availableItemsCount === 0);
         }
+         // Ensure the cart items container is scrollable if needed
+        cartItemsContainer.style.overflowY = cartProducts.length > 3 ? 'auto' : 'hidden'; // Example: scroll after 3 items
     };
 
     // --- Policy Modals ---
@@ -1127,163 +1222,247 @@
     const closeSizeGuideModal = () => closeOverlay();
 
     // --- Filter and Display Products ---
-    const applyFilters = (scrollToProducts = false, instant = false) => {
+    // Main function to filter products based on category, search term, and size
+    const applyFilters = (scrollToProducts = false, instantScroll = false) => {
       if (!productGrid || !loadMoreButton || !categoryTitleMain || !categoryDescription || !noResultsDiv || !clearFiltersBtn) return;
+
+        // Get current filter values
         currentSearchTerm = overlaySearchInput?.value.trim().toLowerCase() || '';
         currentSizeFilter = overlaySizeSelect?.value || 'all';
+        // Get active category from the selected category card
         activeCategory = document.querySelector('.category-card.active')?.dataset.category || 'all';
+
+        // Filter the main products array
         let filtered = products.filter(p => {
-            if (!p) return false;
+            if (!p) return false; // Skip invalid product entries
+
+            // Category match (allow 'all' or specific category)
             const categoryMatch = activeCategory === 'all' || p.category === activeCategory;
+
+            // Search term match (check title, description, or ID)
             const searchTermLower = currentSearchTerm;
             const titleMatch = !searchTermLower ||
                                (p.title && p.title.toLowerCase().includes(searchTermLower)) ||
                                (p.description && p.description.toLowerCase().includes(searchTermLower)) ||
-                               String(p.id).includes(searchTermLower);
+                               String(p.id).includes(searchTermLower); // Allow searching by ID
+
+            // Size match (handle various size formats like 'S', 'S ( कमर 36)', '2XL')
             let sizeMatch = true;
             if (currentSizeFilter !== 'all') {
                 const productSizeUpper = String(p.size || '').toUpperCase();
-                const productBaseSizeUpper = String(p.base_size || '').toUpperCase();
+                const productBaseSizeUpper = String(p.base_size || '').toUpperCase(); // Check base size if available
                 const filterSizeUpper = currentSizeFilter.toUpperCase();
+                // Check if size starts with filter, equals filter, or base size equals filter
                 sizeMatch = (productSizeUpper.startsWith(filterSizeUpper + ' ') ||
                              productSizeUpper.startsWith(filterSizeUpper + '(') ||
                              productSizeUpper === filterSizeUpper ||
                              productBaseSizeUpper === filterSizeUpper);
             }
-             return categoryMatch && titleMatch && sizeMatch;
+
+             return categoryMatch && titleMatch && sizeMatch; // Must match all criteria
         });
-        currentFilteredProducts = filtered;
+
+        currentFilteredProducts = filtered; // Store the filtered list
+
+        // Update category header title and description
         const activeCategoryElement = document.querySelector(`.category-card[data-category='${activeCategory}'] span`);
         categoryTitleMain.textContent = activeCategory === 'all' ? 'جميع المنتجات' : (activeCategoryElement?.textContent || activeCategory);
         categoryDescription.textContent = categoryDescriptions[activeCategory] || `عرض ${currentFilteredProducts.length} منتج مطابق للفلترة.`;
+
+        // Show/hide the "Clear Filters" button
         const isFiltered = activeCategory !== 'all' || !!currentSearchTerm || currentSizeFilter !== 'all';
         clearFiltersBtn.classList.toggle('hidden', !isFiltered);
+
+        // Clear the grid and reset displayed count
         productGrid.innerHTML = '';
         displayedProductCount = 0;
 
+        // Show/hide 'no results' message and load products if available
         if (currentFilteredProducts.length > 0) {
             noResultsDiv.classList.add('hidden');
             productGrid.classList.remove('hidden');
-            loadMoreButton.classList.remove('hidden');
-            loadMoreProducts(instant);
+            loadMoreButton.classList.remove('hidden'); // Show load more initially
+            loadMoreProducts(instantScroll); // Load the first batch
         } else {
             noResultsDiv.classList.remove('hidden');
             productGrid.classList.add('hidden');
-            loadMoreButton.classList.add('hidden');
+            loadMoreButton.classList.add('hidden'); // Hide load more if no results
         }
+
+        // Scroll to the products section if requested
         if (scrollToProducts) {
             setTimeout(() => {
                 const targetElement = document.getElementById('products');
                  if (targetElement) {
-                    const headerOffset = header?.offsetHeight || 70;
+                    const headerOffset = header?.offsetHeight || 70; // Adjust for sticky header
                     const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-                    const offsetPosition = elementPosition - headerOffset - 20;
-                    window.scrollTo({ top: offsetPosition, behavior: instant ? 'auto' : 'smooth' });
+                    const offsetPosition = elementPosition - headerOffset - 20; // Extra space
+                    window.scrollTo({ top: offsetPosition, behavior: instantScroll ? 'auto' : 'smooth' });
                  }
-             }, instant ? 0 : 100);
+             }, instantScroll ? 0 : 100); // Delay slightly for smooth scroll
         }
     };
+    // Debounced version for inputs that fire rapidly (like search input)
     const debouncedApplyFilters = debounce(applyFilters, 350);
 
     // --- Load More Products ---
+    // Appends the next batch of filtered products to the grid
     const loadMoreProducts = (instant = false) => {
         if (!productGrid || !loadMoreButton) return;
+
         const nextBatch = currentFilteredProducts.slice(displayedProductCount, displayedProductCount + productsPerLoad);
+
         if (nextBatch.length === 0) {
+             // No more products to load, hide button
              loadMoreButton.classList.add('hidden');
-             loadMoreButton.disabled = false;
+             loadMoreButton.disabled = false; // Re-enable in case filters change
              loadMoreButton.innerHTML = '<i class="fas fa-chevron-down mr-2 text-sm"></i> عرض المزيد';
             return;
         }
-        noResultsDiv?.classList.add('hidden');
-        productGrid?.classList.remove('hidden');
-        const fragment = document.createDocumentFragment();
+
+        noResultsDiv?.classList.add('hidden'); // Ensure no results message is hidden
+        productGrid?.classList.remove('hidden'); // Ensure grid is visible
+
+        const fragment = document.createDocumentFragment(); // Use fragment for performance
         nextBatch.forEach((product, index) => {
-            const card = createProductCard(product, false);
+            const card = createProductCard(product, false); // Create standard card
             if(card) {
+                 // Apply animation delay, skip if instant loading
                  if (!instant && card.classList.contains('section-animate')) card.style.transitionDelay = `${index * 60}ms`;
                  fragment.appendChild(card);
+                 // Observe for animation if observer is active and not instant loading
                  if (sectionObserver && !instant && card.classList.contains('section-animate')) sectionObserver.observe(card);
+                 // Fallback: make visible immediately if observer not available or instant load
                  else if (card.classList.contains('section-animate')) card.classList.add('visible');
              }
         });
-        productGrid.appendChild(fragment);
-        displayedProductCount += nextBatch.length;
-        requestAnimationFrame(() => {
+        productGrid.appendChild(fragment); // Append batch to grid
+
+        displayedProductCount += nextBatch.length; // Update count
+
+        // Check if there are more products left after this batch
+        requestAnimationFrame(() => { // Ensure DOM update before checking
             const hasMore = displayedProductCount < currentFilteredProducts.length;
-            loadMoreButton.classList.toggle('hidden', !hasMore);
-            loadMoreButton.disabled = false;
-             loadMoreButton.innerHTML = '<i class="fas fa-chevron-down mr-2 text-sm"></i> عرض المزيد';
+            loadMoreButton.classList.toggle('hidden', !hasMore); // Hide button if no more products
+            loadMoreButton.disabled = false; // Re-enable button
+            loadMoreButton.innerHTML = '<i class="fas fa-chevron-down mr-2 text-sm"></i> عرض المزيد'; // Reset button text
         });
     };
 
     // --- Clear All Filters ---
     const clearAllFilters = () => {
+        // Reset filter states
         activeCategory = 'all';
         currentSearchTerm = '';
         currentSizeFilter = 'all';
+        // Reset UI elements
         if(overlaySearchInput) overlaySearchInput.value = '';
         if(overlaySizeSelect) overlaySizeSelect.value = 'all';
         document.querySelectorAll('.category-card').forEach(el => el.classList.toggle('active', el.dataset.category === 'all'));
+        // Re-apply filters (showing all products) and scroll to top of section instantly
         applyFilters(true, true);
-        if (searchFilterOverlay?.classList.contains('visible')) closeOverlay();
+        if (searchFilterOverlay?.classList.contains('visible')) closeOverlay(); // Close overlay if open
     };
 
     // --- WhatsApp Order Submission ---
     const handleOrderSubmit = (event) => {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default form submission
         if (!orderForm || !formErrorMessage) return;
+
+        // Reset previous errors
         formErrorMessage.classList.add('hidden');
         orderForm.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+
+        // Get form inputs
         const nameInput = document.getElementById('customer-name');
         const phoneInput = document.getElementById('customer-phone');
         const addressInput = document.getElementById('customer-address');
         let isValid = true; let errors = [];
+
+        // Basic validation
         if (!nameInput?.value.trim()) { errors.push("يرجى إدخال الاسم الكامل."); isValid = false; nameInput?.classList.add('invalid'); }
+        // Validate phone using pattern and checkValidity
         if (!phoneInput?.value.trim() || !phoneInput.checkValidity()) { errors.push("رقم هاتف واتساب غير صحيح (مثال: 07xxxxxxxxx)."); isValid = false; phoneInput?.classList.add('invalid'); }
         if (!addressInput?.value.trim()) { errors.push("يرجى إدخال العنوان الكامل للتوصيل."); isValid = false; addressInput?.classList.add('invalid'); }
+
+        // If invalid, show errors and stop
         if (!isValid) {
             formErrorMessage.innerHTML = errors.join('<br>');
             formErrorMessage.classList.remove('hidden');
+            // Scroll error message into view smoothly
             formErrorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
+
+        // Construct WhatsApp message
         let message = "👋 *طلب جديد من Master Quality*\n\n";
         message += `👤 *الاسم:* ${nameInput.value.trim()}\n`;
         message += `📞 *الهاتف:* ${phoneInput.value.trim()}\n`;
         message += `📍 *العنوان:* ${addressInput.value.trim()}\n\n`;
         message += "🛒 *المنتجات المطلوبة:*\n--------------------\n";
         let totalPrice = 0; const currency = "د.ع";
+
+        // Check if ordering from cart or single item
         const orderedFromCart = cartItemsForOrder.length > 0;
-         const singleProductId = orderFormProductId?.value;
-         if (!orderedFromCart && singleProductId) {
+        const singleProductId = orderFormProductId?.value; // Check hidden field
+
+         if (!orderedFromCart && singleProductId) { // Single item order
             const title = orderFormProductTitle?.value; const size = orderFormProductSize?.value; const price = orderFormProductPrice?.value;
-             if (title && size && price) { message += `1. ${title} (${size}) - *${formatPrice(price)} ${currency}*\n`; try { totalPrice = parseInt(String(price).replace(/,/g, ''), 10); } catch {} }
-         } else if (orderedFromCart) {
-            cartItemsForOrder.forEach((item, index) => { message += `${index + 1}. ${item.title} (${item.size}) - *${formatPrice(item.price)} ${currency}*\n`; try { totalPrice += parseInt(String(item.price).replace(/,/g, ''), 10); } catch {} });
-         } else { message += "خطأ: لم يتم تحديد المنتجات.\n"; }
+             if (title && size && price) {
+                 message += `1. ${title} (${size}) - *${formatPrice(price)} ${currency}*\n`;
+                 try { totalPrice = parseInt(String(price).replace(/,/g, ''), 10); } catch {}
+             }
+         } else if (orderedFromCart) { // Cart order
+            cartItemsForOrder.forEach((item, index) => {
+                message += `${index + 1}. ${item.title} (${item.size}) - *${formatPrice(item.price)} ${currency}*\n`;
+                try { totalPrice += parseInt(String(item.price).replace(/,/g, ''), 10); } catch {}
+            });
+         } else {
+            message += "خطأ: لم يتم تحديد المنتجات.\n"; // Fallback error
+         }
+
         message += "--------------------\n";
         if (totalPrice > 0) message += `💰 *الإجمالي للمنتجات:* ${totalPrice.toLocaleString('ar-IQ')} ${currency}\n`;
         message += "\n*(الدفع نقداً عند الاستلام)*\n\n";
-        message += `_تم إرسال هذا الطلب من موقع: ${window.location.hostname || 'Master Quality Store'}_`;
+        message += `_تم إرسال هذا الطلب من موقع: ${window.location.hostname || 'Master Quality Store'}_`; // Add source
+
+        // Encode message and create WhatsApp URL
         const encodedMessage = encodeURIComponent(message);
         const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+        // Open WhatsApp link in a new tab
         window.open(whatsappURL, '_blank');
+
+        // Provide feedback to the user
         const submitButton = orderForm.querySelector('button[type="submit"]');
-        if(submitButton) { const originalHTML = submitButton.innerHTML; submitButton.innerHTML = `<i class="fas fa-check mr-2"></i> تم الإرسال!`; submitButton.disabled = true; }
+        if(submitButton) {
+            const originalHTML = submitButton.innerHTML;
+            submitButton.innerHTML = `<i class="fas fa-check mr-2"></i> تم الإرسال بنجاح!`;
+            submitButton.disabled = true;
+        }
+
+         // If ordered from cart, clear those items from the cart
          if (orderedFromCart) {
             const orderedIds = cartItemsForOrder.map(item => item.id);
-            cart = cart.filter(id => !orderedIds.includes(id));
+            cart = cart.filter(id => !orderedIds.includes(id)); // Keep items not in the order
             localStorage.setItem('mqCart_v4', JSON.stringify(cart));
-            updateCartCount(); cartItemsForOrder = [];
+            updateCartCount(); // Update global cart count
+            cartItemsForOrder = []; // Clear the temporary list
         }
+
+        // Close modal and reset form after a delay
         setTimeout(() => {
              closeOrderModal();
-             if(submitButton) { submitButton.innerHTML = originalHTML; submitButton.disabled = false; }
-             orderForm.reset();
+             if(submitButton) { // Restore button state
+                submitButton.innerHTML = originalHTML;
+                submitButton.disabled = false;
+             }
+             orderForm.reset(); // Reset form fields
+            // If cart modal was open before ordering, refresh its content
             if (cartModalOverlay?.classList.contains('visible')) renderCartItems();
-         }, 1500);
+         }, 2000); // Increased delay for user to see success message
     };
+    // Add submit listener and input listeners to remove validation errors on input
     if (orderForm) {
         orderForm.addEventListener('submit', handleOrderSubmit);
         ['customer-name', 'customer-phone', 'customer-address'].forEach(id => {
@@ -1294,61 +1473,116 @@
 
     // --- Category Filtering & Active State ---
     const setActiveCategory = (category, clickedElement = null) => {
-        activeCategory = category;
+        activeCategory = category; // Update state
+        // Update active class on category cards
         document.querySelectorAll('.category-card').forEach(card => card.classList.toggle('active', card.dataset.category === category));
+        // If triggered by a click, reset other filters and apply immediately
         if (clickedElement) {
             currentSearchTerm = ''; currentSizeFilter = 'all';
-            if (overlaySearchInput) overlaySearchInput.value = ''; if (overlaySizeSelect) overlaySizeSelect.value = 'all';
-            applyFilters(true);
-        } else { applyFilters(false); }
+            if (overlaySearchInput) overlaySearchInput.value = '';
+            if (overlaySizeSelect) overlaySizeSelect.value = 'all';
+            applyFilters(true); // Apply filter and scroll to products
+        } else {
+            applyFilters(false); // Apply filter without scrolling (e.g., on initial load)
+        }
     };
 
     // --- Swiper Initialization ---
     const initSwiper = () => {
-        if (typeof Swiper === 'undefined') { console.warn("Swiper not loaded."); return; }
-        if (!newArrivalsWrapper) { console.warn("New arrivals wrapper not found."); return; }
+        if (typeof Swiper === 'undefined') { console.warn("Swiper library not loaded."); return; }
+        if (!newArrivalsWrapper) { console.warn("New arrivals wrapper element not found."); return; }
+
+        // Filter products marked as new and sort by ID descending (newest first)
         const newArrivals = products.filter(p => p && p.is_new).sort((a, b) => (b.id || 0) - (a.id || 0));
         const arrivalsSection = newArrivalsWrapper.closest('#new-arrivals');
+
         if (newArrivals.length > 0) {
-            if (arrivalsSection) arrivalsSection.style.display = '';
-            newArrivalsWrapper.innerHTML = '';
-            newArrivals.forEach(product => { const slide = createProductCard(product, true); if (slide) newArrivalsWrapper.appendChild(slide); });
+            if (arrivalsSection) arrivalsSection.style.display = ''; // Show section if hidden
+            newArrivalsWrapper.innerHTML = ''; // Clear placeholders/old slides
+            // Create and append slides for new arrivals
+            newArrivals.forEach(product => {
+                const slide = createProductCard(product, true); // Create card as carousel item
+                if (slide) newArrivalsWrapper.appendChild(slide);
+            });
+
+            // Destroy previous instance if exists to prevent issues
             if (swiperInstance) { swiperInstance.destroy(true, true); swiperInstance = null; }
+
+            // Initialize Swiper
             try {
                 swiperInstance = new Swiper('.arrivals-swiper', {
-                    slidesPerView: 'auto', spaceBetween: 16, grabCursor: true,
-                    loop: newArrivals.length > 4, speed: 500, centeredSlides: false,
-                    breakpoints: { 768: { slidesPerView: 3, spaceBetween: 20 }, 1024: { slidesPerView: 4, spaceBetween: 24 } },
-                    navigation: { nextEl: '.arrivals-swiper .swiper-button-next', prevEl: '.arrivals-swiper .swiper-button-prev' },
-                    pagination: { el: '.arrivals-swiper .swiper-pagination', clickable: true },
-                    a11y: { enabled: true, prevSlideMessage: 'السابق', nextSlideMessage: 'التالي', paginationBulletMessage: 'الانتقال للشريحة {{index}}' },
+                    slidesPerView: 'auto', // Responsive number of slides
+                    spaceBetween: 16,
+                    grabCursor: true,
+                    loop: newArrivals.length > 4, // Loop only if enough slides
+                    speed: 500,
+                    centeredSlides: false,
+                    // Responsive breakpoints
+                    breakpoints: {
+                        768: { slidesPerView: 3, spaceBetween: 20 },
+                        1024: { slidesPerView: 4, spaceBetween: 24 }
+                    },
+                    // Navigation and Pagination
+                    navigation: {
+                        nextEl: '.arrivals-swiper .swiper-button-next',
+                        prevEl: '.arrivals-swiper .swiper-button-prev',
+                    },
+                    pagination: {
+                        el: '.arrivals-swiper .swiper-pagination',
+                        clickable: true,
+                    },
+                    // Accessibility
+                    a11y: {
+                        enabled: true,
+                        prevSlideMessage: 'السابق',
+                        nextSlideMessage: 'التالي',
+                        paginationBulletMessage: 'الانتقال للشريحة {{index}}',
+                    },
+                     // Performance: Preload adjacent images
+                     // preloadImages: false, // Set to false if lazy loading handles it
+                     // lazy: true, // Use Swiper's lazy loading if native isn't sufficient (requires specific HTML structure) - Native is preferred here.
                 });
             } catch (error) {
+                 // Fallback if Swiper fails: basic horizontal scroll
                  console.error("Swiper initialization failed:", error);
-                 newArrivalsWrapper.style.cssText = 'display: flex; overflow-x: auto; gap: 1rem; padding: 1rem 0;';
+                 newArrivalsWrapper.style.cssText = 'display: flex; overflow-x: auto; gap: 1rem; padding: 1rem 0; scroll-snap-type: x mandatory;';
+                 newArrivalsWrapper.querySelectorAll('.swiper-slide').forEach(s => s.style.scrollSnapAlign = 'start');
                  const controls = arrivalsSection?.querySelectorAll('.swiper-button-next, .swiper-button-prev, .swiper-pagination');
-                 controls?.forEach(el => el.style.display = 'none');
+                 controls?.forEach(el => el.style.display = 'none'); // Hide Swiper controls
              }
         } else {
+            // Hide the entire section if there are no new arrivals
             if (arrivalsSection) arrivalsSection.style.display = 'none';
         }
     };
 
     // --- Header Scroll & Active Nav ---
+    // Handles header style changes on scroll and updates active nav link
     const handleHeaderScroll = () => {
         if (!header) return;
         const scrollY = window.scrollY;
+        // Add 'scrolled' class for styling (e.g., background opacity, shadow)
         header.classList.toggle('scrolled', scrollY > 50);
+
+        // Update active navigation link based on scroll position
         let currentSectionId = '';
         const sections = document.querySelectorAll('main section[id]');
-        const headerHeight = header.offsetHeight || 70;
-        const scrollPosition = scrollY + headerHeight + 50;
+        const headerHeight = header.offsetHeight || 70; // Get header height for offset
+        const scrollPosition = scrollY + headerHeight + 50; // Offset to activate link earlier
+
         for (let i = 0; i < sections.length; i++) {
              const section = sections[i];
-             if (section && typeof section.offsetTop === 'number' && section.offsetTop <= scrollPosition) currentSectionId = section.id;
-             else if (section.offsetTop > scrollPosition) break;
+             // Check if the section's top is above the scroll position
+             if (section && typeof section.offsetTop === 'number' && section.offsetTop <= scrollPosition) {
+                 currentSectionId = section.id; // This section is currently active or passed
+             } else if (section.offsetTop > scrollPosition) {
+                 break; // Next section is below the threshold, stop checking
+             }
         }
+        // Default to 'hero' if at the very top
         if (scrollY < headerHeight) currentSectionId = 'hero';
+
+        // Update active class for both desktop and mobile nav links
         mainNavLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${currentSectionId}`));
         mobileNavMenuLinks?.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${currentSectionId}`));
     };
@@ -1357,49 +1591,73 @@
     const toggleMobileMenu = () => {
         isMobileMenuOpen = !isMobileMenuOpen;
         if (mobileNavMenu && mobileNavToggle) {
-            mobileNavMenu.classList.toggle('visible', isMobileMenuOpen);
+            mobileNavMenu.classList.toggle('visible', isMobileMenuOpen); // Show/hide menu
             const icon = mobileNavToggle.querySelector('i');
-            if (icon) icon.className = `fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-lg`;
-            mobileNavToggle.setAttribute('aria-expanded', String(isMobileMenuOpen));
-            document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
-            if (!isMobileMenuOpen && (activeModalOrOverlay || productDetailPanel?.classList.contains('visible'))) document.body.style.overflow = 'hidden';
+            if (icon) icon.className = `fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-lg`; // Toggle icon
+            mobileNavToggle.setAttribute('aria-expanded', String(isMobileMenuOpen)); // Update ARIA state
+            // Prevent body scroll when menu is open, but only if no other modal/panel is active
+            if (isMobileMenuOpen) {
+                document.body.style.overflow = 'hidden';
+            } else if (!activeModalOrOverlay && !productDetailPanel?.classList.contains('visible')) {
+                document.body.style.overflow = '';
+            }
         }
     };
+    // Closes mobile menu if open (e.g., when a link is clicked)
     const closeMobileMenu = () => { if (isMobileMenuOpen) toggleMobileMenu(); };
 
     // --- Section Animation Observer ---
+    // Uses Intersection Observer to add 'visible' class for animations when sections scroll into view
     let sectionObserver = null;
     const initSectionObserver = () => {
+        // Fallback for browsers that don't support IntersectionObserver
         if (!('IntersectionObserver' in window)) {
+            console.warn("IntersectionObserver not supported. Animations will trigger immediately.");
             document.querySelectorAll('.section-animate').forEach(el => { el.classList.add('visible'); el.classList.remove('section-animate'); });
             return;
         }
         sectionObserver = new IntersectionObserver((entries, observer) => {
              entries.forEach(entry => {
-                 if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+                 // When element enters viewport (or threshold is met)
+                 if (entry.isIntersecting) {
+                     entry.target.classList.add('visible'); // Add class to trigger animation
+                     observer.unobserve(entry.target); // Stop observing once animated
+                 }
              });
-         }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+         }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }); // Trigger slightly before fully visible
+
+        // Observe all elements with the 'section-animate' class
         document.querySelectorAll('.section-animate').forEach(section => { if(section) sectionObserver.observe(section); });
     };
 
     // --- Scroll to Top ---
+    // Handles visibility of scroll-to-top button and calls header scroll handler
     const handleScroll = () => {
-        if (scrollToTopBtn) scrollToTopBtn.classList.toggle('visible', window.scrollY > window.innerHeight * 0.6);
-        handleHeaderScroll();
+        if (scrollToTopBtn) scrollToTopBtn.classList.toggle('visible', window.scrollY > window.innerHeight * 0.6); // Show after ~60vh scroll
+        handleHeaderScroll(); // Update header style/active nav link on scroll
     };
+    // Smoothly scrolls the window to the top
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // --- Event Listeners Setup ---
+    // Central function to attach all primary event listeners
     const setupEventListeners = () => {
-         window.addEventListener('scroll', debounce(handleScroll, 50), { passive: true });
+         // Use debounced scroll handler for performance
+         window.addEventListener('scroll', debounce(handleScroll, 50), { passive: true }); // Passive listener for scroll performance
+         // Add Escape key listener to close modals/panel/menu
          document.addEventListener('keydown', handleEscapeKey);
 
+         // Header buttons
          mobileNavToggle?.addEventListener('click', toggleMobileMenu);
          searchFilterToggleBtn?.addEventListener('click', () => openOverlay(searchFilterOverlay));
          themeToggleButton?.addEventListener('click', toggleTheme);
          cartButton?.addEventListener('click', openCartModal);
-         startShoppingBtnCart?.addEventListener('click', () => {
-            closeOverlay();
+
+         // "Start Shopping" button in empty cart
+         startShoppingBtnCart?.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeOverlay(); // Close cart modal
+            // Smooth scroll to products section
             const productsSection = document.getElementById('products');
              if(productsSection) {
                  const headerOffset = header?.offsetHeight || 70;
@@ -1408,96 +1666,135 @@
              }
         });
 
+         // Mobile navigation links - close menu and scroll smoothly
          mobileNavMenuLinks?.forEach(link => {
             link.addEventListener('click', (e) => {
                 const targetId = link.getAttribute('href');
                  if (targetId && targetId.startsWith('#')) {
                     const targetElement = document.querySelector(targetId);
                      if (targetElement) {
-                         e.preventDefault();
+                         e.preventDefault(); // Prevent default anchor jump
                          const headerOffset = header?.offsetHeight || 70;
                          const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                         // Scroll to target section with offset for header
                          window.scrollTo({ top: elementPosition - headerOffset - 20, behavior: 'smooth' });
                      }
                  }
-                 closeMobileMenu();
+                 closeMobileMenu(); // Close menu after click
              });
          });
 
+        // Search/Filter Overlay controls
         closeSearchFilterOverlayBtn?.addEventListener('click', closeOverlay);
+        // Close overlay if backdrop is clicked
         searchFilterOverlay?.addEventListener('click', (e) => { if (e.target === searchFilterOverlay) closeOverlay(); });
         applyOverlayFiltersBtn?.addEventListener('click', handleApplyOverlayFilters);
-        overlaySearchInput?.addEventListener('input', () => { currentSearchTerm = overlaySearchInput.value.trim().toLowerCase(); debouncedApplyFilters(false); });
-        overlaySizeSelect?.addEventListener('change', () => { currentSizeFilter = overlaySizeSelect.value || 'all'; applyFilters(true, true); });
-        clearOverlayFiltersBtn?.addEventListener('click', clearAllFilters);
-        clearFiltersBtn?.addEventListener('click', clearAllFilters);
+        // Apply filters immediately on size change, debounced on search input
+        overlaySearchInput?.addEventListener('input', debouncedApplyFilters); // Debounced for search input
+        overlaySizeSelect?.addEventListener('change', () => applyFilters(true, true)); // Instant for select change
+        clearOverlayFiltersBtn?.addEventListener('click', clearAllFilters); // Clear button in overlay
+        clearFiltersBtn?.addEventListener('click', clearAllFilters); // Clear button below category title
 
+        // Product Detail Panel controls
         closeDetailPanelBtn?.addEventListener('click', closeDetailPanel);
-        productDetailBackdrop?.addEventListener('click', closeDetailPanel);
+        productDetailBackdrop?.addEventListener('click', closeDetailPanel); // Close on backdrop click
 
+        // Order Modal controls
         orderFormModalCloseButton?.addEventListener('click', closeOrderModal);
         orderFormModalOverlay?.addEventListener('click', (e) => { if (e.target === orderFormModalOverlay) closeOrderModal(); });
+
+        // Cart Modal controls
         cartModalCloseButton?.addEventListener('click', closeCartModal);
         cartModalOverlay?.addEventListener('click', (e) => { if (e.target === cartModalOverlay) closeCartModal(); });
         cartOrderAllBtn?.addEventListener('click', prepareOrderForAllCartItems);
 
+        // Policy Modal controls (Privacy)
         privacyPolicyLink?.addEventListener('click', (e) => { e.preventDefault(); openPrivacyPolicyModal(); });
         privacyPolicyModalCloseButton?.addEventListener('click', closePrivacyPolicyModal);
         privacyModalCloseBtnBottom?.addEventListener('click', closePrivacyPolicyModal);
         privacyPolicyModalOverlay?.addEventListener('click', (e) => { if (e.target === privacyPolicyModalOverlay) closePrivacyPolicyModal(); });
+
+        // Policy Modal controls (Return)
         returnPolicyLink?.addEventListener('click', (e) => { e.preventDefault(); openReturnPolicyModal(); });
         returnPolicyModalCloseButton?.addEventListener('click', closeReturnPolicyModal);
         returnModalCloseBtnBottom?.addEventListener('click', closeReturnPolicyModal);
         returnPolicyModalOverlay?.addEventListener('click', (e) => { if (e.target === returnPolicyModalOverlay) closeReturnPolicyModal(); });
+
+        // Size Guide Modal controls
         sizeGuideFooterLink?.addEventListener('click', (e) => { e.preventDefault(); openSizeGuideModal(); });
         sizeGuideModalCloseButton?.addEventListener('click', closeSizeGuideModal);
         sizeGuideModalCloseBtnBottom?.addEventListener('click', closeSizeGuideModal);
         sizeGuideModalOverlay?.addEventListener('click', (e) => { if (e.target === sizeGuideModalOverlay) closeSizeGuideModal(); });
 
+        // Scroll to Top button
         scrollToTopBtn?.addEventListener('click', scrollToTop);
 
-        document.querySelectorAll('.category-card').forEach(card => card.addEventListener('click', (e) => { e.preventDefault(); const cat = card.dataset.category; if(cat) setActiveCategory(cat, card); }));
+        // Category card clicks
+        document.querySelectorAll('.category-card').forEach(card => card.addEventListener('click', (e) => {
+            e.preventDefault();
+            const cat = card.dataset.category;
+            if(cat) setActiveCategory(cat, card); // Set active category and filter
+        }));
 
+        // Load More button click
         loadMoreButton?.addEventListener('click', () => {
-             loadMoreButton.disabled = true;
-             loadMoreButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2 text-sm"></i> جاري التحميل...`;
+             loadMoreButton.disabled = true; // Disable during load
+             loadMoreButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2 text-sm"></i> جاري التحميل...`; // Loading state
+             // Simulate network delay slightly before loading
              setTimeout(() => loadMoreProducts(), 200);
          });
 
+        // Set current year in footer
         const yearSpan = document.getElementById('year');
         if (yearSpan) yearSpan.textContent = new Date().getFullYear();
     };
 
     // --- Helper Functions ---
+    // Specific handler for applying filters from the overlay and closing it
     const handleApplyOverlayFilters = () => {
         currentSearchTerm = overlaySearchInput?.value.trim().toLowerCase() || '';
         currentSizeFilter = overlaySizeSelect?.value || 'all';
-        applyFilters(true, true);
-        closeOverlay();
+        applyFilters(true, true); // Apply filters, scroll instantly
+        closeOverlay(); // Close the filter overlay
     };
+    // Handles the Escape key press to close modals, panel, or mobile menu
     const handleEscapeKey = (event) => {
       if (event.key === 'Escape') {
-          if (productDetailPanel?.classList.contains('visible')) closeDetailPanel();
-          else if (activeModalOrOverlay) closeOverlay();
-          else if (isMobileMenuOpen) closeMobileMenu();
+          if (productDetailPanel?.classList.contains('visible')) {
+              closeDetailPanel();
+          } else if (activeModalOrOverlay) {
+              closeOverlay();
+          } else if (isMobileMenuOpen) {
+              closeMobileMenu();
+          }
       }
     };
 
     // --- Initialization ---
+    // Runs when the DOM is fully loaded and parsed
     document.addEventListener('DOMContentLoaded', () => {
         console.log("DOM Ready. Initializing App.");
+        // Apply stored theme or detect system preference
         const storedTheme = localStorage.getItem('mqTheme_v2');
         applyTheme(storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-        initSectionObserver();
-        initSwiper();
+
+        // Initialize features
+        initSectionObserver(); // Start observing elements for animations
+        initSwiper(); // Initialize the New Arrivals slider
+
+        // Initial product load and filter application
         if (productGrid && loadMoreButton) {
-             setActiveCategory('all');
-             applyFilters(false, true);
-        } else { console.error("Core product grid elements missing."); }
-        updateCartCount();
-        renderRecentlyViewed(); // Initial render for recently viewed items
-        setupEventListeners();
-        handleScroll(); // Initial check for header/scroll top
+             setActiveCategory('all'); // Set default category
+             applyFilters(false, true); // Apply initial filters (all products), load instantly
+        } else {
+            console.error("Core product grid or load more button elements missing. Product loading skipped.");
+        }
+
+        updateCartCount(); // Set initial cart count display
+        renderRecentlyViewed(); // Display any previously viewed items
+        setupEventListeners(); // Attach all event listeners
+        handleScroll(); // Initial check for header style and scroll-to-top visibility
+
         console.log("App Initialized.");
     });
     </script>
