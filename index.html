@@ -17,6 +17,83 @@
 
     <!-- REMOVED Tailwind CDN Script -->
     <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <style>
+        /* General Styles */
+        .simple-grid { display: grid; }
+        .product-card { min-height: 300px; }
+
+        /* Image handling */
+        .product-card-img, .detail-swiper-image {
+            display: block; width: 100%; height: 100%; object-fit: contain;
+            background-color: #f3f4f6; /* Light fallback bg */
+        }
+        html.dark .product-card-img, html.dark .detail-swiper-image {
+            background-color: #374151; /* Dark fallback bg */
+        }
+        .img-error { object-fit: scale-down; }
+
+        /* Product Card Image Hover Effect */
+        .product-card-image-container { position: relative; }
+        .product-card-img { transition: opacity 0.3s ease-in-out; }
+        .product-card-img-hover {
+            position: absolute; inset: 0; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .product-card.group:hover .product-card-img { opacity: 0; }
+        .product-card.group:hover .product-card-img-hover { opacity: 1; }
+
+        /* Zoom Effect (Detail Panel) */
+        .zoom-container { overflow: hidden; position: relative; cursor: zoom-in; }
+        .zoom-image { transition: transform 0.2s ease-out; }
+
+        /* Active Category Card */
+         .category-card.active {
+            border-color: var(--color-primary);
+            background-color: rgba(var(--color-primary-rgb), 0.05);
+            color: var(--color-primary); font-weight: 600;
+        }
+        html.dark .category-card.active {
+             border-color: var(--color-primary-light);
+             background-color: rgba(var(--color-primary-light-rgb), 0.1);
+             color: var(--color-primary-light);
+        }
+
+        /* Detail Panel Swiper Styles */
+        .detail-panel-swiper { width: 100%; height: 100%; position: relative; }
+        .detail-panel-swiper .swiper-slide {
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; background-color: #f9fafb; /* Light slide bg */
+        }
+        html.dark .detail-panel-swiper .swiper-slide { background-color: #1f2937; } /* Dark slide bg */
+        .detail-panel-swiper .swiper-pagination-bullet { background-color: rgba(0, 0, 0, 0.4); opacity: 0.6; width: 10px; height: 10px; }
+        html.dark .detail-panel-swiper .swiper-pagination-bullet { background-color: rgba(255, 255, 255, 0.5); }
+        .detail-panel-swiper .swiper-pagination-bullet-active { background-color: var(--color-primary); opacity: 1; }
+        html.dark .detail-panel-swiper .swiper-pagination-bullet-active { background-color: var(--color-primary-light); }
+        .detail-panel-swiper .swiper-button-next, .detail-panel-swiper .swiper-button-prev {
+            color: var(--color-primary); background-color: rgba(255, 255, 255, 0.7); border-radius: 50%;
+            width: 36px; height: 36px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .detail-panel-swiper .swiper-button-next:hover, .detail-panel-swiper .swiper-button-prev:hover { background-color: rgba(255, 255, 255, 0.9); }
+        html.dark .detail-panel-swiper .swiper-button-next, html.dark .detail-panel-swiper .swiper-button-prev {
+            color: var(--color-primary-light); background-color: rgba(55, 65, 81, 0.7);
+        }
+        html.dark .detail-panel-swiper .swiper-button-next:hover, html.dark .detail-panel-swiper .swiper-button-prev:hover { background-color: rgba(55, 65, 81, 0.9); }
+        .detail-panel-swiper .swiper-button-next::after, .detail-panel-swiper .swiper-button-prev::after { font-size: 16px; font-weight: bold; }
+        .detail-panel-swiper.swiper-container-single-slide .swiper-button-next,
+        .detail-panel-swiper.swiper-container-single-slide .swiper-button-prev,
+        .detail-panel-swiper.swiper-container-single-slide .swiper-pagination { display: none; }
+
+        /* Tailwind CSS Variable Setup */
+        @layer base {
+            :root {
+                --color-primary-rgb: 8, 145, 178; /* #0891B2 */
+                --color-primary: #0891B2;
+                --color-primary-light-rgb: 103, 232, 249; /* #67E8F9 */
+                --color-primary-light: #67E8F9;
+            }
+        }
+    </style>
 
 </head>
 <body class="bg-light-background dark:bg-dark-background text-light-text-primary dark:text-dark-text-primary transition-colors duration-medium font-sans antialiased text-base overflow-x-hidden">
@@ -25,7 +102,6 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 h-full flex justify-between items-center">
             <!-- Logo -->
             <a href="#hero" class="logo flex-shrink-0 transition-opacity hover:opacity-80" aria-label="الصفحة الرئيسية">
-                 <!-- Eager load logo as it's above the fold -->
                  <img src="photo/logo.webp" alt="Master Quality Logo" class="max-h-9 md:max-h-10" loading="eager" onerror="this.src='https://placehold.co/150x40/F8FAFC/0891B2?text=Master+Quality&font=cairo'; this.onerror=null;">
             </a>
             <!-- Desktop Nav -->
@@ -160,7 +236,7 @@
         </section>
 
         <!-- Footer -->
-         <footer id="footer" class="section-animate">
+         <footer id="footer" class="section-animate bg-light-surface dark:bg-dark-surface border-t border-light-border/50 dark:border-dark-border/50 py-10 text-center text-light-text-secondary dark:text-dark-text-secondary">
              <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                  <div class="footer-logo mb-6">
                     <!-- Lazy load footer logo -->
@@ -173,10 +249,10 @@
                         <span>تواصل معنا عبر واتساب</span>
                     </a>
                 </div>
-                <div class="footer-links mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2">
-                    <a href="#" id="privacy-policy-link">سياسة الخصوصية</a>
-                    <a href="#" id="return-policy-link">سياسة الإرجاع</a>
-                    <a href="#" id="size-guide-footer-link">دليل المقاسات</a>
+                <div class="footer-links mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+                    <a href="#" id="privacy-policy-link" class="footer-link">سياسة الخصوصية</a>
+                    <a href="#" id="return-policy-link" class="footer-link">سياسة الإرجاع</a>
+                    <a href="#" id="size-guide-footer-link" class="footer-link">دليل المقاسات</a>
                 </div>
             </div>
         </footer>
@@ -284,6 +360,7 @@
                         <option value="XS">XS</option> <option value="S">S</option> <option value="M">M</option>
                         <option value="L">L</option> <option value="XL">XL</option> <option value="XXL">XXL</option>
                         <option value="2XL">2XL</option>
+                        <option value="qc50mq">qc50mq</option> <!-- Added qc50mq -->
                     </select>
                 </div>
                  <button id="apply-overlay-filters" class="btn btn-primary w-full py-3.5 text-lg"><i class="fas fa-check mr-1.5"></i> تطبيق وعرض النتائج</button>
@@ -392,6 +469,8 @@
                               <tr> <td>XL</td> <td>102-108</td> <td>84-90</td> <td>110-116</td> <td>44-46</td> </tr>
                               <tr> <td>XXL</td> <td>109-115</td> <td>91-97</td> <td>117-123</td> <td>48</td> </tr>
                               <tr> <td>2XL</td> <td>116-122</td> <td>98-104</td> <td>124-130</td> <td>48+</td> </tr>
+                               <!-- Added qc50mq Row -->
+                               <tr> <td>qc50mq</td> <td>-</td> <td>-</td> <td>-</td> <td>قسيمة</td> </tr>
                           </tbody>
                      </table>
                     </div>
@@ -417,89 +496,65 @@
     <!-- Your App Logic (JavaScript) -->
     <script>
     // --- Product Data ---
-    // COMMENT: Ensure images are reasonably optimized (size & format) on the server.
+    // Standardized to image1 and image2. Ensure you replace duplicate image1 URLs with actual image2 URLs.
     const products = [
-    { "id": 1, "title": "بنطلون جيجنز Master Quality أزرق مريح", "image": "photo/1.webp", "price": "10,000", "size": "S (كمر 36)", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "جيجنز مريح وعملي بلون أزرق جذاب، مثالي للارتداء اليومي.", "is_new": false, "stock_level": "low" },
-    { "id": 4, "title": "بنطلون جيجنز Master Quality أزرق عملي", "image": "photo/4.webp", "price": "10,000", "size": "M (كمر 40)", "base_size": "M", "category": "trousers", "availability": "out stock", "description": "جيجنز بقصة عملية ومريحة للاستخدام اليومي.", "is_new": false },
-    { "id": 5, "title": "بنطلون Master Quality مطبع بألوان زاهية", "image": "photo/5.webp", "price": "10,000", "size": "L (كمر 42)", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "بنطلون قماش خفيف بنقشة بيزلي زاهية ومميزة.", "is_new": false },
-    { "id": 7, "title": "بنطلون Master Quality خصر عالي جملي", "image": "photo/7.webp", "price": "10,000", "size": "XXL (كمر 48)", "base_size": "XXL", "category": "trousers", "availability": "out stock", "description": "بنطلون أنيق بلون جملي دافئ وخصر عالي مع أزرار زينة.", "is_new": false },
-    { "id": 8, "title": "بنطلون Master Quality مقلم أرجل واسعة رمادي", "image": "photo/8.webp", "price": "10,000", "size": "M (كمر 38)", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "بنطلون عصري مقلم بقصة أرجل واسعة ومريحة.", "is_new": false },
-    { "id": 9, "title": "بنطلون Master Quality أسود بحزام وكسرات", "image": "photo/9.webp", "price": "10,000", "size": "M (كمر 38)", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "بنطلون أسود كلاسيكي مع حزام أنيق وكسرات أمامية لإطلالة رسمية.", "is_new": false },
-    { "id": 10, "title": "بنطلون Master Quality بيج أرجل واسعة", "image": "photo/10.webp", "price": "10,000", "size": "M (كمر 38)", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "بنطلون بيج فاتح بقصة أرجل واسعة وخامة مريحة للصيف.", "is_new": false },
-    { "id": 11, "title": "بنطلون Master Quality أصفر خردلي برباط خصر", "image": "photo/11.webp", "price": "10,000", "size": "L (كمر 42)", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "بنطلون كاجوال مريح بلون أصفر خردلي جذاب وخصر مطاطي مع رباط.", "is_new": false },
-    { "id": 12, "title": "بنطلون Master Quality أبيض قصة مرتبة", "image": "photo/12.webp", "price": "10,000", "size": "S (كمر 34)", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "بنطلون أبيض أساسي بقصة كلاسيكية مرتبة لمختلف المناسبات.", "is_new": false },
-    { "id": 13, "title": "بنطلون Master Quality دانتيل أبيض", "image": "photo/13.webp", "price": "10,000", "size": "L (كمر 42)", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "بنطلون أنيق من الدانتيل الأبيض الفاخر لإطلالة مميزة وجذابة.", "is_new": false },
-    { "id": 14, "title": "بنطلون Master Quality ليجنز زيتي مطبع", "image": "photo/14.webp", "price": "10,000", "size": "M (كمر 37)", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "ليجنز مريح بلون زيتي عملي ونقشة هادئة.", "is_new": false },
-    { "id": 102, "title": "بنطلون كارجو Master Quality بيج برباط كاحل", "image": "photo/102.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "بنطلون كارجو عملي ومريح بلون بيج، يتميز برباط قابل للتعديل عند الكاحل.", "is_new": false },
-    { "id": 15, "title": "توب تانك Master Quality مضلع رمادي غامق", "image": "photo/15.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب أساسي مضلع ومريح بلون رمادي غامق للاستخدام اليومي.", "is_new": false },
-    { "id": 16, "title": "توب كروب Master Quality مضلع أخضر ليموني", "image": "photo/16.webp", "price": "4,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "توب كروب عصري مضلع بلون نيون منعش وحافة مكشكشة.", "is_new": false },
-    { "id": 17, "title": "توب تانك Master Quality مخطط فوشي/أبيض", "image": "photo/17.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب مخطط كلاسيكي بألوان صيفية زاهية وحواف بيضاء.", "is_new": false },
-    { "id": 18, "title": "توب تانك Master Quality مضلع أبيض", "image": "photo/18.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب أبيض أساسي مضلع لا غنى عنه في أي خزانة.", "is_new": false },
-    { "id": 19, "title": "توب تانك Master Quality أخضر زاهي", "image": "photo/19.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب أساسي مريح وعملي بلون أخضر منعش.", "is_new": false },
-    { "id": 20, "title": "توب تانك Master Quality تركوازي", "image": "photo/20.webp", "price": "4,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "توب أساسي ناعم بلون تركوازي هادئ ومريح.", "is_new": false },
-    { "id": 21, "title": "توب تانك Master Quality أسود", "image": "photo/21.webp", "price": "4,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "توب أسود أساسي عملي لكل الإطلالات برقبة واسعة قليلاً.", "is_new": false },
-    { "id": 22, "title": "كاميصول Master Quality تركوازي بحواف دانتيل", "image": "photo/22.webp", "price": "4,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "كاميصول ناعم بلون تركوازي مع لمسة دانتيل أنثوية على الحافة.", "is_new": false },
-    { "id": 23, "title": "كاميصول Master Quality تركوازي بحواف دانتيل", "image": "photo/23.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "كاميصول ناعم بلون تركوازي مع لمسة دانتيل أنثوية على الحافة.", "is_new": false },
-    { "id": 24, "title": "توب تانك Master Quality رمادي فاتح ميلانج", "image": "photo/24.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "توب أساسي مريح وعملي بلون رمادي فاتح ميلانج.", "is_new": false },
-    { "id": 25, "title": "كاميصول Master Quality أخضر فاتح بحواف دانتيل", "image": "photo/25.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "كاميصول ناعم بلون أخضر باستيل ولمسة دانتيل رقيقة.", "is_new": false },
-    { "id": 26, "title": "توب كروب Master Quality أخضر فاتح بملمس مميز", "image": "photo/26.webp", "price": "4,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "توب كروب عصري بملمس مجعد (سموكيد) ورقبة V.", "is_new": false },
-    { "id": 27, "title": "توب تانك Master Quality مخطط أخضر/أبيض مضلع", "image": "photo/27.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "توب مضلع مخطط بقصة مريحة وألوان منعشة.", "is_new": false },
-    { "id": 28, "title": "كاميصول Master Quality أوف وايت/كريمي", "image": "photo/28.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "كاميصول أساسي ناعم بلون أوف وايت هادئ ومريح.", "is_new": false },
-    { "id": 29, "title": "توب كروب Master Quality خوخي/مرجاني بملمس مميز", "image": "photo/29.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "توب كروب عصري بملمس مجعد (سموكيد) ورقبة V بلون خوخي.", "is_new": false },
-    { "id": 30, "title": "توب/فيست Master Quality محبوك بنقشة مموجة", "image": "photo/30.webp", "price": "4,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "فيست محبوك بنقشة مموجة جريئة وألوان زاهية (أزرق وأصفر).", "is_new": true, "stock_level": "low" },
-    { "id": 31, "title": "توب تانك Master Quality أخضر ليموني نيون", "image": "photo/31.webp", "price": "4,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "توب رياضي أو كاجوال بلون نيون منعش وقصة مريحة.", "is_new": false },
-    { "id": 32, "title": "توب كروب Master Quality أخضر بقصة غير متماثلة", "image": "photo/32.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب كروب عصري بقصة كتف غير متماثلة وجريئة.", "is_new": false },
-    { "id": 33, "title": "توب تانك Master Quality مخطط كحلي/أبيض", "image": "photo/33.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "out stock", "description": "توب مخطط كلاسيكي بستايل بحري أنيق (كحلي وأبيض).", "is_new": false },
-    { "id": 34, "title": "توب كروب Master Quality مضلع بيج", "image": "photo/34.webp", "price": "4,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "out stock", "description": "توب كروب أساسي مضلع بلون بيج محايد وعصري.", "is_new": false },
-    { "id": 35, "title": "كاميصول Master Quality فوشي بحواف دانتيل", "image": "photo/35.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "كاميصول أنثوي بلون فوشي جذاب ولمسة دانتيل رقيقة.", "is_new": false },
-    { "id": 37, "title": "توب كروب Master Quality مخطط أخضر فاتح/أبيض مضلع", "image": "photo/37.webp", "price": "4,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "توب كروب مضلع ومخطط بألوان هادئة (أخضر فاتح وأبيض).", "is_new": false },
-    { "id": 38, "title": "توب كروب Master Quality أسود بكشكشة", "image": "photo/38.webp", "price": "4,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "توب كروب أسود أنيق بتصميم كشكشة أمامي للمناسبات.", "is_new": false },
-    { "id": 42, "title": "تي شيرت Master Quality أصفر فاتح مطبع", "image": "photo/42.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "تي شيرت عصري ومريح بلون أصفر فاتح مع طبعات كتابية، مثالي للإطلالات اليومية.", "is_new": false },
-    { "id": 43, "title": "بلوزة Master Quality بأكمام طويلة ونقشة بيزلي", "image": "photo/43.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة، تتميز بنقشة بيزلي باللونين الأزرق والأبيض.", "is_new": false },
-    { "id": 45, "title": "بلوزة Master Quality موردة بأكمام طويلة", "image": "photo/45.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "out stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة V، تتميز بنقشة موردة زاهية وحواف مطاطية.", "is_new": false },
-    { "id": 47, "title": "بلوزة Master Quality بلون خمري وأكمام طويلة", "image": "photo/47.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة ناعمة بلون خمري غني، تتميز بأكمام طويلة مع أساور مطاطية وياقة دائرية.", "is_new": false },
-    { "id": 48, "title": "تي شيرت Master Quality أبيض بطبعة فلامنجو", "image": "photo/48.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "تي شيرت قطني مريح باللون الأبيض مع طبعة فلامنجو وردية مميزة.", "is_new": false },
-    { "id": 49, "title": "بلوزة Master Quality بأكمام طويلة ونقشة برتقالية وبيج", "image": "photo/49.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة، تتميز بنقشة خطوط مموجة باللونين البرتقالي والبيج.", "is_new": true },
-    { "id": 51, "title": "بلوزة Master Quality بنقشة حيوانية أبيض وأسود", "image": "photo/51.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "بلوزة عصرية بأكمام متوسطة الطول ونقشة حيوانية جذابة باللونين الأبيض والأسود.", "is_new": true },
-    { "id": 53, "title": "بلوزة Master Quality بيج بأكمام طويلة ورباط أمامي", "image": "photo/53.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة، تتميز بتصميم رباط أمامي جذاب ولون بيج محايد.", "is_new": true },
-    { "id": 56, "title": "طقم Master Quality أبيض بلوزة وبنطلون واسع دانتيل", "image": "photo/56.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "out stock", "description": "طقم أنيق مكون من قطعتين باللون الأبيض، بلوزة بأكمام طويلة وتفاصيل دانتيل (برودي) مع بنطلون بأرجل واسعة بنفس التفاصيل.", "is_new": true },
-    { "id": 58, "title": "بلوزة Master Quality فوشيا بأكمام طويلة وكسرات", "image": "photo/58.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون فوشيا زاهي، تتميز بكسرات أمامية وأكمام طويلة وياقة برباط.", "is_new": true },
-    { "id": 59, "title": "بلوزة Master Quality بيضاء أكتاف مكشوفة وكشكشة", "image": "photo/59.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية أنيقة باللون الأبيض، تتميز بتصميم أكتاف مكشوفة وكشكشة عريضة على الصدر والأكمام.", "is_new": false },
-    { "id": 61, "title": "بلوزة Master Quality بيضاء دانتيل (برودي) بياقة رباط", "image": "photo/61.webp", "price": "8,000", "size": "XXL", "base_size": "XXL", "category": "tops", "availability": "out stock", "description": "بلوزة بيضاء أنيقة بأكمام طويلة وتفاصيل دانتيل (برودي) بالكامل، مع ياقة برباط وحافة سفلية مميزة.", "is_new": true },
-    { "id": 66, "title": "بلوزة Master Quality خضراء بأكمام كشكشة", "image": "photo/66.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية بلون أخضر زاهي، تتميز بأكمام قصيرة مزينة بكشكشة وياقة دائرية.", "is_new": false },
-    { "id": 67, "title": "بلوزة Master Quality وردي فاتح بأكمام طويلة وكشكشة ياقة", "image": "photo/67.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون وردي فاتح، تتميز بأكمام طويلة وياقة V مزينة بكشكشة.", "is_new": false, "stock_level": "low" },
-    { "id": 68, "title": "بلوزة Master Quality منقطة بياقة عالية وأكمام طويلة", "image": "photo/68.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة عالية مكشكشة، تتميز بنقشة منقطة باللونين البيج والأسود.", "is_new": false },
-    { "id": 69, "title": "بلوزة Master Quality سوداء بأكمام طويلة وياقة دائرية", "image": "photo/69.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة سوداء أساسية بأكمام طويلة وتصميم أكتاف منفوخة قليلاً وياقة دائرية.", "is_new": false },
-    { "id": 70, "title": "بلوزة Master Quality بيضاء بتطريز أسود وياقة رباط", "image": "photo/70.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "out stock", "description": "بلوزة بيضاء أنيقة بأكمام 3/4، تتميز بتطريز أسود على الصدر والأكمام وياقة V برباط.", "is_new": false },
-    { "id": 75, "title": "طقم Master Quality أخضر فاتح توب وتنورة دانتيل (برودي)", "image": "photo/75.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "out stock", "description": "طقم صيفي أنيق بلون أخضر فاتح، مكون من توب بأكمام قصيرة وتنورة طويلة متدرجة، كلاهما بتفاصيل دانتيل (برودي).", "is_new": true },
-    { "id": 76, "title": "تي شيرت Master Quality أبيض بطبعة قطة وزهور", "image": "photo/76.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "تي شيرت قطني مريح باللون الأبيض، يتميز بطبعة مرحة لقطة سوداء مع زهور وكتابة \"It's Friday\".", "is_new": false },
-    { "id": 78, "title": "(تخفيض فقط لك عند شراء من موقع)", "image": "photo/78.webp", "price": "0", "size": "qc50mq", "base_size": "qc50mq", "category": "tops", "availability": "in stock", "description": " يرجئ اضافة هذه قسيمة الئ عمليات شراء خاصة بكم وسوف تحصل علئ خصم 50% علئ قطعة شكرا لك لتصفحك موقعنا ", "is_new": false },
-    { "id": 84, "title": "بلوزة Master Quality موردة بأكمام كشكشة", "image": "photo/84.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية أنيقة بنقشة موردة، تتميز بأكمام قصيرة مزينة بكشكشة وياقة دائرية.", "is_new": false },
-    { "id": 88, "title": "بلوزة Master Quality بيضاء بأكمام منقوشة 3/4", "image": "photo/88.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "out stock", "description": "بلوزة أنيقة بجسم أبيض وأكمام 3/4 منفوخة بنقشة زهور خضراء وياقة دائرية.", "is_new": false },
-    { "id": 91, "title": "توب Master Quality تركوازي بياقة V وأكمام قصيرة", "image": "photo/91.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب أساسي بلون تركوازي زاهي، يتميز بياقة V وأكمام قصيرة وحافة مموجة.", "is_new": true },
-    { "id": 92, "title": "بلوزة Master Quality وردي فاتح بأكمام طويلة وكشكشة جانبية", "image": "photo/92.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون وردي فاتح، تتميز بأكمام طويلة وياقة دائرية مع كشكشة تمتد بشكل مائل على الصدر.", "is_new": false },
-    { "id": 93, "title": "قميص Master Quality وردي فاتح مقلم بأكمام طويلة", "image": "photo/93.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "قميص كلاسيكي بلون وردي فاتح مع خطوط بيضاء رفيعة، يتميز بأكمام طويلة وياقة وأزرار أمامية.", "is_new": false },
-    { "id": 94, "title": "بلوزة Master Quality تركوازي لف بأكمام طويلة", "image": "photo/94.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون تركوازي لامع، تتميز بتصميم لف وياقة V وأكمام طويلة بأسورة.", "is_new": false },
-    { "id": 95, "title": "بلوزة Master Quality منقوشة بأكمام طويلة وياقة رباط", "image": "photo/95.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "tops", "availability": "out stock", "description": "بلوزة أنيقة بأكمام طويلة، تتميز بنقشة هندسية باللونين الأخضر والأبيض وياقة برباط.", "is_new": false },
-    { "id": 98, "title": "بلوزة Master Quality منقوشة بأكمام كشكشة", "image": "photo/98.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية بنقشة عصرية، تتميز بأكمام قصيرة مزينة بكشكشة وياقة دائرية.", "is_new": false },
-    { "id": 100, "title": "بلوزة Master Quality بيضاء بكشكشة أمامية وأكمام طويلة", "image": "photo/100.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "out stock", "description": "بلوزة بيضاء أنيقة بأكمام طويلة، تتميز بكشكشة متعددة الطبقات تمتد على طول الجزء الأمامي وياقة V.", "is_new": true },
-    { "id": 103, "title": "قميص/تونيك Master Quality مقلم مع حزام", "image": "photo/103.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "قميص أو تونيك طويل بأكمام طويلة وياقة، يتميز بخطوط طولية متعددة الألوان وحزام قماشي لربط الخصر.", "is_new": false },
-    { "id": 104, "title": "بلوزة Master Quality سوداء بطبعة أوراق شجر بيضاء", "image": "photo/104.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة سوداء أنيقة بأكمام 3/4 وياقة دائرية، تتميز بطبعة أوراق شجر بيضاء.", "is_new": false },
-    { "id": 166, "title": "بلوزة Master Quality سوداء بطبعة أوراق شجر بيضاء مكرر", "image": "photo/166.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة سوداء أنيقة بأكمام 3/4 وياقة دائرية، تتميز بطبعة أوراق شجر بيضاء.", "is_new": false },
-    { "id": 116, "title": "فستان Master Quality مورد أزرق وأخضر", "image": "photo/116.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان صيفي ميدي بنقشة موردة زاهية، يتميز بياقة V وأكمام قصيرة مكشكشة وحافة متدرجة.", "is_new": false },
-    { "id": 117, "title": "فستان Master Quality أخضر وأبيض منقوش بحزام", "image": "photo/117.webp", "price": "12,000", "size": "XXL", "base_size": "XXL", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بنقشة عصرية باللونين الأخضر والأبيض، يتميز بأكمام طويلة وياقة V وحزام قماشي و حافة متدرجة.", "is_new": false },
-    { "id": 118, "title": "فستان Master Quality خمري شيفون بأكمام طويلة", "image": "photo/118.webp", "price": "12,000", "size": "S", "base_size": "S", "category": "dresses", "availability": "out stock", "description": "فستان ميدي بلون خمري غني من قماش شيفون، يتميز بأكمام طويلة وياقة عالية مكشكشة وحافة متدرجة.", "is_new": false },
-    { "id": 119, "title": "فستان Master Quality أخضر سادة بأكمام قصيرة", "image": "photo/119.webp", "price": "12,000", "size": "L", "base_size": "L", "category": "dresses", "availability": "in stock", "description": "فستان ميدي كاجوال بلون أخضر سادة، يتميز بأكمام قصيرة وياقة دائرية وخصر مرتفع.", "is_new": false },
-    { "id": 121, "title": "فستان ماكسي Master Quality أزرق بنقشة بيزلي", "image": "photo/121.webp", "price": "12,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي فضفاض ومريح بنقشة بيزلي زاهية، يتميز بأكمام قصيرة وياقة V.", "is_new": false },
-    { "id": 1211, "title": "فستان ماكسي Master Quality أزرق بنقشة بيزلي مكرر", "image": "photo/121s.webp", "price": "12,000", "size": "S", "base_size": "S", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي فضفاض ومريح بنقشة بيزلي زاهية، يتميز بأكمام قصيرة وياقة V.", "is_new": false },
-    { "id": 122, "title": "فستان Master Quality كاروهات بخصر مزموم", "image": "photo/122.webp", "price": "12,000", "size": "XL", "base_size": "XL", "category": "dresses", "availability": "in stock", "description": "فستان قصير بأكمام طويلة وقماش كاروهات، يتميز بخصر مزموم (مطاط) وياقة دائرية مع فتحة صغيرة.", "is_new": false, "stock_level": "low" },
-    { "id": 124, "title": "فستان Master Quality خمري بأكمام طويلة وكشكشة ياقة", "image": "photo/124.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بلون خمري غني، يتميز بأكمام طويلة وياقة V مزينة بكشكشة وخصر مطاطي.", "is_new": false },
-    { "id": 127, "title": "فستان حوامل Master Quality أخضر مورد بخصر مزموم", "image": "photo/127.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "maternity", "availability": "in stock", "description": "فستان حوامل ميدي بنقشة موردة، يتميز بأكمام طويلة وياقة قميص وخصر مزموم (مطاط).", "is_new": false }, // Maternity category added
-    { "id": 128, "title": "فستان Master Quality أخضر فاتح محكم بحزام", "image": "photo/128.webp", "price": "12,000", "size": "XXL", "base_size": "XXL", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بلون أخضر فاتح وقماش محكم، يتميز بأكمام قصيرة مكشكشة وياقة V وحزام قماشي.", "is_new": false },
-    { "id": 143, "title": "فستان Master Quality وردي سادة بياقة V", "image": "photo/143.webp", "price": "12,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "فستان ميدي كاجوال بلون وردي، يتميز بأكمام قصيرة وياقة V وفتحة صغيرة بأزرار.", "is_new": false },
-    { "id": 146, "title": "فستان ماكسي Master Quality وردي فاتح أكتاف مكشوفة", "image": "photo/146.webp", "price": "12,000", "size": "XL", "base_size": "XL", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي بلون وردي فاتح وتصميم أكتاف مكشوفة، يتميز بأكمام 3/4 وياقة مكشكشة.", "is_new": false },
-    { "id": 151, "title": "فستان ماكسي Master Quality تركوازي بليسيه بياقة هالتر", "image": "photo/151.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي أنيق بلون تركوازي وقماش بليسيه، يتميز بياقة هالتر وحزام خصر معدني.", "is_new": false },
-    { "id": 155, "title": "فستان Master Quality منقوش أزرق وأخضر بحزام", "image": "photo/155.webp", "price": "12,000", "size": "S", "base_size": "S", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بنقشة عصرية باللونين الأزرق والأخضر، يتميز بأكمام 3/4 واسعة وياقة V وحزام قماشي.", "is_new": false }
+    // تم تعديل image2 ليتوافق مع النمط photo/{id}.{id}.webp
+    // تم إزالة المنتجات غير المتوفرة (availability: "out stock")
+    { "id": 1, "title": "بنطلون جيجنز Master Quality أزرق مريح", "image1": "photo/1.webp", "image2": "photo/1.webp", "price": "10,000", "size": "S (كمر 36)", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "جيجنز مريح وعملي بلون أزرق جذاب، مثالي للارتداء اليومي.", "is_new": false, "stock_level": "low" },
+    { "id": 5, "title": "بنطلون Master Quality مطبع بألوان زاهية", "image1": "photo/5.webp", "image2": "photo/5.5.webp", "price": "10,000", "size": "L (كمر 42)", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "بنطلون قماش خفيف بنقشة بيزلي زاهية ومميزة.", "is_new": false }, // تم تعديل image2
+    { "id": 8, "title": "بنطلون Master Quality مقلم أرجل واسعة رمادي", "image1": "photo/8.webp", "image2": "photo/8.8.webp", "price": "10,000", "size": "M (كمر 38)", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "بنطلون عصري مقلم بقصة أرجل واسعة ومريحة.", "is_new": false }, // تم تعديل image2
+    { "id": 11, "title": "بنطلون Master Quality أصفر خردلي برباط خصر", "image1": "photo/11.webp", "image2": "photo/11.11.webp", "price": "10,000", "size": "L (كمر 42)", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "بنطلون كاجوال مريح بلون أصفر خردلي جذاب وخصر مطاطي مع رباط.", "is_new": false },
+    { "id": 13, "title": "بنطلون Master Quality دانتيل أبيض", "image1": "photo/13.webp", "image2": "photo/13.13.webp", "price": "10,000", "size": "L (كمر 42)", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "بنطلون أنيق من الدانتيل الأبيض الفاخر لإطلالة مميزة وجذابة.", "is_new": false },
+    { "id": 14, "title": "بنطلون Master Quality ليجنز زيتي مطبع", "image1": "photo/14.webp", "image2": "photo/14.14.webp", "price": "10,000", "size": "M (كمر 37)", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "ليجنز مريح بلون زيتي عملي ونقشة هادئة.", "is_new": false },
+    { "id": 102, "title": "بنطلون كارجو Master Quality بيج برباط كاحل", "image1": "photo/102.webp", "image2": "photo/102.102.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "بنطلون كارجو عملي ومريح بلون بيج، يتميز برباط قابل للتعديل عند الكاحل.", "is_new": false },
+    { "id": 16, "title": "توب كروب Master Quality مضلع أخضر ليموني", "image1": "photo/16.webp", "image2": "photo/16.16.webp", "price": "4,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "توب كروب عصري مضلع بلون نيون منعش وحافة مكشكشة.", "is_new": false }, // تم تعديل image2
+    { "id": 17, "title": "توب تانك Master Quality مخطط فوشي/أبيض", "image1": "photo/17.webp", "image2": "photo/17.17.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب مخطط كلاسيكي بألوان صيفية زاهية وحواف بيضاء.", "is_new": false },
+    { "id": 19, "title": "توب تانك Master Quality أخضر زاهي", "image1": "photo/19.webp", "image2": "photo/19.19.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب أساسي مريح وعملي بلون أخضر منعش.", "is_new": false },
+    { "id": 22, "title": "كاميصول Master Quality تركوازي بحواف دانتيل", "image1": "photo/22.webp", "image2": "photo/22.22.webp", "price": "4,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "كاميصول ناعم بلون تركوازي مع لمسة دانتيل أنثوية على الحافة.", "is_new": false },
+    { "id": 24, "title": "توب تانك Master Quality رمادي فاتح ميلانج", "image1": "photo/24.webp", "image2": "photo/24.24.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "توب أساسي مريح وعملي بلون رمادي فاتح ميلانج.", "is_new": false },
+    { "id": 25, "title": "كاميصول Master Quality أخضر فاتح بحواف دانتيل", "image1": "photo/25.webp", "image2": "photo/25.25.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "كاميصول ناعم بلون أخضر باستيل ولمسة دانتيل رقيقة.", "is_new": false },
+    { "id": 26, "title": "توب كروب Master Quality أخضر فاتح بملمس مميز", "image1": "photo/26.webp", "image2": "photo/26.26.webp", "price": "4,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "توب كروب عصري بملمس مجعد (سموكيد) ورقبة V.", "is_new": false },
+    { "id": 27, "title": "توب تانك Master Quality مخطط أخضر/أبيض مضلع", "image1": "photo/27.webp", "image2": "photo/27.27.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "توب مضلع مخطط بقصة مريحة وألوان منعشة.", "is_new": false },
+    { "id": 29, "title": "توب كروب Master Quality خوخي/مرجاني بملمس مميز", "image1": "photo/29.webp", "image2": "photo/29.29.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "توب كروب عصري بملمس مجعد (سموكيد) ورقبة V بلون خوخي.", "is_new": false },
+    { "id": 30, "title": "توب/فيست Master Quality محبوك بنقشة مموجة", "image1": "photo/30.webp", "image2": "photo/30.30.webp", "price": "4,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "فيست محبوك بنقشة مموجة جريئة وألوان زاهية (أزرق وأصفر).", "is_new": true, "stock_level": "low" },
+    { "id": 32, "title": "توب كروب Master Quality أخضر بقصة غير متماثلة", "image1": "photo/32.webp", "image2": "photo/32.32.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب كروب عصري بقصة كتف غير متماثلة وجريئة.", "is_new": false },
+    { "id": 35, "title": "كاميصول Master Quality فوشي بحواف دانتيل", "image1": "photo/35.webp", "image2": "photo/35.35.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "كاميصول أنثوي بلون فوشي جذاب ولمسة دانتيل رقيقة.", "is_new": false },
+    { "id": 42, "title": "تي شيرت Master Quality أصفر فاتح مطبع", "image1": "photo/42.webp", "image2": "photo/42.42.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "تي شيرت عصري ومريح بلون أصفر فاتح مع طبعات كتابية، مثالي للإطلالات اليومية.", "is_new": false },
+    { "id": 43, "title": "بلوزة Master Quality بأكمام طويلة ونقشة بيزلي", "image1": "photo/43.webp", "image2": "photo/43.43.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة، تتميز بنقشة بيزلي باللونين الأزرق والأبيض.", "is_new": false }, // تم تعديل image2
+    { "id": 47, "title": "بلوزة Master Quality بلون خمري وأكمام طويلة", "image1": "photo/47.webp", "image2": "photo/47.47.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة ناعمة بلون خمري غني، تتميز بأكمام طويلة مع أساور مطاطية وياقة دائرية.", "is_new": false },
+    { "id": 48, "title": "تي شيرت Master Quality أبيض بطبعة فلامنجو", "image1": "photo/48.webp", "image2": "photo/48.48.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "تي شيرت قطني مريح باللون الأبيض مع طبعة فلامنجو وردية مميزة.", "is_new": false },
+    { "id": 49, "title": "بلوزة Master Quality بأكمام طويلة ونقشة برتقالية وبيج", "image1": "photo/49.webp", "image2": "photo/49.49.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة، تتميز بنقشة خطوط مموجة باللونين البرتقالي والبيج.", "is_new": true },
+    { "id": 51, "title": "بلوزة Master Quality بنقشة حيوانية أبيض وأسود", "image1": "photo/51.webp", "image2": "photo/51.51.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "بلوزة عصرية بأكمام متوسطة الطول ونقشة حيوانية جذابة باللونين الأبيض والأسود.", "is_new": true },
+    { "id": 53, "title": "بلوزة Master Quality بيج بأكمام طويلة ورباط أمامي", "image1": "photo/53.webp", "image2": "photo/53.53.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة، تتميز بتصميم رباط أمامي جذاب ولون بيج محايد.", "is_new": true }, // تم تعديل image2
+    { "id": 58, "title": "بلوزة Master Quality فوشيا بأكمام طويلة وكسرات", "image1": "photo/58.webp", "image2": "photo/58.58.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون فوشيا زاهي، تتميز بكسرات أمامية وأكمام طويلة وياقة برباط.", "is_new": true },
+    { "id": 59, "title": "بلوزة Master Quality بيضاء أكتاف مكشوفة وكشكشة", "image1": "photo/59.webp", "image2": "photo/59.59.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية أنيقة باللون الأبيض، تتميز بتصميم أكتاف مكشوفة وكشكشة عريضة على الصدر والأكمام.", "is_new": false },
+    { "id": 66, "title": "بلوزة Master Quality خضراء بأكمام كشكشة", "image1": "photo/66.webp", "image2": "photo/66.66.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية بلون أخضر زاهي، تتميز بأكمام قصيرة مزينة بكشكشة وياقة دائرية.", "is_new": false },
+    { "id": 67, "title": "بلوزة Master Quality وردي فاتح بأكمام طويلة وكشكشة ياقة", "image1": "photo/67.webp", "image2": "photo/67.67.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون وردي فاتح، تتميز بأكمام طويلة وياقة V مزينة بكشكشة.", "is_new": false, "stock_level": "low" },
+    { "id": 68, "title": "بلوزة Master Quality منقطة بياقة عالية وأكمام طويلة", "image1": "photo/68.webp", "image2": "photo/68.68.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة عالية مكشكشة، تتميز بنقشة منقطة باللونين البيج والأسود.", "is_new": false },
+    { "id": 69, "title": "بلوزة Master Quality سوداء بأكمام طويلة وياقة دائرية", "image1": "photo/69.webp", "image2": "photo/69.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة سوداء أساسية بأكمام طويلة وتصميم أكتاف منفوخة قليلاً وياقة دائرية.", "is_new": false },
+    { "id": 76, "title": "تي شيرت Master Quality أبيض بطبعة قطة وزهور", "image1": "photo/76.webp", "image2": "photo/76.76.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "تي شيرت قطني مريح باللون الأبيض، يتميز بطبعة مرحة لقطة سوداء مع زهور وكتابة \"It's Friday\".", "is_new": false },
+    { "id": 78, "title": "(تخفيض فقط لك عند شراء من موقع)", "image1": "photo/78.webp", "image2": "photo/78.webp", "price": "0", "size": "qc50mq", "base_size": "qc50mq", "category": "tops", "availability": "in stock", "description": " يرجئ اضافة هذه قسيمة الئ عمليات شراء خاصة بكم وسوف تحصل علئ خصم 50% علئ قطعة شكرا لك لتصفحك موقعنا ", "is_new": false },
+    { "id": 84, "title": "بلوزة Master Quality موردة بأكمام كشكشة", "image1": "photo/84.webp", "image2": "photo/84.84.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية أنيقة بنقشة موردة، تتميز بأكمام قصيرة مزينة بكشكشة وياقة دائرية.", "is_new": false },
+    { "id": 91, "title": "توب Master Quality تركوازي بياقة V وأكمام قصيرة", "image1": "photo/91.webp", "image2": "photo/91.91.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب أساسي بلون تركوازي زاهي، يتميز بياقة V وأكمام قصيرة وحافة مموجة.", "is_new": true },
+    { "id": 92, "title": "بلوزة Master Quality وردي فاتح بأكمام طويلة وكشكشة جانبية", "image1": "photo/92.webp", "image2": "photo/92.92.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون وردي فاتح، تتميز بأكمام طويلة وياقة دائرية مع كشكشة تمتد بشكل مائل على الصدر.", "is_new": false },
+    { "id": 93, "title": "قميص Master Quality وردي فاتح مقلم بأكمام طويلة", "image1": "photo/93.webp", "image2": "photo/93.93.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "قميص كلاسيكي بلون وردي فاتح مع خطوط بيضاء رفيعة، يتميز بأكمام طويلة وياقة وأزرار أمامية.", "is_new": false },
+    { "id": 94, "title": "بلوزة Master Quality تركوازي لف بأكمام طويلة", "image1": "photo/94.webp", "image2": "photo/94.94.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون تركوازي لامع، تتميز بتصميم لف وياقة V وأكمام طويلة بأسورة.", "is_new": false },
+    { "id": 98, "title": "بلوزة Master Quality منقوشة بأكمام كشكشة", "image1": "photo/98.webp", "image2": "photo/98.98.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية بنقشة عصرية، تتميز بأكمام قصيرة مزينة بكشكشة وياقة دائرية.", "is_new": false },
+    { "id": 103, "title": "قميص/تونيك Master Quality مقلم مع حزام", "image1": "photo/103.webp", "image2": "photo/103.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "قميص أو تونيك طويل بأكمام طويلة وياقة، يتميز بخطوط طولية متعددة الألوان وحزام قماشي لربط الخصر.", "is_new": false },
+    { "id": 166, "title": "بلوزة Master Quality سوداء بطبعة أوراق شجر بيضاء مكرر", "image1": "photo/166.webp", "image2": "photo/166.166.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة سوداء أنيقة بأكمام 3/4 وياقة دائرية، تتميز بطبعة أوراق شجر بيضاء.", "is_new": false },
+    { "id": 116, "title": "فستان Master Quality مورد أزرق وأخضر", "image1": "photo/116.webp", "image2": "photo/116.116.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان صيفي ميدي بنقشة موردة زاهية، يتميز بياقة V وأكمام قصيرة مكشكشة وحافة متدرجة.", "is_new": false },
+    { "id": 117, "title": "فستان Master Quality أخضر وأبيض منقوش بحزام", "image1": "photo/117.webp", "image2": "photo/117.117.webp", "price": "12,000", "size": "XXL", "base_size": "XXL", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بنقشة عصرية باللونين الأخضر والأبيض، يتميز بأكمام طويلة وياقة V وحزام قماشي و حافة متدرجة.", "is_new": false }, // تم تعديل image2
+    { "id": 119, "title": "فستان Master Quality أخضر سادة بأكمام قصيرة", "image1": "photo/119.webp", "image2": "photo/119.119.webp", "price": "12,000", "size": "L", "base_size": "L", "category": "dresses", "availability": "in stock", "description": "فستان ميدي كاجوال بلون أخضر سادة، يتميز بأكمام قصيرة وياقة دائرية وخصر مرتفع.", "is_new": false },
+    { "id": 121, "title": "فستان ماكسي Master Quality أزرق بنقشة بيزلي", "image1": "photo/121.webp", "image2": "photo/121.121.webp", "price": "12,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي فضفاض ومريح بنقشة بيزلي زاهية، يتميز بأكمام قصيرة وياقة V.", "is_new": false },
+    { "id": 1211, "title": "فستان ماكسي Master Quality أزرق بنقشة بيزلي مكرر", "image1": "photo/121s.webp", "image2": "photo/121s.webp", "price": "12,000", "size": "S", "base_size": "S", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي فضفاض ومريح بنقشة بيزلي زاهية، يتميز بأكمام قصيرة وياقة V.", "is_new": false }, // تم تعديل image2
+    { "id": 122, "title": "فستان Master Quality كاروهات بخصر مزموم", "image1": "photo/122.webp", "image2": "photo/122.122.webp", "price": "12,000", "size": "XL", "base_size": "XL", "category": "dresses", "availability": "in stock", "description": "فستان قصير بأكمام طويلة وقماش كاروهات، يتميز بخصر مزموم (مطاط) وياقة دائرية مع فتحة صغيرة.", "is_new": false, "stock_level": "low" },
+    { "id": 118, "title": "فستان Master Quality خمري بأكمام طويلة وكشكشة ياقة", "image1": "photo/124.webp", "image2": "photo/124.124.webp", "price": "12,000", "size": "s", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بلون خمري غني، يتميز بأكمام طويلة وياقة V مزينة بكشكشة وخصر مطاطي.", "is_new": false },
+    { "id": 127, "title": "فستان حوامل Master Quality أخضر مورد بخصر مزموم", "image1": "photo/127.webp", "image2": "photo/127.127.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "maternity", "availability": "in stock", "description": "فستان حوامل ميدي بنقشة موردة، يتميز بأكمام طويلة وياقة قميص وخصر مزموم (مطاط).", "is_new": false }, // Maternity category added
+    { "id": 128, "title": "فستان Master Quality أخضر فاتح محكم بحزام", "image1": "photo/128.webp", "image2": "photo/128.128.webp", "price": "12,000", "size": "XXL", "base_size": "XXL", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بلون أخضر فاتح وقماش محكم، يتميز بأكمام قصيرة مكشكشة وياقة V وحزام قماشي.", "is_new": false },
+    { "id": 143, "title": "فستان Master Quality وردي سادة بياقة V", "image1": "photo/143.webp", "image2": "photo/143.143.webp", "price": "12,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "فستان ميدي كاجوال بلون وردي، يتميز بأكمام قصيرة وياقة V وفتحة صغيرة بأزرار.", "is_new": false },
+    { "id": 146, "title": "فستان ماكسي Master Quality وردي فاتح أكتاف مكشوفة", "image1": "photo/146.webp", "image2": "photo/146.146.webp", "price": "12,000", "size": "XL", "base_size": "XL", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي بلون وردي فاتح وتصميم أكتاف مكشوفة، يتميز بأكمام 3/4 وياقة مكشكشة.", "is_new": false },
+    { "id": 151, "title": "فستان ماكسي Master Quality تركوازي بليسيه بياقة هالتر", "image1": "photo/151.webp", "image2": "photo/151.151.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي أنيق بلون تركوازي وقماش بليسيه، يتميز بياقة هالتر وحزام خصر معدني.", "is_new": false }, // تم تعديل image2
+    { "id": 155, "title": "فستان Master Quality منقوش أزرق وأخضر بحزام", "image1": "photo/155.webp", "image2": "photo/155.155.webp", "price": "12,000", "size": "S", "base_size": "S", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بنقشة عصرية باللونين الأزرق والأخضر، يتميز بأكمام 3/4 واسعة وياقة V وحزام قماشي.", "is_new": false }
 ];
 
     // --- DOM Elements ---
@@ -588,7 +643,8 @@
     let isMobileMenuOpen = false;
     let activeModalOrOverlay = null;
     let isPanelOpening = false; // Flag to prevent double opening
-    let swiperInstance = null; // Hold the swiper instance
+    let swiperInstance = null; // Hold the swiper instance for arrivals
+    let detailSwiperInstance = null; // Hold the swiper instance for product detail panel
     const categoryDescriptions = { all: "تصفحي جميع منتجاتنا المختارة بعناية فائقة.", trousers: "تشكيلة واسعة من البناطيل المريحة والأنيقة لجميع إطلالاتك.", dresses: "فساتين أنيقة وعصرية لمختلف المناسبات، من الكاجوال إلى السهرة.", maternity: "ملابس حوامل مصممة لتوفير الراحة والأناقة خلال فترة الحمل.", tops: "مجموعة متنوعة من التوبات والبلوزات والقمصان العصرية والكلاسيكية.", };
     const MAX_RECENTLY_VIEWED = 8; // Max items in Recently Viewed
 
@@ -610,6 +666,12 @@
             return priceString; // Return original if parsing fails
         }
     };
+    // Helper to check if a URL seems valid (basic check)
+    const isValidImageUrl = (url) => {
+        // Basic check: not null, not empty string, not a placeholder
+        return url && typeof url === 'string' && url.trim() !== '' && !url.startsWith('https://placehold.co');
+    };
+
 
     // --- Theme Management ---
     const applyTheme = (theme) => {
@@ -636,23 +698,37 @@
 
                 if (bgIndex > -1 && textIndex < urlParts.length) {
                     // Define color mappings
-                    const lightBg = 'F8FAFC'; const darkBg = '1E293B';
-                    const lightMuted = '6B7280'; const darkMuted = '9CA3AF';
-                    const primary = '0891B2'; const primaryLight = '67E8F9';
+                    const lightBg = 'F8FAFC'; const darkBg = '1E293B'; // Main background placeholders
+                    const lightMuted = '6B7280'; const darkMuted = '9CA3AF'; // Muted text placeholders
+                    const primary = '0891B2'; const primaryLight = '67E8F9'; // Primary color placeholders
+                    const lightSurfaceBg = 'E5E7EB'; const darkSurfaceBg = '374151'; // Surface placeholders (like cart items)
+                    const errorPlaceholder = '7F1D1D'; // A potential error color placeholder text
+
+                    let currentBg = urlParts[bgIndex].toUpperCase();
+                    let currentText = urlParts[textIndex].toUpperCase();
 
                     if (theme === 'dark') {
-                        if (urlParts[bgIndex].toUpperCase() === lightBg) urlParts[bgIndex] = darkBg;
-                        if (urlParts[textIndex].toUpperCase() === primary) urlParts[textIndex] = primaryLight;
-                        if (urlParts[textIndex].toUpperCase() === lightMuted) urlParts[textIndex] = darkMuted;
+                        if (currentBg === lightBg) urlParts[bgIndex] = darkBg;
+                        if (currentBg === lightSurfaceBg) urlParts[bgIndex] = darkSurfaceBg;
+
+                        if (currentText === primary) urlParts[textIndex] = primaryLight;
+                        if (currentText === lightMuted) urlParts[textIndex] = darkMuted;
+                        if (currentText === errorPlaceholder) urlParts[textIndex] = darkMuted; // Change error text color too if needed
+
                     } else { // Light theme
-                        if (urlParts[bgIndex].toUpperCase() === darkBg) urlParts[bgIndex] = lightBg;
-                        if (urlParts[textIndex].toUpperCase() === primaryLight) urlParts[textIndex] = primary;
-                        if (urlParts[textIndex].toUpperCase() === darkMuted) urlParts[textIndex] = lightMuted;
+                        if (currentBg === darkBg) urlParts[bgIndex] = lightBg;
+                         if (currentBg === darkSurfaceBg) urlParts[bgIndex] = lightSurfaceBg;
+
+                        if (currentText === primaryLight) urlParts[textIndex] = primary;
+                        if (currentText === darkMuted) urlParts[textIndex] = lightMuted;
+                        if (currentText === errorPlaceholder) urlParts[textIndex] = errorPlaceholder; // Keep error text color same maybe
                     }
                     newSrc = urlParts.join('/');
                 }
                 // Only update src if it changed to avoid unnecessary reloads
-                if (newSrc !== currentSrc) img.src = newSrc;
+                if (newSrc !== currentSrc && img.getAttribute('src') !== newSrc) { // Extra check
+                     img.src = newSrc;
+                 }
             }
         });
     };
@@ -688,6 +764,9 @@
         icon.classList.add('fas', isNowInCart ? 'fa-check-circle' : 'fa-cart-plus', baseIconClass);
         if (isNowInCart) {
           icon.classList.add('text-success-DEFAULT', 'dark:text-success-light'); // Use Tailwind colors directly
+        } else {
+            // Ensure text color resets if not success
+            icon.classList.remove('text-success-DEFAULT', 'dark:text-success-light');
         }
 
         // Simple scale animation on change (can use Tailwind animate-ping or similar)
@@ -708,6 +787,8 @@
            // Change button style based on state using custom classes
            btn.classList.toggle('btn-success', isNowInCart);
            btn.classList.toggle('btn-secondary', !isNowInCart);
+           // Ensure only one style is active
+           if (isNowInCart) btn.classList.remove('btn-secondary'); else btn.classList.remove('btn-success');
       }
       btn.classList.toggle('is-in-cart', isNowInCart); // Keep custom class if needed for other logic
     };
@@ -763,27 +844,35 @@
     };
 
     // --- Create Product Card HTML ---
-    // Generates the HTML for a single product card using Tailwind classes where possible
+    // UPDATED: Now includes two images for hover effect
     const createProductCard = (product, isCarousel = false) => {
         if (!product) return null;
 
         const cardWrapper = document.createElement('div');
-        // Combine custom and Tailwind classes
         cardWrapper.className = `product-card group flex flex-col bg-light-surface dark:bg-dark-surface rounded-xl overflow-hidden shadow-card border border-light-border/30 dark:border-dark-border/30 transition-all duration-medium ease-[cubic-bezier(0.33,1,0.68,1)] hover:shadow-card-hover hover:-translate-y-1.5 hover:border-primary/40 dark:hover:border-primary-light/40 ${isCarousel ? 'swiper-product-card max-w-[260px]' : 'section-animate'}`;
         cardWrapper.dataset.id = product.id;
         cardWrapper.dataset.category = product.category;
         cardWrapper.dataset.base_size = product.base_size;
-        cardWrapper.dataset.title = product.title.toLowerCase(); // For search filtering
+        cardWrapper.dataset.title = product.title.toLowerCase();
 
         const isCurrentlyInCart = isInCart(product.id);
         const theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
         const placeholderBg = theme === 'dark' ? '1E293B' : 'F8FAFC';
         const placeholderText = theme === 'dark' ? '9CA3AF' : '6B7280';
-        const placeholderImg = `https://placehold.co/400x400/${placeholderBg}/${placeholderText}?text=لا+توجد+صورة&font=cairo`;
+        const placeholderImg1 = `https://placehold.co/400x400/${placeholderBg}/${placeholderText}?text=صورة+1&font=cairo`;
+        const placeholderImg2 = `https://placehold.co/400x400/${placeholderBg}/${placeholderText}?text=صورة+2&font=cairo`;
+
+        // Use image1 as primary, image2 as hover (or fallback to image1 if image2 is invalid/same)
+        const primaryImageSrc = product.image1 || placeholderImg1;
+        const hoverImageSrc = (isValidImageUrl(product.image2) && product.image2 !== product.image1) ? product.image2 : primaryImageSrc; // Fallback to primary if hover is invalid or same
 
         cardWrapper.innerHTML = `
-            <div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
-                <img src="${product.image || placeholderImg}" alt="${product.title}" loading="lazy" class="product-card-img w-full h-full object-contain transition-transform duration-slow ease-[cubic-bezier(0.33,1,0.68,1)] group-hover:scale-105" onerror="if(this.src !== '${placeholderImg}') { this.src='${placeholderImg}'; this.classList.add('img-error', 'object-scale-down'); } this.onerror=null;">
+            <div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700 product-card-image-container">
+                 <!-- Primary Image -->
+                 <img src="${primaryImageSrc}" alt="${product.title}" loading="lazy" class="product-card-img w-full h-full object-contain" onerror="if(this.src !== '${placeholderImg1}') { this.src='${placeholderImg1}'; this.classList.add('img-error', 'object-scale-down'); } this.onerror=null;">
+                 <!-- Hover Image -->
+                 <img src="${hoverImageSrc}" alt="${product.title} - عرض آخر" loading="lazy" class="product-card-img-hover w-full h-full object-contain" onerror="if(this.src !== '${placeholderImg2}') { this.src='${placeholderImg2}'; this.classList.add('img-error', 'object-scale-down'); } this.onerror=null;">
+
                 <div class="badges-container absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
                     ${product.availability === 'in stock' ? `<span class="badge badge-stock text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-success-DEFAULT text-success-text">متوفر</span>` : `<span class="badge badge-out-stock text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-error-DEFAULT text-error-text">غير متوفر</span>`}
                     ${product.is_new ? `<span class="badge badge-new text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-info-DEFAULT text-info-text">جديد <i class="fas fa-fire text-xs"></i></span>` : ''}
@@ -816,7 +905,7 @@
         // If it's for a carousel, wrap it in a swiper-slide div
         if (isCarousel) {
             const slide = document.createElement('div');
-            slide.className = 'swiper-slide !w-auto !h-auto flex-shrink-0 flex justify-center'; // Use !important carefully if needed
+            slide.className = 'swiper-slide !w-auto !h-auto flex-shrink-0 flex justify-center';
              slide.appendChild(cardWrapper);
             return slide;
         } else {
@@ -826,25 +915,26 @@
 
 
     // --- Modal, Overlay & Panel Management ---
-    // Generic function to open modal/overlay/panel with animation
+    // (openOverlay and closeOverlay functions remain the same as previous version)
     const openOverlay = (overlayElement) => {
         if (!overlayElement || activeModalOrOverlay === overlayElement) return;
         if (activeModalOrOverlay) closeOverlay(true);
         if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(true);
 
         activeModalOrOverlay = overlayElement;
-        overlayElement.style.display = 'flex'; // Or 'block' depending on element
+        overlayElement.style.display = 'flex';
         requestAnimationFrame(() => overlayElement.classList.add('visible', 'opacity-100'));
-        requestAnimationFrame(() => { // Second frame for nested content animation
+        requestAnimationFrame(() => {
             const content = overlayElement.querySelector('.modal-content, .overlay-content');
-            if(content) content.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+            if(content) {
+                content.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+                content.classList.remove('opacity-0', 'scale-95', '-translate-y-5');
+             }
         });
         document.body.style.overflow = 'hidden';
         overlayElement.dispatchEvent(new CustomEvent('overlayOpened'));
         if (overlayElement.id === 'search-filter-overlay') overlaySearchInput?.focus();
     };
-
-    // Generic function to close the active modal/overlay/panel
     const closeOverlay = (instant = false) => {
         const overlayToClose = activeModalOrOverlay;
         if (!overlayToClose) return;
@@ -852,10 +942,16 @@
         const duration = instant ? 0 : 350;
         overlayToClose.classList.remove('visible', 'opacity-100');
         const content = overlayToClose.querySelector('.modal-content, .overlay-content');
-        if(content) content.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+        if(content) {
+            content.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+            content.classList.add('opacity-0', 'scale-95', '-translate-y-5');
+        }
 
         setTimeout(() => {
             overlayToClose.style.display = 'none';
+            if(content) {
+                content.classList.remove('opacity-0', 'scale-95', '-translate-y-5');
+             }
             if (!activeModalOrOverlay && !productDetailPanel?.classList.contains('visible')) {
                 document.body.style.overflow = '';
             }
@@ -876,8 +972,6 @@
             renderRecentlyViewed();
         } catch (e) { console.error("Error updating recently viewed:", e); }
     };
-
-    // Renders the recently viewed products section
     const renderRecentlyViewed = () => {
         if (!recentlyViewedWrapper || !recentlyViewedEmpty || !recentlyViewedSection) return;
         try {
@@ -887,36 +981,29 @@
             if (viewedProducts.length > 0) {
                 recentlyViewedSection.classList.remove('hidden');
                 recentlyViewedEmpty.classList.add('hidden');
-                recentlyViewedWrapper.innerHTML = ''; // Clear previous items
-                // recentlyViewedWrapper.classList.add('simple-grid'); // Ensure grid layout class (using Tailwind classes now)
+                recentlyViewedWrapper.innerHTML = '';
+                recentlyViewedWrapper.classList.add('simple-grid');
 
                 const fragment = document.createDocumentFragment();
                 viewedProducts.forEach((product, index) => {
                     const card = createProductCard(product, false);
                     if (card) {
-                         // Apply consistent entry animation with delay using inline style
-                        card.style.transitionDelay = `${index * 60}ms`;
-                        // Observer will handle adding 'visible' class
-                        if (sectionObserver) sectionObserver.observe(card);
-                        else card.classList.add('visible'); // Fallback
-
-                        card.classList.add('recently-viewed-card'); // Keep for potential specific styling
+                         card.style.transitionDelay = `${index * 60}ms`;
+                         if (sectionObserver && card.classList.contains('section-animate')) {
+                             sectionObserver.observe(card);
+                         } else if (card.classList.contains('section-animate')) {
+                            card.classList.add('visible', 'opacity-100', 'translate-y-0');
+                        }
+                        card.classList.add('recently-viewed-card');
                         fragment.appendChild(card);
                     }
                 });
                 recentlyViewedWrapper.appendChild(fragment);
 
-                 // Re-trigger animation observation for newly added items
-                 if (sectionObserver) {
-                     recentlyViewedWrapper.querySelectorAll('.section-animate:not(.visible)').forEach(el => {
-                        sectionObserver.observe(el);
-                    });
-                 }
-
             } else {
                 recentlyViewedSection.classList.add('hidden');
                 recentlyViewedEmpty.classList.remove('hidden');
-                // recentlyViewedWrapper.classList.remove('simple-grid'); // Remove if Tailwind classes are used instead
+                recentlyViewedWrapper.classList.remove('simple-grid');
             }
         } catch (e) {
             console.error("Error rendering recently viewed:", e);
@@ -926,6 +1013,86 @@
 
 
     // --- Product Detail Panel ---
+
+    // REINTRODUCED: Initialize Image Zoom Function (targets images inside zoom-containers)
+    const initImageZoom = () => {
+        const zoomContainers = productDetailContent?.querySelectorAll('.zoom-container');
+        if (!zoomContainers || zoomContainers.length === 0) return;
+
+        const zoomScale = 1.75; // Zoom level
+
+        zoomContainers.forEach(container => {
+            const img = container.querySelector('.zoom-image');
+            if (!img) return;
+
+            // Clear previous listeners if any (safety)
+            if (container._mouseMoveHandler) container.removeEventListener('mousemove', container._mouseMoveHandler);
+            if (container._mouseLeaveHandler) container.removeEventListener('mouseleave', container._mouseLeaveHandler);
+
+
+            const handleMouseMove = (e) => {
+                if (img.naturalWidth === 0 || img.classList.contains('img-error')) return;
+
+                const rect = container.getBoundingClientRect();
+                const offsetX = e.clientX - rect.left;
+                const offsetY = e.clientY - rect.top;
+                const xPercent = Math.min(100, Math.max(0, (offsetX / container.offsetWidth) * 100));
+                const yPercent = Math.min(100, Math.max(0, (offsetY / container.offsetHeight) * 100));
+
+                img.style.transition = 'transform 0.1s linear';
+                img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+                img.style.transform = `scale(${zoomScale})`;
+            };
+
+            const handleMouseLeave = () => {
+                img.style.transition = 'transform 0.2s ease-out';
+                img.style.transformOrigin = 'center center';
+                img.style.transform = 'scale(1)';
+            };
+
+            container.addEventListener('mousemove', handleMouseMove);
+            container.addEventListener('mouseleave', handleMouseLeave);
+
+            // Store handlers for cleanup
+            container._mouseMoveHandler = handleMouseMove;
+            container._mouseLeaveHandler = handleMouseLeave;
+        });
+    };
+
+    // Initialize Swiper for Detail Panel
+    const initDetailSwiper = () => {
+        if (typeof Swiper === 'undefined') { console.error("Swiper library not loaded."); return; }
+        const swiperContainer = productDetailContent?.querySelector('.detail-panel-swiper');
+        if (!swiperContainer) { /* console.log("Detail panel Swiper container not found yet."); */ return; } // Might not be ready immediately
+
+         if (detailSwiperInstance) { // Destroy if exists
+            detailSwiperInstance.destroy(true, true); detailSwiperInstance = null;
+        }
+
+        const slides = swiperContainer.querySelectorAll('.swiper-slide');
+        const loopMode = slides.length > 1;
+
+        try {
+             detailSwiperInstance = new Swiper(swiperContainer, {
+                 slidesPerView: 1, spaceBetween: 10, loop: loopMode,
+                 pagination: { el: '.detail-panel-swiper .swiper-pagination', clickable: true },
+                 navigation: { nextEl: '.detail-panel-swiper .swiper-button-next', prevEl: '.detail-panel-swiper .swiper-button-prev' },
+                 keyboard: { enabled: true, onlyInViewport: true }, grabCursor: true,
+                 a11y: { enabled: true, prevSlideMessage: 'الصورة السابقة', nextSlideMessage: 'الصورة التالية', paginationBulletMessage: 'الانتقال للصورة {{index}}' },
+                 on: {
+                    init: function (swiper) { swiper.el.classList.toggle('swiper-container-single-slide', swiper.slides.length <= 1); },
+                    slidesLengthChange: function (swiper) { swiper.el.classList.toggle('swiper-container-single-slide', swiper.slides.length <= 1); }
+                  }
+             });
+             // console.log("Detail Swiper Initialized", detailSwiperInstance);
+        } catch (error) {
+             console.error("Failed to initialize detail panel Swiper:", error);
+             swiperContainer.querySelectorAll('.swiper-button-next, .swiper-button-prev, .swiper-pagination').forEach(el => el.style.display = 'none');
+        }
+    };
+
+
+    // UPDATED: Open Product Detail Panel - Uses SwiperJS AND calls initImageZoom
     const openDetailPanel = (productId) => {
         const product = products.find(p => p && p.id === Number(productId));
         if (!product || !productDetailPanel || !productDetailContent || !productDetailBackdrop || isPanelOpening) return;
@@ -941,15 +1108,69 @@
         const theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
         const placeholderBg = theme === 'dark' ? '1E293B' : 'F8FAFC';
         const placeholderText = theme === 'dark' ? '6B7280' : '9CA3AF';
-        const placeholderImg = `https://placehold.co/600x450/${placeholderBg}/${placeholderText}?text=Image+Error&font=cairo`;
+        const placeholderImg1 = `https://placehold.co/600x600/${placeholderBg}/${placeholderText}?text=صورة+1&font=cairo`;
+        const placeholderImg2 = `https://placehold.co/600x600/${placeholderBg}/${placeholderText}?text=صورة+2&font=cairo`;
 
-        productDetailContent.innerHTML = `
-            <div class="detail-panel-image-container aspect-w-4 aspect-h-3 mb-6 overflow-hidden rounded-lg bg-gray-200 dark:bg-dark-border">
-                <img id="detail-panel-image" src="${product.image || placeholderImg}" alt="${product.title}" class="detail-panel-image w-full h-full object-contain" loading="eager" onerror="if(this.src !== '${placeholderImg}') { this.src='${placeholderImg}'; this.classList.add('img-error', 'object-scale-down'); } this.onerror=null;">
+        // --- Generate Swiper HTML Structure with Zoom Container ---
+        let slidesHtml = '';
+        const images = [product.image1, product.image2];
+        const placeholders = [placeholderImg1, placeholderImg2];
+        let validImageCount = 0;
+
+        images.forEach((imgUrl, index) => {
+            const placeholder = placeholders[index];
+            const isDuplicate = index === 1 && imgUrl === product.image1;
+            const isValid = isValidImageUrl(imgUrl) && !isDuplicate;
+            const src = isValid ? imgUrl : (validImageCount === 0 ? placeholder : null); // Use placeholder only if first or no valid image yet
+            const altText = `${product.title} - صورة ${index + 1}`;
+
+            if (src) { // Only create slide if we have a source
+                 // Wrap image in zoom-container
+                 slidesHtml += `
+                    <div class="swiper-slide">
+                         <div class="zoom-container w-full h-full">
+                            <img src="${src}" alt="${altText}" class="detail-swiper-image zoom-image" loading="eager" onerror="if(this.src !== '${placeholder}') { this.src='${placeholder}'; this.classList.add('img-error'); } this.onerror=null;">
+                         </div>
+                    </div>
+                `;
+                if (isValid) validImageCount++;
+            }
+        });
+
+        if (slidesHtml === '') { // Fallback
+             slidesHtml = `
+                 <div class="swiper-slide">
+                    <div class="zoom-container w-full h-full">
+                        <img src="${placeholderImg1}" alt="${product.title} - صورة المنتج" class="detail-swiper-image zoom-image img-error" loading="eager">
+                    </div>
+                 </div>
+             `;
+         }
+
+        const imageSectionHtml = `
+            <div class="detail-panel-image-wrapper aspect-square mb-6 relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden border border-light-border/50 dark:border-dark-border/50">
+                 <!-- Swiper -->
+                <div class="swiper detail-panel-swiper">
+                    <div class="swiper-wrapper">
+                        ${slidesHtml}
+                    </div>
+                    <!-- Add Pagination -->
+                    <div class="swiper-pagination"></div>
+                    <!-- Add Navigation -->
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                </div>
             </div>
+        `;
+        // --- End Swiper HTML ---
+
+        // Set Inner HTML (This replaces old content and Swiper/Zoom listeners)
+        productDetailContent.innerHTML = `
+            ${imageSectionHtml}
             <h2 id="detail-panel-title" class="detail-panel-title text-2xl md:text-3xl font-bold font-heading text-light-text-primary dark:text-dark-text-primary leading-tight mb-4">${product.title}</h2>
             <div class="detail-panel-info flex flex-col gap-3 p-4 bg-light-surface dark:bg-dark-background rounded-lg border border-light-border dark:border-dark-border shadow-inner-sm mb-6">
-                <div class="info-row flex justify-between items-center pb-3 border-b border-dashed border-light-border/50 dark:border-dark-border/50 text-base">
+                <!-- ... (rest of the info rows remain the same) ... -->
+                 <div class="info-row flex justify-between items-center pb-3 border-b border-dashed border-light-border/50 dark:border-dark-border/50 text-base">
                     <span class="flex items-center gap-2 text-light-text-secondary dark:text-dark-text-secondary font-medium"><i class="fas fa-ruler-combined text-base text-accent"></i>المقاس:</span>
                     <div class="flex items-center gap-2">
                         <span id="detail-panel-size" class="info-value size-badge bg-primary dark:bg-primary-light text-primary-text dark:text-dark-text-primary py-1 px-3 rounded-full text-sm font-bold">${product.size}</span>
@@ -1003,6 +1224,13 @@
         if (cartBtn) cartBtn.addEventListener('click', () => { toggleCart(currentProductIdForDetail); });
         if (sizeGuideBtn) sizeGuideBtn.addEventListener('click', openSizeGuideModal);
 
+        // Initialize Swiper and Zoom AFTER content is added and DOM is updated
+        requestAnimationFrame(() => {
+            initDetailSwiper();
+             // Delay zoom init slightly after swiper to ensure slides are fully processed
+             setTimeout(initImageZoom, 50);
+         });
+
         // Show the panel and backdrop with animation
         productDetailPanel.classList.remove('hidden');
         productDetailBackdrop.style.display = 'block';
@@ -1018,9 +1246,35 @@
     };
 
 
-    // Closes the product detail panel
+    // UPDATED: Closes the product detail panel, cleans up Swiper AND Zoom listeners
     const closeDetailPanel = (instant = false) => {
         if (!productDetailPanel || !productDetailBackdrop || !productDetailPanel.classList.contains('visible') || isPanelOpening) return;
+
+         // Clean up zoom listeners first
+         productDetailContent?.querySelectorAll('.zoom-container').forEach(container => {
+             if (container._mouseMoveHandler) {
+                 container.removeEventListener('mousemove', container._mouseMoveHandler);
+                 container._mouseMoveHandler = null;
+             }
+             if (container._mouseLeaveHandler) {
+                 container.removeEventListener('mouseleave', container._mouseLeaveHandler);
+                 container._mouseLeaveHandler = null;
+             }
+             const img = container.querySelector('.zoom-image');
+             if(img) { // Reset image style potentially altered by zoom
+                 img.style.transform = 'scale(1)';
+                 img.style.transformOrigin = 'center center';
+                 img.style.transition = 'none';
+             }
+         });
+
+         // Destroy the detail Swiper instance
+         if (detailSwiperInstance) {
+            try { detailSwiperInstance.destroy(true, true); }
+            catch (e) { console.error("Error destroying detail Swiper:", e); }
+            detailSwiperInstance = null;
+        }
+
         const duration = instant ? 0 : 400;
         productDetailPanel.classList.remove('visible', 'opacity-100', 'translate-x-0');
         productDetailBackdrop.classList.remove('visible', 'opacity-100');
@@ -1028,12 +1282,13 @@
             productDetailPanel.classList.add('hidden');
             productDetailBackdrop.style.display = 'none';
             currentProductIdForDetail = null;
-            productDetailContent.innerHTML = '';
+            productDetailContent.innerHTML = ''; // Clear content AFTER animation
             if (!activeModalOrOverlay) document.body.style.overflow = '';
         }, duration);
     };
 
     // --- Order Modal ---
+    // (Remains the same as previous version)
     const openOrderModal = (productId = null) => {
         if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(true);
         if (activeModalOrOverlay) closeOverlay(true);
@@ -1091,7 +1346,6 @@
         orderForm?.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
         openOverlay(orderFormModalOverlay);
     };
-
     const closeOrderModal = () => closeOverlay();
     const prepareOrderForAllCartItems = () => {
         closeCartModal();
@@ -1100,17 +1354,16 @@
 
 
     // --- Cart Modal ---
+    // (Remains the same as previous version)
     const openCartModal = () => { renderCartItems(); openOverlay(cartModalOverlay); };
     const closeCartModal = () => closeOverlay();
-
-    // Renders the items currently in the cart modal
     const renderCartItems = () => {
         if (!cartItemsContainer || !cartEmptyMessage || !cartOrderAllBtn) return;
 
         const fragment = document.createDocumentFragment();
         const cartProducts = cart.map(id => products.find(p => p.id === id)).filter(p => p);
         let availableItemsCount = 0;
-        cartItemsContainer.innerHTML = ''; // Clear previous items first
+        cartItemsContainer.innerHTML = '';
 
         if (cartProducts.length === 0) {
             cartEmptyMessage.classList.remove('hidden');
@@ -1119,7 +1372,7 @@
             cartOrderAllBtn.classList.add('opacity-50', 'cursor-not-allowed');
         } else {
             cartEmptyMessage.classList.add('hidden');
-            cartItemsContainer.classList.add('has-items');
+             cartItemsContainer.classList.add('has-items');
             cartProducts.forEach(product => {
                 if (!product) return;
                 if (product.availability === 'in stock') availableItemsCount++;
@@ -1133,7 +1386,7 @@
                 const placeholderImg = `https://placehold.co/80x96/${placeholderBg}/${placeholderText}?text=Img&font=cairo`;
 
                  itemElement.innerHTML = `
-                     <img src="${product.image || placeholderImg}" alt="${product.title}" class="cart-item-image w-[60px] h-[75px] object-contain rounded border border-light-border dark:border-dark-border bg-white dark:bg-dark-surface flex-shrink-0" loading="lazy" onerror="if(this.src !== '${placeholderImg}') { this.src='${placeholderImg}'; this.classList.add('img-error', 'object-scale-down'); } this.onerror=null;">
+                     <img src="${product.image1 || placeholderImg}" alt="${product.title}" class="cart-item-image w-[60px] h-[75px] object-contain rounded border border-light-border dark:border-dark-border bg-white dark:bg-dark-surface flex-shrink-0" loading="lazy" onerror="if(this.src !== '${placeholderImg}') { this.src='${placeholderImg}'; this.classList.add('img-error', 'object-scale-down'); } this.onerror=null;">
                      <div class="cart-item-details flex-grow flex flex-col gap-0.5 overflow-hidden min-w-0">
                          <p class="cart-item-title text-sm font-semibold text-light-text-primary dark:text-dark-text-primary leading-snug line-clamp-2">${product.title}</p>
                          <p class="cart-item-size text-xs text-light-text-secondary dark:text-dark-text-secondary">المقاس: <span class="value font-medium bg-light-border/50 dark:bg-dark-border/50 py-0.5 px-1.5 rounded text-xs inline-block mr-0.5">${product.size}</span></p>
@@ -1166,8 +1419,6 @@
             cartOrderAllBtn.classList.toggle('opacity-50', availableItemsCount === 0);
             cartOrderAllBtn.classList.toggle('cursor-not-allowed', availableItemsCount === 0);
         }
-        // Optional: Adjust scroll based on item count
-        // cartItemsContainer.style.overflowY = cartProducts.length > 3 ? 'auto' : 'hidden';
     };
 
     // --- Policy Modals ---
@@ -1181,6 +1432,7 @@
     const closeSizeGuideModal = () => closeOverlay();
 
     // --- Filter and Display Products ---
+    // (Remains the same as previous version)
     const applyFilters = (scrollToProducts = false, instantScroll = false) => {
       if (!productGrid || !loadMoreButton || !categoryTitleMain || !categoryDescription || !noResultsDiv || !clearFiltersBtn) return;
 
@@ -1202,10 +1454,8 @@
                 const productSizeUpper = String(p.size || '').toUpperCase();
                 const productBaseSizeUpper = String(p.base_size || '').toUpperCase();
                 const filterSizeUpper = currentSizeFilter.toUpperCase();
-                sizeMatch = (productSizeUpper.startsWith(filterSizeUpper + ' ') ||
-                             productSizeUpper.startsWith(filterSizeUpper + '(') ||
-                             productSizeUpper === filterSizeUpper ||
-                             productBaseSizeUpper === filterSizeUpper);
+                sizeMatch = (productSizeUpper.includes(filterSizeUpper) ||
+                              productBaseSizeUpper === filterSizeUpper);
             }
              return categoryMatch && titleMatch && sizeMatch;
         });
@@ -1224,13 +1474,13 @@
 
         if (currentFilteredProducts.length > 0) {
             noResultsDiv.classList.add('hidden');
-            productGrid.classList.remove('hidden'); // Ensure grid is shown
-             loadMoreButton.parentElement?.classList.remove('hidden'); // Show load more container
+            productGrid.classList.remove('hidden');
+             loadMoreButton.parentElement?.classList.remove('hidden');
             loadMoreProducts(instantScroll);
         } else {
             noResultsDiv.classList.remove('hidden');
-            productGrid.classList.add('hidden'); // Hide grid
-            loadMoreButton.parentElement?.classList.add('hidden'); // Hide load more container
+            productGrid.classList.add('hidden');
+            loadMoreButton.parentElement?.classList.add('hidden');
         }
 
         if (scrollToProducts) {
@@ -1248,35 +1498,33 @@
     const debouncedApplyFilters = debounce(applyFilters, 350);
 
     // --- Load More Products ---
+    // (Remains the same as previous version)
     const loadMoreProducts = (instant = false) => {
         if (!productGrid || !loadMoreButton) return;
-
         const nextBatch = currentFilteredProducts.slice(displayedProductCount, displayedProductCount + productsPerLoad);
-
         if (nextBatch.length === 0) {
              loadMoreButton.parentElement?.classList.add('hidden');
              loadMoreButton.disabled = false;
              loadMoreButton.innerHTML = '<i class="fas fa-chevron-down mr-2 text-sm"></i> عرض المزيد';
             return;
         }
-
         noResultsDiv?.classList.add('hidden');
         productGrid?.classList.remove('hidden');
-
         const fragment = document.createDocumentFragment();
         nextBatch.forEach((product, index) => {
             const card = createProductCard(product, false);
             if(card) {
                  if (!instant && card.classList.contains('section-animate')) card.style.transitionDelay = `${index * 60}ms`;
                  fragment.appendChild(card);
-                 if (sectionObserver && !instant && card.classList.contains('section-animate')) sectionObserver.observe(card);
-                 else if (card.classList.contains('section-animate')) card.classList.add('visible');
+                 if (sectionObserver && !instant && card.classList.contains('section-animate')) {
+                     sectionObserver.observe(card);
+                 } else if (card.classList.contains('section-animate')) {
+                     card.classList.add('visible', 'opacity-100', 'translate-y-0');
+                 }
              }
         });
         productGrid.appendChild(fragment);
-
         displayedProductCount += nextBatch.length;
-
         requestAnimationFrame(() => {
             const hasMore = displayedProductCount < currentFilteredProducts.length;
              loadMoreButton.parentElement?.classList.toggle('hidden', !hasMore);
@@ -1286,10 +1534,9 @@
     };
 
     // --- Clear All Filters ---
+    // (Remains the same as previous version)
     const clearAllFilters = () => {
-        activeCategory = 'all';
-        currentSearchTerm = '';
-        currentSizeFilter = 'all';
+        activeCategory = 'all'; currentSearchTerm = ''; currentSizeFilter = 'all';
         if(overlaySearchInput) overlaySearchInput.value = '';
         if(overlaySizeSelect) overlaySizeSelect.value = 'all';
         document.querySelectorAll('.category-card').forEach(el => el.classList.toggle('active', el.dataset.category === 'all'));
@@ -1298,39 +1545,33 @@
     };
 
     // --- WhatsApp Order Submission ---
+    // (Remains the same as previous version)
     const handleOrderSubmit = (event) => {
         event.preventDefault();
         if (!orderForm || !formErrorMessage) return;
-
         formErrorMessage.classList.add('hidden');
         orderForm.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
-
         const nameInput = document.getElementById('customer-name');
         const phoneInput = document.getElementById('customer-phone');
         const addressInput = document.getElementById('customer-address');
         let isValid = true; let errors = [];
-
         if (!nameInput?.value.trim()) { errors.push("يرجى إدخال الاسم الكامل."); isValid = false; nameInput?.classList.add('invalid'); }
         if (!phoneInput?.value.trim() || !phoneInput.checkValidity()) { errors.push("رقم هاتف واتساب غير صحيح (مثال: 07xxxxxxxxx)."); isValid = false; phoneInput?.classList.add('invalid'); }
         if (!addressInput?.value.trim()) { errors.push("يرجى إدخال العنوان الكامل للتوصيل."); isValid = false; addressInput?.classList.add('invalid'); }
-
         if (!isValid) {
             formErrorMessage.innerHTML = errors.join('<br>');
             formErrorMessage.classList.remove('hidden');
             formErrorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
-
         let message = "👋 *طلب جديد من Master Quality*\n\n";
         message += `👤 *الاسم:* ${nameInput.value.trim()}\n`;
         message += `📞 *الهاتف:* ${phoneInput.value.trim()}\n`;
         message += `📍 *العنوان:* ${addressInput.value.trim()}\n\n`;
         message += "🛒 *المنتجات المطلوبة:*\n--------------------\n";
         let totalPrice = 0; const currency = "د.ع";
-
         const orderedFromCart = cartItemsForOrder.length > 0;
         const singleProductId = orderFormProductId?.value;
-
          if (!orderedFromCart && singleProductId) {
             const title = orderFormProductTitle?.value; const size = orderFormProductSize?.value; const price = orderFormProductPrice?.value;
              if (title && size && price) {
@@ -1343,23 +1584,19 @@
                 try { totalPrice += parseInt(String(item.price).replace(/,/g, ''), 10); } catch {}
             });
          } else { message += "خطأ: لم يتم تحديد المنتجات.\n"; }
-
         message += "--------------------\n";
         if (totalPrice > 0) message += `💰 *الإجمالي للمنتجات:* ${totalPrice.toLocaleString('ar-IQ')} ${currency}\n`;
         message += "\n*(الدفع نقداً عند الاستلام)*\n\n";
         message += `_تم إرسال هذا الطلب من موقع: ${window.location.hostname || 'Master Quality Store'}_`;
-
         const encodedMessage = encodeURIComponent(message);
         const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
         window.open(whatsappURL, '_blank');
-
         const submitButton = orderForm.querySelector('button[type="submit"]');
         if(submitButton) {
             const originalHTML = submitButton.innerHTML;
             submitButton.innerHTML = `<i class="fas fa-check mr-2"></i> تم الإرسال بنجاح!`;
             submitButton.disabled = true;
         }
-
          if (orderedFromCart) {
             const orderedIds = cartItemsForOrder.map(item => item.id);
             cart = cart.filter(id => !orderedIds.includes(id));
@@ -1367,15 +1604,10 @@
             updateCartCount();
             cartItemsForOrder = [];
         }
-
         setTimeout(() => {
              closeOrderModal();
-             if(submitButton) {
-                submitButton.innerHTML = originalHTML;
-                submitButton.disabled = false;
-             }
+             if(submitButton) { submitButton.innerHTML = originalHTML; submitButton.disabled = false; }
              orderForm.reset();
-            // if (cartModalOverlay?.classList.contains('visible')) renderCartItems();
          }, 2000);
     };
     if (orderForm) {
@@ -1387,6 +1619,7 @@
     }
 
     // --- Category Filtering & Active State ---
+    // (Remains the same as previous version)
     const setActiveCategory = (category, clickedElement = null) => {
         activeCategory = category;
         document.querySelectorAll('.category-card').forEach(card => card.classList.toggle('active', card.dataset.category === category));
@@ -1399,253 +1632,165 @@
     };
 
     // --- Swiper Initialization ---
+    // (Remains the same as previous version - for Arrivals)
     const initSwiper = () => {
-        if (typeof Swiper === 'undefined' || !newArrivalsWrapper) { return; }
-
+        if (typeof Swiper === 'undefined' || !newArrivalsWrapper) { console.warn("Swiper library not found or wrapper missing."); return; }
         const newArrivals = products.filter(p => p && p.is_new).sort((a, b) => (b.id || 0) - (a.id || 0));
         const arrivalsSection = newArrivalsWrapper.closest('#new-arrivals');
-
         if (newArrivals.length > 0) {
             if (arrivalsSection) arrivalsSection.style.display = '';
             newArrivalsWrapper.innerHTML = '';
-            newArrivals.forEach(product => {
-                const slide = createProductCard(product, true);
-                if (slide) newArrivalsWrapper.appendChild(slide);
-            });
-
+            newArrivals.forEach(product => { const slide = createProductCard(product, true); if (slide) newArrivalsWrapper.appendChild(slide); });
+            const swiperContainer = newArrivalsWrapper.closest('.swiper');
+            if (!swiperContainer) { console.error("Swiper container (.swiper) not found around the wrapper."); return; }
             if (swiperInstance) { swiperInstance.destroy(true, true); swiperInstance = null; }
-
             try {
-                swiperInstance = new Swiper('.arrivals-swiper', {
-                    slidesPerView: 'auto',
-                    spaceBetween: 16, // Corresponds to gap-4
-                    grabCursor: true,
-                    loop: newArrivals.length > 4,
-                    speed: 500,
-                    centeredSlides: false,
-                    navigation: {
-                        nextEl: '.arrivals-swiper .swiper-button-next',
-                        prevEl: '.arrivals-swiper .swiper-button-prev',
-                    },
-                    pagination: {
-                        el: '.arrivals-swiper .swiper-pagination',
-                        clickable: true,
-                    },
-                    a11y: { enabled: true, prevSlideMessage: 'السابق', nextSlideMessage: 'التالي', paginationBulletMessage: 'الانتقال للشريحة {{index}}', },
+                swiperInstance = new Swiper(swiperContainer, {
+                    slidesPerView: 'auto', spaceBetween: 16, grabCursor: true, loop: newArrivals.length > 4, speed: 500, centeredSlides: false,
+                     watchSlidesProgress: true, preventClicks: true, preventClicksPropagation: true,
+                     a11y: { enabled: true, prevSlideMessage: 'السابق', nextSlideMessage: 'التالي', paginationBulletMessage: 'الانتقال للشريحة {{index}}', },
+                     navigation: { nextEl: '.arrivals-swiper .swiper-button-next', prevEl: '.arrivals-swiper .swiper-button-prev', },
+                     pagination: { el: '.arrivals-swiper .swiper-pagination', clickable: true, },
+                     breakpoints: { 640: { spaceBetween: 20 }, 1024: { spaceBetween: 24 } }
                 });
             } catch (error) {
                  console.error("Swiper initialization failed:", error);
-                 // Basic fallback scroll
-                 newArrivalsWrapper.style.cssText = 'display: flex; overflow-x: auto; gap: 1rem; padding: 1rem 0; scroll-snap-type: x mandatory;';
-                 newArrivalsWrapper.querySelectorAll('.swiper-slide').forEach(s => { s.style.scrollSnapAlign = 'start'; s.style.width = 'auto'; });
-                 arrivalsSection?.querySelectorAll('.swiper-button-next, .swiper-button-prev, .swiper-pagination').forEach(el => el.style.display = 'none');
+                 newArrivalsWrapper.style.cssText = 'display: flex; overflow-x: auto; gap: 1rem; padding: 1rem 0; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;';
+                 newArrivalsWrapper.querySelectorAll('.swiper-slide').forEach(s => { s.style.scrollSnapAlign = 'start'; s.style.width = 'auto'; s.style.flexShrink = '0'; });
+                 arrivalsSection?.querySelectorAll('.swiper-button-next, .swiper-button-prev, .swiper-pagination').forEach(el => { if(el) el.style.display = 'none'; });
              }
-        } else {
-            if (arrivalsSection) arrivalsSection.style.display = 'none';
-        }
+        } else { if (arrivalsSection) arrivalsSection.style.display = 'none'; }
     };
 
     // --- Header Scroll & Active Nav ---
-    const handleHeaderScroll = () => {
+    // (Remains the same as previous version)
+     const handleHeaderScroll = () => {
         if (!header) return;
         const scrollY = window.scrollY;
         header.classList.toggle('scrolled', scrollY > 50);
-
-        let currentSectionId = 'hero'; // Default to hero
+        let currentSectionId = 'hero';
         const sections = document.querySelectorAll('main section[id]');
         const headerHeight = header.offsetHeight || 70;
         const scrollPosition = scrollY + headerHeight + 50;
-
-        for (let i = 0; i < sections.length; i++) {
+        for (let i = sections.length - 1; i >= 0; i--) {
              const section = sections[i];
-             if (section && section.offsetTop <= scrollPosition) {
-                 currentSectionId = section.id;
-             } else { break; }
-        }
-
-        // Update active class for both desktop and mobile nav links
-        mainNavLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${currentSectionId}`));
-        mobileNavMenuLinks?.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${currentSectionId}`));
+             if (section && section.offsetTop <= scrollPosition && section.offsetHeight > 50) {
+                 currentSectionId = section.id; break;
+             }
+         }
+        mainNavLinks.forEach(link => { const isActive = link.getAttribute('href') === `#${currentSectionId}`; link.classList.toggle('active', isActive); link.setAttribute('aria-current', isActive ? 'page' : 'false'); });
+        mobileNavMenuLinks?.forEach(link => { const isActive = link.getAttribute('href') === `#${currentSectionId}`; link.classList.toggle('active', isActive); link.setAttribute('aria-current', isActive ? 'page' : 'false'); link.classList.toggle('bg-primary/10', isActive); link.classList.toggle('dark:bg-primary-light/15', isActive); });
     };
 
     // --- Mobile Menu ---
-    const toggleMobileMenu = () => {
+    // (Remains the same as previous version)
+     const toggleMobileMenu = () => {
         isMobileMenuOpen = !isMobileMenuOpen;
         if (mobileNavMenu && mobileNavToggle) {
-            mobileNavMenu.classList.toggle('visible', isMobileMenuOpen);
-            mobileNavMenu.classList.toggle('opacity-100', isMobileMenuOpen);
-            mobileNavMenu.classList.toggle('opacity-0', !isMobileMenuOpen);
-            mobileNavMenu.classList.toggle('translate-y-0', isMobileMenuOpen);
-            mobileNavMenu.classList.toggle('-translate-y-full', !isMobileMenuOpen);
-            mobileNavMenu.classList.toggle('invisible', !isMobileMenuOpen);
-
-            const icon = mobileNavToggle.querySelector('i');
-            if (icon) icon.className = `fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-lg`;
+            mobileNavMenu.classList.toggle('visible', isMobileMenuOpen); mobileNavMenu.classList.toggle('opacity-100', isMobileMenuOpen); mobileNavMenu.classList.toggle('opacity-0', !isMobileMenuOpen);
+            mobileNavMenu.classList.toggle('translate-y-0', isMobileMenuOpen); mobileNavMenu.classList.toggle('-translate-y-full', !isMobileMenuOpen); mobileNavMenu.classList.toggle('invisible', !isMobileMenuOpen);
+            const icon = mobileNavToggle.querySelector('i'); if (icon) icon.className = `fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-lg`;
             mobileNavToggle.setAttribute('aria-expanded', String(isMobileMenuOpen));
-            if (isMobileMenuOpen) {
-                document.body.style.overflow = 'hidden';
-            } else if (!activeModalOrOverlay && !productDetailPanel?.classList.contains('visible')) {
-                document.body.style.overflow = '';
-            }
+            if (isMobileMenuOpen) { document.body.style.overflow = 'hidden'; } else if (!activeModalOrOverlay && !productDetailPanel?.classList.contains('visible')) { document.body.style.overflow = ''; }
         }
     };
     const closeMobileMenu = () => { if (isMobileMenuOpen) toggleMobileMenu(); };
 
     // --- Section Animation Observer ---
+    // (Remains the same as previous version)
     let sectionObserver = null;
     const initSectionObserver = () => {
-        if (!('IntersectionObserver' in window)) {
-            document.querySelectorAll('.section-animate').forEach(el => { el.classList.add('visible', 'opacity-100', 'translate-y-0'); });
-            return;
-        }
-        sectionObserver = new IntersectionObserver((entries, observer) => {
+        const elementsToAnimate = document.querySelectorAll('.section-animate');
+        if (!elementsToAnimate.length) return;
+        if (!('IntersectionObserver' in window)) { elementsToAnimate.forEach(el => { el.classList.add('visible', 'opacity-100', 'translate-y-0'); }); return; }
+         sectionObserver = new IntersectionObserver((entries, observer) => {
              entries.forEach(entry => {
-                 if (entry.isIntersecting) {
-                     entry.target.classList.add('visible', 'opacity-100', 'translate-y-0');
-                     observer.unobserve(entry.target);
-                 }
+                 if (entry.isIntersecting) { requestAnimationFrame(() => { entry.target.classList.add('visible', 'opacity-100', 'translate-y-0'); }); observer.unobserve(entry.target); }
              });
          }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
-
-        document.querySelectorAll('.section-animate').forEach(section => { if(section) sectionObserver.observe(section); });
+         elementsToAnimate.forEach(section => { if(section) sectionObserver.observe(section); });
     };
 
     // --- Scroll to Top ---
+    // (Remains the same as previous version)
     const handleScroll = () => {
         if (scrollToTopBtn) {
             const isVisible = window.scrollY > window.innerHeight * 0.6;
-            scrollToTopBtn.classList.toggle('visible', isVisible);
-            scrollToTopBtn.classList.toggle('opacity-100', isVisible);
-            scrollToTopBtn.classList.toggle('opacity-0', !isVisible);
-             scrollToTopBtn.classList.toggle('scale-100', isVisible);
-             scrollToTopBtn.classList.toggle('scale-90', !isVisible);
-            scrollToTopBtn.classList.toggle('invisible', !isVisible);
+            scrollToTopBtn.classList.toggle('visible', isVisible); scrollToTopBtn.classList.toggle('opacity-100', isVisible); scrollToTopBtn.classList.toggle('opacity-0', !isVisible);
+            scrollToTopBtn.classList.toggle('scale-100', isVisible); scrollToTopBtn.classList.toggle('scale-90', !isVisible); scrollToTopBtn.classList.toggle('invisible', !isVisible);
         }
         handleHeaderScroll();
     };
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // --- Event Listeners Setup ---
+    // (Remains mostly the same, ensures modal closures trigger correctly)
     const setupEventListeners = () => {
          window.addEventListener('scroll', debounce(handleScroll, 50), { passive: true });
          document.addEventListener('keydown', handleEscapeKey);
-
          mobileNavToggle?.addEventListener('click', toggleMobileMenu);
          searchFilterToggleBtn?.addEventListener('click', () => openOverlay(searchFilterOverlay));
          themeToggleButton?.addEventListener('click', toggleTheme);
          cartButton?.addEventListener('click', openCartModal);
-         startShoppingBtnCart?.addEventListener('click', (e) => {
-            e.preventDefault(); closeOverlay();
-            const productsSection = document.getElementById('products');
-             if(productsSection) {
-                 const headerOffset = header?.offsetHeight || 70;
-                 const elementPosition = productsSection.getBoundingClientRect().top + window.pageYOffset;
-                 window.scrollTo({ top: elementPosition - headerOffset - 20, behavior: 'smooth' });
-             }
-        });
-
-         mobileNavMenuLinks?.forEach(link => {
-            link.addEventListener('click', (e) => {
-                const targetId = link.getAttribute('href');
-                 if (targetId && targetId.startsWith('#')) {
-                    const targetElement = document.querySelector(targetId);
-                     if (targetElement) {
-                         e.preventDefault();
-                         const headerOffset = header?.offsetHeight || 70;
-                         const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-                         window.scrollTo({ top: elementPosition - headerOffset - 20, behavior: 'smooth' });
-                     }
-                 }
-                 closeMobileMenu();
-             });
-         });
-
+         startShoppingBtnCart?.addEventListener('click', (e) => { e.preventDefault(); closeOverlay(); const productsSection = document.getElementById('products'); if(productsSection) { const headerOffset = header?.offsetHeight || 70; const elementPosition = productsSection.getBoundingClientRect().top + window.pageYOffset; window.scrollTo({ top: elementPosition - headerOffset - 20, behavior: 'smooth' }); } });
+         mobileNavMenuLinks?.forEach(link => { link.addEventListener('click', (e) => { const targetId = link.getAttribute('href'); if (targetId && targetId.startsWith('#')) { const targetElement = document.querySelector(targetId); if (targetElement) { e.preventDefault(); const headerOffset = header?.offsetHeight || 70; const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset; closeMobileMenu(); setTimeout(() => { window.scrollTo({ top: elementPosition - headerOffset - 20, behavior: 'smooth' }); }, 300); } else { closeMobileMenu(); } } else { closeMobileMenu(); } }); });
         closeSearchFilterOverlayBtn?.addEventListener('click', closeOverlay);
         searchFilterOverlay?.addEventListener('click', (e) => { if (e.target === searchFilterOverlay) closeOverlay(); });
         applyOverlayFiltersBtn?.addEventListener('click', handleApplyOverlayFilters);
-        overlaySearchInput?.addEventListener('input', () => debouncedApplyFilters(true, false)); // Pass flags
+        overlaySearchInput?.addEventListener('input', () => debouncedApplyFilters(true, false));
         overlaySizeSelect?.addEventListener('change', () => applyFilters(true, true));
         clearOverlayFiltersBtn?.addEventListener('click', clearAllFilters);
         clearFiltersBtn?.addEventListener('click', clearAllFilters);
-
         closeDetailPanelBtn?.addEventListener('click', closeDetailPanel);
         productDetailBackdrop?.addEventListener('click', closeDetailPanel);
-
         orderFormModalCloseButton?.addEventListener('click', closeOrderModal);
         orderFormModalOverlay?.addEventListener('click', (e) => { if (e.target === orderFormModalOverlay) closeOrderModal(); });
-
         cartModalCloseButton?.addEventListener('click', closeCartModal);
         cartModalOverlay?.addEventListener('click', (e) => { if (e.target === cartModalOverlay) closeCartModal(); });
         cartOrderAllBtn?.addEventListener('click', prepareOrderForAllCartItems);
-
         privacyPolicyLink?.addEventListener('click', (e) => { e.preventDefault(); openPrivacyPolicyModal(); });
         privacyPolicyModalCloseButton?.addEventListener('click', closePrivacyPolicyModal);
         privacyModalCloseBtnBottom?.addEventListener('click', closePrivacyPolicyModal);
         privacyPolicyModalOverlay?.addEventListener('click', (e) => { if (e.target === privacyPolicyModalOverlay) closePrivacyPolicyModal(); });
-
         returnPolicyLink?.addEventListener('click', (e) => { e.preventDefault(); openReturnPolicyModal(); });
         returnPolicyModalCloseButton?.addEventListener('click', closeReturnPolicyModal);
         returnModalCloseBtnBottom?.addEventListener('click', closeReturnPolicyModal);
         returnPolicyModalOverlay?.addEventListener('click', (e) => { if (e.target === returnPolicyModalOverlay) closeReturnPolicyModal(); });
-
         sizeGuideFooterLink?.addEventListener('click', (e) => { e.preventDefault(); openSizeGuideModal(); });
         sizeGuideModalCloseButton?.addEventListener('click', closeSizeGuideModal);
         sizeGuideModalCloseBtnBottom?.addEventListener('click', closeSizeGuideModal);
         sizeGuideModalOverlay?.addEventListener('click', (e) => { if (e.target === sizeGuideModalOverlay) closeSizeGuideModal(); });
-
         scrollToTopBtn?.addEventListener('click', scrollToTop);
-
-        document.querySelectorAll('.category-card').forEach(card => card.addEventListener('click', (e) => {
-            e.preventDefault();
-            const cat = card.dataset.category;
-            if(cat) setActiveCategory(cat, card);
-        }));
-
-        loadMoreButton?.addEventListener('click', () => {
-             loadMoreButton.disabled = true;
-             loadMoreButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2 text-sm"></i> جاري التحميل...`;
-             setTimeout(() => loadMoreProducts(), 200);
-         });
-
-        const yearSpan = document.getElementById('year');
-        if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+        document.querySelectorAll('.category-card').forEach(card => card.addEventListener('click', (e) => { e.preventDefault(); const cat = card.dataset.category; if(cat) setActiveCategory(cat, card); }));
+        loadMoreButton?.addEventListener('click', () => { loadMoreButton.disabled = true; loadMoreButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2 text-sm"></i> جاري التحميل...`; requestAnimationFrame(() => { setTimeout(() => loadMoreProducts(), 150); }); });
+        const yearSpan = document.getElementById('year'); if (yearSpan) yearSpan.textContent = new Date().getFullYear();
     };
 
     // --- Helper Functions ---
-    const handleApplyOverlayFilters = () => {
-        // No need to re-read values, applyFilters does it
-        applyFilters(true, true); // Apply filters, scroll instantly
-        closeOverlay();
-    };
-    const handleEscapeKey = (event) => {
-      if (event.key === 'Escape') {
-          if (productDetailPanel?.classList.contains('visible')) closeDetailPanel();
-          else if (activeModalOrOverlay) closeOverlay();
-          else if (isMobileMenuOpen) closeMobileMenu();
-      }
-    };
+    // (Remains the same as previous version)
+    const handleApplyOverlayFilters = () => { applyFilters(true, true); closeOverlay(); };
+    const handleEscapeKey = (event) => { if (event.key === 'Escape' || event.key === 'Esc') { if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(); else if (activeModalOrOverlay) closeOverlay(); else if (isMobileMenuOpen) closeMobileMenu(); } };
 
     // --- Initialization ---
+    // (Remains the same as previous version)
     document.addEventListener('DOMContentLoaded', () => {
         console.log("DOM Ready. Initializing App.");
         const storedTheme = localStorage.getItem('mqTheme_v2');
-        applyTheme(storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-
+        const initialTheme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(initialTheme);
         initSectionObserver();
-        initSwiper();
-
+        initSwiper(); // Init arrivals swiper
         if (productGrid && loadMoreButton) {
-             setActiveCategory('all'); // Set default category, this calls applyFilters
-             // applyFilters(false, true); // No need to call again, setActiveCategory handles it
+             setActiveCategory('all');
         } else {
             console.error("Core product grid or load more button elements missing.");
+             const mainContent = document.querySelector('.main-content');
+             if(mainContent) { mainContent.innerHTML = '<p class="text-center text-error text-xl p-10">حدث خطأ أثناء تحميل المنتجات. يرجى المحاولة مرة أخرى لاحقاً.</p>'; }
         }
-
         updateCartCount();
         renderRecentlyViewed();
         setupEventListeners();
         handleScroll();
-
         console.log("App Initialized.");
     });
     </script>
