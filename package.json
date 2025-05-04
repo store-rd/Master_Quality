@@ -1,0 +1,22 @@
+{
+  "name": "master-quality-store",
+  "version": "1.0.0",
+  "description": "Master Quality Store Website",
+  "main": "index.html",
+  "scripts": {
+    "build:css": "tailwindcss -i ./styles.css -o ./dist/output.css --minify",
+    "watch:css": "tailwindcss -i ./styles.css -o ./dist/output.css --watch"
+  },
+  "keywords": [
+    "ecommerce",
+    "tailwind",
+    "store"
+  ],
+  "author": "Your Name",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3"
+  }
+}

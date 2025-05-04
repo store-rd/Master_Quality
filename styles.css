@@ -1,3 +1,8 @@
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ==========================================================================
    1. CSS Custom Properties (Variables) based on tailwind.config
    ========================================================================== */
@@ -185,12 +190,12 @@
   }
 
   /* ==========================================================================
-     2. Base & Global Styles
+     2. Base & Global Styles (You might remove some base styles if Tailwind handles them)
      ========================================================================== */
   body {
     font-family: var(--font-sans);
-    font-size: 1rem;
-    line-height: 1.7;
+    /* font-size: 1rem; */ /* Tailwind's base usually handles this */
+    /* line-height: 1.7; */ /* Tailwind's base usually handles this */
     background-color: var(--color-light-background);
     color: var(--color-light-text-primary);
     transition-property: background-color, color;
@@ -198,19 +203,19 @@
     transition-timing-function: ease-in-out;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */ /* Tailwind class 'overflow-x-hidden' already applied to body */
   }
-  html.dark body {
-    background-color: var(--color-dark-background);
-    color: var(--color-dark-text-primary);
-  }
+  /* html.dark body { */ /* Tailwind handles dark mode via the 'dark:' prefix */
+    /* background-color: var(--color-dark-background); */
+    /* color: var(--color-dark-text-primary); */
+  /* } */
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    font-weight: 600;
+    /* font-weight: 600; */ /* Often handled by Tailwind heading classes */
   }
 
-  /* Hero Gradient Text Fix */
+  /* Hero Gradient Text Fix - Keep this custom style */
   #hero h1 span.bg-clip-text {
     background-image: linear-gradient(to right, var(--color-primary-DEFAULT), var(--color-accent-DEFAULT));
     -webkit-background-clip: text; background-clip: text;
@@ -220,7 +225,7 @@
     background-image: linear-gradient(to right, var(--color-primary-light), rgba(var(--color-accent-raw), 0.9));
   }
 
-  /* Scrollbar */
+  /* Scrollbar - Keep this custom style */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background-color: rgba(var(--color-light-border-raw), 0.2); }
   ::-webkit-scrollbar-thumb { background-color: rgba(var(--color-primary-raw), 0.6); border: 2px solid transparent; border-radius: var(--rounded-full); background-clip: content-box; transition: background-color 0.2s ease; }
@@ -229,9 +234,10 @@
   html.dark ::-webkit-scrollbar-thumb { background-color: rgba(var(--color-primary-light-raw), 0.6); }
   html.dark ::-webkit-scrollbar-thumb:hover { background-color: var(--color-primary-light); }
 
-  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+  /* visually-hidden - Keep or use Tailwind's sr-only */
+  /* .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; } */
 
-  /* Shimmer effect placeholder */
+  /* Shimmer effect placeholder - Keep this custom style */
   .shimmer-bg {
     position: relative;
     overflow: hidden;
@@ -253,7 +259,7 @@
   }
 
   /* ==========================================================================
-     3. Layout: Header, Footer, Navigation, Sections
+     3. Layout: Header, Footer, Navigation, Sections (Keep custom styles)
      ========================================================================== */
   #main-header { transition: box-shadow 0.3s ease-out, background-color 0.3s ease-out; }
   #main-header.scrolled { box-shadow: var(--shadow-header); background-color: rgba(var(--color-light-background-raw), 0.95); backdrop-filter: blur(12px); }
@@ -282,18 +288,18 @@
   html.dark #mobile-nav-menu a.nav-link.active { background-color: rgba(var(--color-primary-light-raw), 0.15); color: var(--color-primary-light); }
   #mobile-nav-menu a.nav-link.active::after { content: ''; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; background-color: var(--color-accent-DEFAULT); border-radius: var(--rounded-full); opacity: 1; transition: all 0.3s ease-out; }
 
-  /* Section Animation */
+  /* Section Animation - Keep this custom style */
   .section-animate { opacity: 0; transform: translateY(30px); transition: opacity 0.8s var(--timing-gentle), transform 0.8s var(--timing-gentle); will-change: opacity, transform; }
   .section-animate.visible { opacity: 1; transform: translateY(0); }
 
-  /* Footer */
+  /* Footer - Keep custom styles (Tailwind classes handle some spacing/text) */
   #footer { padding-top: 4rem; padding-bottom: 2.5rem; background-image: linear-gradient(to top, var(--color-light-surface), var(--color-light-background)); text-align: center; font-size: 0.875rem; border-top: 1px solid rgba(var(--color-light-border-raw), 0.7); }
   html.dark #footer { background-image: linear-gradient(to top, var(--color-dark-surface), var(--color-dark-background)); border-top-color: rgba(var(--color-dark-border-raw), 0.7); }
-  #footer .footer-logo img { max-height: 2.5rem; margin-left: auto; margin-right: auto; opacity: 0.8; }
-  #footer p { margin-bottom: 1.25rem; font-size: 0.875rem; color: var(--color-light-text-secondary); }
+  #footer .footer-logo img { /* max-height: 2.5rem; */ /* Handled by Tailwind class */ /* margin-left: auto; margin-right: auto; */ /* Handled by Tailwind class mx-auto */ opacity: 0.8; }
+  #footer p { /* margin-bottom: 1.25rem; */ /* Handled by Tailwind class mb-5 */ font-size: 0.875rem; color: var(--color-light-text-secondary); }
   html.dark #footer p { color: var(--color-dark-text-secondary); }
   @media (min-width: 768px) { #footer p { font-size: 1rem; } }
-  #footer .whatsapp-link-container { display: flex; justify-content: center; align-items: center; margin-bottom: 1.5rem; }
+  #footer .whatsapp-link-container { /* display: flex; justify-content: center; align-items: center; margin-bottom: 1.5rem; */ /* Handled by Tailwind classes */ }
   #footer .whatsapp-link { font-weight: 600; color: #16A34A; transition: color var(--duration-DEFAULT) ease-in-out, transform 0.2s ease-out; display: inline-flex; align-items: center; gap: 0.625rem; font-size: 1rem; padding: 0.5rem 1rem; border-radius: var(--rounded-full); background-color: rgba(16, 185, 129, 0.1); }
   html.dark #footer .whatsapp-link { color: #4ADE80; background-color: rgba(52, 211, 153, 0.15); }
   #footer .whatsapp-link:hover { color: #15803D; background-color: rgba(16, 185, 129, 0.15); transform: scale(1.05); }
@@ -301,22 +307,22 @@
   #footer .whatsapp-link i { font-size: 1.25rem; transition: transform 0.2s ease-in-out; }
   #footer .whatsapp-link:hover i { transform: scale(1.1); }
   @media (min-width: 768px) { #footer .whatsapp-link { font-size: 1.125rem; } #footer .whatsapp-link i { font-size: 1.5rem; } }
-  #footer .footer-links { margin-top: 1.5rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 1.5rem; }
+  #footer .footer-links { /* margin-top: 1.5rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 1.5rem; */ /* Handled by Tailwind classes */ }
   #footer .footer-links a { font-size: 0.75rem; color: var(--color-light-text-muted); transition: color var(--duration-DEFAULT) ease-in-out; text-decoration: underline; text-underline-offset: 2px; }
   html.dark #footer .footer-links a { color: var(--color-dark-text-muted); }
   #footer .footer-links a:hover { color: var(--color-primary-DEFAULT); text-decoration: none; }
   html.dark #footer .footer-links a:hover { color: var(--color-primary-light); }
 
   /* ==========================================================================
-     4. Components
+     4. Components (Keep custom component styles)
      ========================================================================== */
 
-  /* Product Card */
-  .product-card { display: flex; flex-direction: column; background-color: var(--color-light-surface); border-radius: var(--rounded-xl); overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid rgba(var(--color-light-border-raw), 0.3); transition: all var(--duration-medium) var(--timing-gentle); max-width: 280px; }
+  /* Product Card - Keep custom styles */
+  .product-card { display: flex; flex-direction: column; background-color: var(--color-light-surface); border-radius: var(--rounded-xl); overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid rgba(var(--color-light-border-raw), 0.3); transition: all var(--duration-medium) var(--timing-gentle); /* max-width: 280px; */ /* Let grid control width */ }
   html.dark .product-card { background-color: var(--color-dark-surface); box-shadow: var(--shadow-card); border-color: rgba(var(--color-dark-border-raw), 0.3); }
   .product-card:hover { transform: translateY(-0.375rem); box-shadow: var(--shadow-card-hover); border-color: rgba(var(--color-primary-raw), 0.4); }
   html.dark .product-card:hover { box-shadow: var(--shadow-card-hover); border-color: rgba(var(--color-primary-light-raw), 0.4); }
-  .arrivals-swiper .product-card, .recently-viewed-card { max-width: 260px; } /* Consistency */
+  /* .arrivals-swiper .product-card, .recently-viewed-card { max-width: 260px; } */ /* Let container control this */
   .product-card .relative.aspect-square { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background-color: #F3F4F6; }
   html.dark .product-card .relative.aspect-square { background-color: #4B5563; }
   .product-card .product-card-img { width: 100%; height: 100%; object-fit: contain; transition: transform var(--duration-slow) var(--timing-gentle); }
@@ -341,7 +347,7 @@
   .product-card .product-card-info .price .currency { font-size: 0.875rem; font-weight: 400; color: var(--color-light-text-muted); margin-right: 2px; }
   html.dark .product-card .product-card-info .price .currency { color: var(--color-dark-text-muted); }
 
-  /* 3D Button Styles */
+  /* 3D Button Styles - Keep custom styles */
   .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.875rem 1.75rem; font-size: 1rem; font-weight: 600; border-radius: var(--rounded-xl); cursor: pointer; user-select: none; transition: all var(--duration-fast) var(--timing-smooth); transform: translateY(0); border-style: solid; border-width: 1px; text-align: center; white-space: nowrap; }
   .btn:focus { outline: none; box-shadow: 0 0 0 3px rgba(var(--color-primary-raw), 0.4), var(--tw-shadow, 0 0 #0000); outline-offset: 2px; }
   html.dark .btn:focus { box-shadow: 0 0 0 3px rgba(var(--color-primary-light-raw), 0.5), var(--tw-shadow, 0 0 #0000); }
@@ -375,7 +381,7 @@
   html.dark .btn-accent:not(:disabled):hover { background-image: linear-gradient(to bottom, var(--color-accent-light), var(--color-accent-DEFAULT)); }
   .btn-accent:focus { box-shadow: 0 0 0 3px rgba(var(--color-accent-raw), 0.4), var(--shadow-btn-accent-3d); }
 
-  /* Icon Button & Action Button */
+  /* Icon Button & Action Button - Keep custom styles */
   .btn-icon { width: 2.5rem; height: 2.5rem; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: var(--rounded-full); transition: all var(--duration-DEFAULT) var(--timing-smooth); background-color: rgba(255, 255, 255, 0.7); backdrop-filter: blur(4px); color: var(--color-light-text-secondary); border: 1px solid rgba(var(--color-light-border-raw), 0.5); box-shadow: var(--shadow-sm); cursor: pointer; }
   html.dark .btn-icon { background-color: rgba(var(--color-dark-surface-raw), 0.7); color: var(--color-dark-text-secondary); border-color: rgba(var(--color-dark-border-raw), 0.5); }
   .btn-icon:not(:disabled):hover { box-shadow: var(--shadow-md); color: var(--color-primary-DEFAULT); background-color: var(--color-light-surface); transform: scale(1.1); border-color: rgba(var(--color-primary-raw), 0.3); }
@@ -403,11 +409,11 @@
   html.dark .cart-btn i.cart-icon { color: var(--color-cart-icon-color); }
   .cart-btn.has-items .cart-icon { color: var(--color-primary-DEFAULT); animation: pulseSimple 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1); }
   html.dark .cart-btn.has-items .cart-icon { color: var(--color-primary-light); }
-  #cart-count { position: absolute; top: -0.25rem; right: -0.25rem; background-color: var(--color-cart-badge-bg); color: white; font-size: 0.7rem; font-weight: 700; border-radius: var(--rounded-full); width: 1.25rem; height: 1.25rem; display: flex; align-items: center; justify-content: center; line-height: 1; border: 2px solid var(--color-light-background); transition: transform 0.3s var(--timing-bouncy), background-color 0.2s ease; transform: scale(0); transform-origin: center; pointer-events: none; }
-  #cart-count.visible { transform: scale(1); }
-  html.dark #cart-count { border-color: var(--color-dark-background); }
+  #cart-count { /* position: absolute; top: -0.25rem; right: -0.25rem; */ /* Tailwind classes absolute -top-1 -right-1 */ background-color: var(--color-cart-badge-bg); /* color: white; */ /* Handled by text-white */ /* font-size: 0.7rem; */ /* Handled by text-[0.7rem] */ font-weight: 700; border-radius: var(--rounded-full); /* width: 1.25rem; height: 1.25rem; */ /* Handled by w-5 h-5 */ /* display: flex; align-items: center; justify-content: center; */ /* Handled by flex items-center justify-center */ /* line-height: 1; */ /* Handled by leading-none */ /* border: 2px solid var(--color-light-background); */ /* Handled by border-2 border-... */ transition: transform 0.3s var(--timing-bouncy), background-color 0.2s ease; /* transform: scale(0); */ /* Handled by scale-0 */ transform-origin: center; pointer-events: none; }
+  /* #cart-count.visible { transform: scale(1); } */ /* Handled by JS toggle or removing scale-0 */
+  /* html.dark #cart-count { border-color: var(--color-dark-background); } */ /* Handled by dark:border-dark-background */
 
-  /* Category Card */
+  /* Category Card - Keep custom styles */
   .category-card { transition: all 0.3s var(--timing-gentle); border: 2px solid rgba(var(--color-light-border-raw), 0.7); border-radius: var(--rounded-2xl); text-align: center; padding: 1.5rem; background-color: var(--color-light-surface); box-shadow: var(--shadow-sm); display: block; color: inherit; text-decoration: none; position: relative; overflow: hidden; }
   html.dark .category-card { border-color: rgba(var(--color-dark-border-raw), 0.7); background-color: var(--color-dark-surface); }
   .category-card:hover { box-shadow: var(--shadow-lg); border-color: var(--color-primary-DEFAULT); transform: translateY(-0.5rem); }
@@ -428,27 +434,27 @@
   html.dark .category-card.active i, html.dark .category-card.active span { color: var(--color-primary-light); }
   .category-card.active i { transform: scale(1.05) rotate(-5deg); }
 
-  /* Input Fields */
+  /* Input Fields - Keep custom styles for base appearance, focus, invalid */
   .form-input, .overlay-input, textarea.form-input { display: block; width: 100%; padding: 0.75rem 1rem; font-size: 1rem; line-height: 1.625; border-radius: var(--rounded-lg); transition: border-color var(--duration-DEFAULT) ease-in-out, box-shadow var(--duration-DEFAULT) ease-in-out; appearance: none; background-color: var(--color-light-background); border: 1px solid var(--color-light-input-border); color: var(--color-light-text-primary); box-shadow: var(--shadow-inner-input); }
   .form-input::placeholder, .overlay-input::placeholder, textarea.form-input::placeholder { color: var(--color-light-text-muted); opacity: 1; }
   html.dark .form-input, html.dark .overlay-input, html.dark textarea.form-input { background-color: var(--color-dark-surface); border-color: var(--color-dark-input-border); color: var(--color-dark-text-primary); box-shadow: var(--shadow-inner-input); }
   html.dark .form-input::placeholder, html.dark .overlay-input::placeholder, html.dark textarea.form-input::placeholder { color: var(--color-dark-text-muted); }
   .form-input:focus, .overlay-input:focus, textarea.form-input:focus { outline: none; border-color: var(--color-primary-DEFAULT); box-shadow: 0 0 0 3px rgba(var(--color-primary-raw), 0.2), var(--shadow-inner-input-focus); }
   html.dark .form-input:focus, html.dark .overlay-input:focus, html.dark textarea.form-input:focus { border-color: var(--color-primary-light); box-shadow: 0 0 0 3px rgba(var(--color-primary-light-raw), 0.2), var(--shadow-inner-input-focus); }
-  textarea.form-input { display: block; width: 100%; padding: 0.8rem 1rem; font-size: 1rem; line-height: 1.6; border-radius: var(--rounded-lg); transition: border-color var(--duration-DEFAULT) ease-in-out, box-shadow var(--duration-DEFAULT) ease-in-out; appearance: none; background-color: var(--color-light-background); border: 1px solid var(--color-light-input-border); color: var(--color-light-text-primary); box-shadow: var(--shadow-inner-input); min-height: 100px; }
-  html.dark textarea.form-input { background-color: var(--color-dark-surface); border-color: var(--color-dark-input-border); color: var(--color-dark-text-primary); box-shadow: var(--shadow-inner-input); }
-  textarea.form-input:focus { outline: none; border-color: var(--color-primary-DEFAULT); box-shadow: 0 0 0 3px rgba(var(--color-primary-raw), 0.2), var(--shadow-inner-input-focus) !important; }
-  html.dark textarea.form-input:focus { border-color: var(--color-primary-light); box-shadow: 0 0 0 3px rgba(var(--color-primary-light-raw), 0.2), var(--shadow-inner-input-focus) !important; }
+  /* textarea.form-input { display: block; width: 100%; padding: 0.8rem 1rem; font-size: 1rem; line-height: 1.6; border-radius: var(--rounded-lg); transition: border-color var(--duration-DEFAULT) ease-in-out, box-shadow var(--duration-DEFAULT) ease-in-out; appearance: none; background-color: var(--color-light-background); border: 1px solid var(--color-light-input-border); color: var(--color-light-text-primary); box-shadow: var(--shadow-inner-input); min-height: 100px; } */
+  /* html.dark textarea.form-input { background-color: var(--color-dark-surface); border-color: var(--color-dark-input-border); color: var(--color-dark-text-primary); box-shadow: var(--shadow-inner-input); } */
+  /* textarea.form-input:focus { outline: none; border-color: var(--color-primary-DEFAULT); box-shadow: 0 0 0 3px rgba(var(--color-primary-raw), 0.2), var(--shadow-inner-input-focus) !important; } */
+  /* html.dark textarea.form-input:focus { border-color: var(--color-primary-light); box-shadow: 0 0 0 3px rgba(var(--color-primary-light-raw), 0.2), var(--shadow-inner-input-focus) !important; } */
   .form-input.invalid, .overlay-input.invalid, textarea.form-input.invalid { border-color: var(--color-error-DEFAULT) !important; box-shadow: 0 0 0 2px rgba(var(--color-error-raw), 0.3) !important; }
   html.dark .form-input.invalid, html.dark .overlay-input.invalid, html.dark textarea.form-input.invalid { border-color: var(--color-error-DEFAULT) !important; box-shadow: 0 0 0 2px rgba(var(--color-error-raw), 0.3) !important; }
   .form-input.ltr { text-align: left; direction: ltr; }
   input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active { -webkit-box-shadow: 0 0 0 40px var(--color-light-background) inset, var(--shadow-inner-input) !important; -webkit-text-fill-color: var(--color-light-text-primary) !important; transition: background-color 5000s ease-in-out 0s; border-color: var(--color-light-input-border) !important; }
   html.dark input:-webkit-autofill, html.dark input:-webkit-autofill:hover, html.dark input:-webkit-autofill:focus, html.dark input:-webkit-autofill:active { -webkit-box-shadow: 0 0 0 40px var(--color-dark-surface) inset, var(--shadow-inner-input) !important; -webkit-text-fill-color: var(--color-dark-text-primary) !important; border-color: var(--color-dark-input-border) !important; }
-  select.overlay-input, select.form-input { padding-left: 3rem; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: left 1rem center; background-repeat: no-repeat; background-size: 1.2em 1.2em; appearance: none; }
+  select.overlay-input, select.form-input { /* padding-left: 3rem; */ background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: left 1rem center; background-repeat: no-repeat; background-size: 1.2em 1.2em; appearance: none; }
   html.dark select.overlay-input, html.dark select.form-input { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239CA3AF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); }
   html.dark select.overlay-input option, html.dark select.form-input option { background-color: var(--color-dark-surface); color: var(--color-dark-text-primary); }
 
-  /* Modal Styles */
+  /* Modal Styles - Keep custom styles for overlay & basic structure */
   .modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 70; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; visibility: hidden; transition: opacity 0.3s ease-out, visibility 0.3s ease-out; }
   html.dark .modal-overlay { background-color: rgba(0, 0, 0, 0.6); }
   .modal-overlay.visible { opacity: 1; visibility: visible; }
@@ -460,7 +466,7 @@
   @media (min-width: 768px) { #order-form-modal > .modal-content > div:nth-child(3) { padding: 2rem; } }
   #order-form { margin-top: 1.5rem; }
 
-  /* Cart Modal */
+  /* Cart Modal - Keep custom styles for items & footer */
   #cart-modal .modal-content { max-width: 42rem; }
   #cart-modal #cart-items-container { padding: 1.25rem; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
   @media (min-width: 768px) { #cart-modal #cart-items-container { padding: 1.5rem; } }
@@ -488,14 +494,14 @@
   #cart-modal #cart-items-container .cart-item.unavailable:hover { opacity: 0.7; }
   #cart-modal #cart-items-container .cart-item:hover:not(.unavailable) { box-shadow: var(--shadow-md); border-color: rgba(var(--color-light-border-raw), 0.8); }
   html.dark #cart-modal #cart-items-container .cart-item:hover:not(.unavailable) { border-color: rgba(var(--color-dark-border-raw), 0.8); }
-  #cart-empty-message { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+  #cart-empty-message { /* flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; */ /* Handled by Tailwind */ }
   #cart-modal .modal-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--color-light-border); background-color: var(--color-light-surface); border-bottom-left-radius: var(--rounded-xl); border-bottom-right-radius: var(--rounded-xl); flex-shrink: 0; margin-top: auto; }
   html.dark #cart-modal .modal-footer { border-top-color: var(--color-dark-border); background-color: var(--color-dark-surface); }
   /* Cart modal icon animation */
   .cart-modal-icon { animation: cartPulse 1.6s ease-in-out infinite; }
 
 
-  /* Search Filter Overlay */
+  /* Search Filter Overlay - Keep custom styles */
   #search-filter-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 65; display: flex; justify-content: center; align-items: flex-start; padding: 5rem 1rem 1rem 1rem; backdrop-filter: blur(8px); opacity: 0; visibility: hidden; transition: opacity 0.3s ease-out, visibility 0.3s ease-out; }
   html.dark #search-filter-overlay { background-color: rgba(0, 0, 0, 0.7); }
   #search-filter-overlay.visible { opacity: 1; visibility: visible; }
@@ -504,7 +510,7 @@
   #search-filter-overlay.visible .overlay-content { opacity: 1; transform: translateY(0); }
   @media (min-width: 768px) { #search-filter-overlay { padding-top: 6rem; } #search-filter-overlay .overlay-content { padding: 2rem; } }
 
-  /* Policy Modals */
+  /* Policy Modals - Keep custom styles */
   #privacy-policy-modal .modal-content, #return-policy-modal .modal-content, #size-guide-modal .modal-content { max-width: 56rem; }
   .policy-header { text-align: center; padding: 1.5rem; border-bottom: 1px solid var(--color-light-border); flex-shrink: 0; }
   html.dark .policy-header { border-bottom-color: var(--color-dark-border); }
@@ -519,9 +525,9 @@
   .policy-content h3 { font-size: 1.25rem; font-weight: 600; font-family: var(--font-heading); color: var(--color-light-text-primary); margin-top: 1.5rem; margin-bottom: 0.5rem; }
   html.dark .policy-content h3 { color: var(--color-dark-text-primary); }
   .policy-content p { margin-bottom: 1rem; }
-  .policy-content ul, .policy-content ol { margin-bottom: 1rem; margin-right: 1.25rem; padding-left: 0; }
-  .policy-content ul { list-style: disc inside; }
-  .policy-content ol { list-style: decimal inside; }
+  .policy-content ul, .policy-content ol { margin-bottom: 1rem; /* margin-right: 1.25rem; */ /* Use Tailwind mr-5 */ padding-left: 0; }
+  .policy-content ul { /* list-style: disc inside; */ /* Use Tailwind list-disc list-inside */ }
+  .policy-content ol { /* list-style: decimal inside; */ /* Use Tailwind list-decimal list-inside */ }
   .policy-content li { margin-bottom: 0.375rem; }
   .policy-content a { color: var(--color-primary-DEFAULT); text-decoration: underline; }
   .policy-content a:hover { text-decoration: none; }
@@ -534,7 +540,7 @@
   html.dark .policy-footer { border-top-color: var(--color-dark-border); }
   .policy-footer .btn-close { padding: 0.75rem 1.5rem; }
 
-  /* Size Guide Table */
+  /* Size Guide Table - Keep custom styles */
   .size-guide-table table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; font-size: 0.9rem; box-shadow: var(--shadow-sm); }
   .size-guide-table th, .size-guide-table td { border: 1px solid var(--color-light-border); padding: 0.75rem 0.5rem; text-align: center; }
   .size-guide-table th { background-color: var(--color-light-background); font-weight: 600; color: var(--color-light-text-primary); }
@@ -544,7 +550,7 @@
   html.dark .size-guide-table tbody tr:nth-child(even) { background-color: var(--color-dark-surface); }
   html.dark .size-guide-table tbody tr { color: var(--color-dark-text-secondary); }
 
-  /* Product Detail Panel */
+  /* Product Detail Panel - Keep custom styles */
   #product-detail-panel { position: fixed; top: 0; bottom: 0; right: 0; width: 100%; height: 100%; background-color: var(--color-light-background); box-shadow: var(--shadow-2xl); z-index: 60; overflow-y: auto; padding: 5rem 1.5rem 1.5rem 1.5rem; border-left: 1px solid rgba(var(--color-light-border-raw), 0.6); display: block; transform: translateX(100%); opacity: 0; visibility: hidden; transition: transform 0.4s var(--timing-gentle), opacity 0.4s ease-out, visibility 0.4s ease-out; }
   @media (min-width: 640px) { #product-detail-panel { width: 80%; } }
   @media (min-width: 768px) { #product-detail-panel { width: 450px; padding: 6rem 2rem 2rem 2rem; } }
@@ -591,20 +597,10 @@
   html.dark #product-detail-panel .detail-panel-description { color: var(--color-dark-text-secondary); }
   #product-detail-panel .detail-panel-actions { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
 
-  /* Recently Viewed Section */
-  #recently-viewed .simple-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1.25rem; /* gap-5 */
-  }
-  @media (min-width: 768px) {
-    #recently-viewed .simple-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.75rem; /* md:gap-7 */ }
-  }
-  @media (min-width: 1024px) {
-    #recently-viewed .simple-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem; /* lg:gap-8 */ }
-  }
+  /* Recently Viewed Section - Use Tailwind grid classes instead */
+  /* #recently-viewed .simple-grid { ... } */
 
-  /* Swiper */
+  /* Swiper - Keep custom styles for navigation/pagination */
   .arrivals-swiper .swiper-button-next, .arrivals-swiper .swiper-button-prev { color: var(--color-primary-DEFAULT); background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(4px); border: 1px solid rgba(var(--color-light-border-raw), 0.6); border-radius: var(--rounded-full); width: 2.5rem; height: 2.5rem; box-shadow: var(--shadow-md); transition: all 0.3s var(--timing-gentle); top: 50%; }
   html.dark .arrivals-swiper .swiper-button-next, html.dark .arrivals-swiper .swiper-button-prev { color: var(--color-primary-light); background-color: rgba(var(--color-dark-surface-raw), 0.8); border-color: rgba(var(--color-dark-border-raw), 0.6); box-shadow: var(--shadow-md); }
   .arrivals-swiper .swiper-button-next:hover, .arrivals-swiper .swiper-button-prev:hover { transform: scale(1.1) translateY(-50%); box-shadow: var(--shadow-lg); background-color: var(--color-light-surface); }
@@ -622,7 +618,7 @@
   @media (max-width: 767px) { .arrivals-swiper .swiper-button-prev, .arrivals-swiper .swiper-button-next { display: none; } }
   .arrivals-swiper .swiper-slide { width: auto !important; height: auto; flex-shrink: 0; display: flex; justify-content: center; }
 
-  /* Scroll-to-top Button */
+  /* Scroll-to-top Button - Keep custom styles */
   #scroll-to-top-btn { position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 50; width: 3rem; height: 3rem; border-radius: var(--rounded-full); box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: center; transition: all var(--duration-medium) var(--timing-gentle); opacity: 0; visibility: hidden; transform: scale(0.9); background-image: linear-gradient(to bottom right, var(--color-primary-DEFAULT), var(--color-accent-DEFAULT)); color: white; border: none; cursor: pointer; }
   html.dark #scroll-to-top-btn { background-image: linear-gradient(to bottom right, var(--color-primary-light), rgba(var(--color-accent-raw), 0.8)); box-shadow: var(--shadow-lg); }
   #scroll-to-top-btn.visible { opacity: 1; visibility: visible; transform: scale(1); }
@@ -631,7 +627,7 @@
   #scroll-to-top-btn i { font-size: 1.25rem; }
 
   /* ==========================================================================
-     5. Animations & Keyframes
+     5. Animations & Keyframes (Keep custom animations)
      ========================================================================== */
   @keyframes fadeInUp { '0%' { opacity: 0; transform: translateY(20px); } '100%' { opacity: 1; transform: translateY(0); } }
   @keyframes fadeIn { '0%' { opacity: 0; } '100%' { opacity: 1; } }
@@ -646,11 +642,11 @@
   @keyframes shimmer { '0%' { left: -150%; } '100%' { left: 150%; } }
   @keyframes cartPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-  /* Apply Tailwind animations */
+  /* Apply Tailwind animations (Keep for consistency, though custom keyframes are defined above) */
   .animate-fade-in-up { animation: fadeInUp 0.8s var(--timing-gentle) both; }
   .animate-pulse-glow { animation: pulseGlow 3s infinite ease-in-out; }
   .animate-bounce-small { animation: bounceSmall 1.2s infinite ease-in-out; }
   .animation-delay-200 { animation-delay: 200ms; }
   .animation-delay-2000 { animation-delay: 2000ms; }
-  .animate-spin { animation: spin 1s linear infinite; }
-  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  /* .animate-spin { animation: spin 1s linear infinite; } */ /* Tailwind provides this utility */
+  /* @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } */ /* Tailwind provides this */
