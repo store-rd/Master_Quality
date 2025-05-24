@@ -15,8 +15,6 @@
     <!-- Link to your BUILT CSS file -->
     <link rel="stylesheet" href="dist/output.css">
 
-    <!-- REMOVED Tailwind CDN Script -->
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     <style>
         /* General Styles */
         .simple-grid { display: grid; }
@@ -128,8 +126,199 @@
                 --color-primary: #0891B2;
                 --color-primary-light-rgb: 103, 232, 249; /* #67E8F9 */
                 --color-primary-light: #67E8F9;
+
+                --color-light-border-alt: #d1d5db; /* gray-300 */
+                --color-dark-border-alt: #4b5563;  /* gray-600 */
             }
         }
+
+        /* Admin Panel Specific Styles */
+        .admin-modal-overlay { /* Base for admin modals */
+            position: fixed; inset: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1rem; /* p-4 */
+            background-color: rgba(0,0,0,0.7); /* bg-black/70 */
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s;
+        }
+        html.dark .admin-modal-overlay { background-color: rgba(0,0,0,0.8); } /* dark:bg-black/80 */
+
+        .admin-modal-overlay.visible {
+            opacity: 1; visibility: visible;
+            transition-delay: 0s;
+        }
+
+        .admin-modal-content { /* Base for content within admin modals */
+            background-color: var(--color-light-surface);
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); /* shadow-2xl */
+            border: 1px solid var(--color-light-border-alt);
+            opacity: 0; transform: translateY(-1.25rem) scale(0.95); /* -translate-y-5 scale-95 */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            position: relative; /* For close button positioning */
+            display: flex; flex-direction: column; /* Ensure flex for inner layout */
+        }
+        html.dark .admin-modal-content {
+            background-color: var(--color-dark-surface);
+            border-color: var(--color-dark-border-alt);
+        }
+
+        .admin-modal-overlay.visible .admin-modal-content {
+            opacity: 1; transform: translateY(0) scale(1);
+        }
+
+        /* Product Management Panel (Main) */
+        #product-management-panel .admin-modal-content {
+            width: 100%; max-width: 72rem; /* max-w-6xl, increased width for more space */
+            height: 90vh; padding: 1.5rem; /* p-6 */
+        }
+        /* The scrollable table container inside product-management-panel */
+        .admin-table-scroll-container {
+            flex-grow: 1; /* Take available vertical space */
+            overflow-y: auto; /* Enable vertical scroll */
+            min-height: 0; /* Crucial for flex-grow to work with overflow in a flex column */
+            margin-bottom: 1rem; /* mb-4 */
+            border: 1px solid var(--color-light-border-alt);
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 0.25rem; /* p-1 */
+            background-color: var(--color-light-background);
+            box-shadow: inset 0 1px 2px 0 rgba(0,0,0,0.05); /* shadow-inner */
+        }
+        html.dark .admin-table-scroll-container {
+            border-color: var(--color-dark-border-alt);
+            background-color: var(--color-dark-background);
+        }
+
+
+        /* Product Form, Export Modal, Import Modal (Sub-modals) */
+        #product-management-form-container .admin-modal-content,
+        #product-export-modal .admin-modal-content,
+        #product-import-modal .admin-modal-content {
+            width: 100%; padding: 1.5rem; /* p-6 */
+        }
+        #product-management-form-container .admin-modal-content { max-width: 42rem; /* max-w-2xl */ max-height: 85vh; overflow-y: auto; }
+        #product-export-modal .admin-modal-content { max-width: 36rem; /* max-w-md */ max-height: 85vh; } 
+        #product-import-modal .admin-modal-content { max-width: 48rem; /* max-w-3xl */ max-height: 85vh; } 
+
+
+        .form-label-admin { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--color-light-text-secondary); }
+        html.dark .form-label-admin { color: var(--color-dark-text-secondary); }
+
+        .form-input-admin, .admin-textarea {
+            display: block; width: 100%; padding: 0.65rem 0.75rem; font-size: 0.9rem;
+            border: 1px solid var(--color-light-border-alt);
+            border-radius: 0.375rem; /* rounded-md */
+            background-color: var(--color-light-background); color: var(--color-light-text-primary);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        html.dark .form-input-admin, html.dark .admin-textarea {
+            border-color: var(--color-dark-border-alt);
+            background-color: var(--color-dark-background); color: var(--color-dark-text-primary);
+        }
+        .form-input-admin:focus, .admin-textarea:focus {
+            outline: none; border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+        }
+        html.dark .form-input-admin:focus, html.dark .admin-textarea:focus {
+            border-color: var(--color-primary-light);
+            box-shadow: 0 0 0 2px rgba(var(--color-primary-light-rgb), 0.2);
+        }
+        .form-input-admin::placeholder, .admin-textarea::placeholder { color: var(--color-light-text-muted); }
+        html.dark .form-input-admin::placeholder, html.dark .admin-textarea::placeholder { color: var(--color-dark-text-muted); }
+
+        /* Checkbox label specific alignment */
+        label[for^="pf-is_new"].form-label-admin,
+        label[for^="pf-update_id"].form-label-admin {
+            margin-bottom: 0; margin-right: 0.5rem; /* For RTL */
+            display: inline-flex; align-items: center; /* Better alignment with checkbox */
+        }
+        input[type="checkbox"].admin-checkbox {
+             /* Tailwind classes: h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded */
+            height: 1rem; width: 1rem; color: var(--color-primary);
+            border-color: var(--color-light-border-alt); border-radius: 0.25rem;
+        }
+        input[type="checkbox"].admin-checkbox:focus {
+            ring: var(--color-primary); /* This might need a custom shadow if Tailwind's ring doesn't work in <style> */
+        }
+        html.dark input[type="checkbox"].admin-checkbox {
+            border-color: var(--color-dark-border-alt);
+        }
+        /* CSV Input style */
+        #csv-file-input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            border: 1px dashed var(--color-light-border-alt);
+            border-radius: 0.375rem;
+            background-color: var(--color-light-background);
+            color: var(--color-light-text-secondary);
+            cursor: pointer;
+        }
+        #csv-file-input:hover { border-color: var(--color-primary); }
+        html.dark #csv-file-input {
+            border-color: var(--color-dark-border-alt);
+            background-color: var(--color-dark-background);
+            color: var(--color-dark-text-secondary);
+        }
+        html.dark #csv-file-input:hover { border-color: var(--color-primary-light); }
+        #csv-file-input::file-selector-button {
+            padding: 0.5rem 1rem; margin-right: 1rem;
+            background-color: var(--color-primary); color: white;
+            border: none; border-radius: 0.25rem;
+            font-weight: 500; cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        #csv-file-input::file-selector-button:hover { background-color: rgba(var(--color-primary-rgb), 0.8); }
+        html.dark #csv-file-input::file-selector-button {
+            background-color: var(--color-primary-light); color: var(--color-dark-text-primary);
+        }
+         html.dark #csv-file-input::file-selector-button:hover { background-color: rgba(var(--color-primary-light-rgb), 0.8); }
+
+
+        /* Table styles for Admin Panel */
+        #product-management-table {
+            width: 100%;
+            min-width: 700px; /* Ensure table has a minimum width for readability */
+            border-collapse: collapse; /* Cleaner borders */
+        }
+        #product-management-table th,
+        #product-management-table td {
+            padding: 0.75rem; /* p-3 */
+            text-align: right;
+            border-bottom: 1px solid var(--color-light-border-alt);
+        }
+        html.dark #product-management-table th,
+        html.dark #product-management-table td {
+            border-bottom-color: var(--color-dark-border-alt);
+        }
+        #product-management-table thead th {
+            background-color: var(--color-light-surface);
+            position: sticky; top: 0; z-index: 10; /* Keep headers visible on scroll */
+            font-weight: 600; /* font-semibold */
+        }
+        html.dark #product-management-table thead th {
+            background-color: var(--color-dark-surface);
+        }
+        #product-management-table tbody tr:hover {
+            background-color: rgba(var(--color-primary-rgb), 0.05);
+        }
+        html.dark #product-management-table tbody tr:hover {
+            background-color: rgba(var(--color-primary-light-rgb), 0.05);
+        }
+        #product-management-table td .btn { /* Make buttons in table smaller */
+            padding: 0.3rem 0.6rem; font-size: 0.8rem;
+        }
+        #admin-sign-out-btn {
+            position: absolute;
+            top: 1rem; /* Match padding of panel, was 1.5rem */
+            right: 1rem; /* Match padding of panel, was 1.5rem */
+            z-index: 20;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+
     </style>
 
 </head>
@@ -197,12 +386,8 @@
         <section id="categories" class="py-16 md:py-24 section-animate">
              <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                  <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold font-heading text-center mb-14 md:mb-20">تصفحي حسب الفئة</h2>
-                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 md:gap-8 lg:gap-10">
-                    <a href="#products" data-category="all" class="category-card group active"><i class="fas fa-tags"></i><span>الكل</span></a>
-                    <a href="#products" data-category="trousers" class="category-card group"><i class="fas fa-user-secret"></i><span>بناطيل</span></a>
-                    <a href="#products" data-category="dresses" class="category-card group"><i class="fas fa-vest-patches"></i><span>فساتين</span></a>
-                    <a href="#products" data-category="maternity" class="category-card group"><i class="fas fa-person-pregnant"></i><span>حوامل</span></a>
-                    <a href="#products" data-category="tops" class="category-card group"><i class="fas fa-tshirt"></i><span>توبات</span></a>
+                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-10" id="category-cards-container">
+                    <!-- Category cards will be populated by JS -->
                  </div>
             </div>
         </section>
@@ -291,6 +476,9 @@
                     <a href="#" id="return-policy-link" class="footer-link">سياسة الإرجاع</a>
                     <a href="#" id="size-guide-footer-link" class="footer-link">دليل المقاسات</a>
                 </div>
+                 <div class="mt-6 text-center">
+                     <button id="product-management-toggle" class="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">إدارة المنتجات (Admin)</button>
+                 </div>
             </div>
         </footer>
 
@@ -519,6 +707,161 @@
           </div>
       </div>
 
+    <!-- Product Management Panel Wrapper -->
+    <div id="product-management-panel" class="admin-modal-overlay">
+        <div class="admin-modal-content"> 
+            <button id="close-management-panel-btn" class="action-btn absolute top-4 left-4 z-10" title="إغلاق"><i class="fas fa-times text-2xl"></i></button>
+            <h2 class="text-2xl font-semibold font-heading mb-6 text-center flex-shrink-0 relative">
+                إدارة المنتجات
+                <!-- زر تسجيل الخروج سيُضاف هنا بواسطة JavaScript إذا كان المدير مسجلاً -->
+            </h2>
+
+            <div class="mb-4 flex flex-col sm:flex-row justify-between items-center gap-4 flex-shrink-0">
+                <div class="flex flex-wrap gap-3"> <!-- Buttons -->
+                    <button id="add-new-product-btn" class="btn btn-success"><i class="fas fa-plus mr-2"></i> إضافة منتج</button>
+                    <button id="export-product-data-btn" class="btn btn-info"><i class="fas fa-file-export mr-2"></i> تصدير CSV</button>
+                    <button id="import-product-data-btn" class="btn btn-warning"><i class="fas fa-file-import mr-2"></i> استيراد CSV</button>
+                </div>
+                <div class="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3"> <!-- Search and Count -->
+                    <div class="relative w-full sm:flex-grow">
+                        <input type="search" id="admin-product-search-input" placeholder="بحث (ID، عنوان)..." class="form-input-admin w-full !pr-4 !pl-10">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-light-text-muted dark:text-dark-text-muted"></i>
+                    </div>
+                    <span id="admin-total-products-count" class="text-sm text-light-text-secondary dark:text-dark-text-secondary whitespace-nowrap flex-shrink-0"></span>
+                </div>
+            </div>
+
+            <div class="admin-table-scroll-container"> 
+                <table id="product-management-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>العنوان</th>
+                            <th>السعر</th>
+                            <th>الفئة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Product rows will be injected here by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+            
+    <!-- Product Form Modal (Sub-modal) -->
+    <div id="product-management-form-container" class="admin-modal-overlay z-[101]"> 
+         <form id="product-form" class="admin-modal-content space-y-4"> 
+            <button type="button" id="close-product-form-btn" class="action-btn absolute top-3 left-3" title="إغلاق"><i class="fas fa-times text-xl"></i></button>
+            <h3 id="product-form-title" class="text-xl font-semibold text-center mb-2">إضافة / تعديل منتج</h3>
+            
+            <div>
+                <label for="pf-id" class="form-label-admin">ID المنتج (اتركه فارغًا للإنشاء التلقائي عند الإضافة)</label>
+                <input type="text" id="pf-id" class="form-input-admin">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="pf-title" class="form-label-admin">العنوان *</label>
+                    <input type="text" id="pf-title" class="form-input-admin" required>
+                </div>
+                <div>
+                    <label for="pf-price" class="form-label-admin">السعر (مثال: 8,000 أو 8000) *</label>
+                    <input type="text" id="pf-price" class="form-input-admin" required>
+                </div>
+                <div>
+                    <label for="pf-image1" class="form-label-admin">رابط الصورة 1 (مثال: photo/img.webp) *</label>
+                    <input type="text" id="pf-image1" class="form-input-admin" required>
+                </div>
+                <div>
+                    <label for="pf-image2" class="form-label-admin">رابط الصورة 2 (Hover)</label>
+                    <input type="text" id="pf-image2" class="form-input-admin">
+                </div>
+                <div>
+                    <label for="pf-size" class="form-label-admin">المقاس المعروض (مثال: M, L, XL)*</label>
+                    <input type="text" id="pf-size" class="form-input-admin" required>
+                </div>
+                <div>
+                    <label for="pf-base_size" class="form-label-admin">المقاس الأساسي للفلترة *</label>
+                    <select id="pf-base_size" class="form-input-admin" required>
+                        <option value="" disabled selected>-- اختر مقاس أساسي --</option>
+                        <option value="XS">XS</option><option value="S">S</option><option value="M">M</option>
+                        <option value="L">L</option><option value="XL">XL</option><option value="XXL">XXL</option>
+                        <option value="2XL">2XL</option><option value="qc50mq">qc50mq</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pf-category" class="form-label-admin">الفئة *</label>
+                    <select id="pf-category" class="form-input-admin" required>
+                        <option value="" disabled selected>-- اختر فئة --</option>
+                        <option value="tops">Tops (توبات)</option>
+                        <option value="dresses">Dresses (فساتين)</option>
+                        <option value="trousers">Trousers (بناطيل)</option>
+                        <option value="maternity">Maternity (حوامل)</option>
+                        <option value="skirts">Skirts (تنانير)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pf-availability" class="form-label-admin">التوفر *</label>
+                    <select id="pf-availability" class="form-input-admin" required>
+                        <option value="in stock">In Stock (متوفر)</option>
+                        <option value="out of stock">Out of Stock (غير متوفر)</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label for="pf-description" class="form-label-admin">الوصف</label>
+                <textarea id="pf-description" rows="3" class="admin-textarea"></textarea> 
+            </div>
+            <div class="flex items-center">
+                <input type="checkbox" id="pf-is_new" class="admin-checkbox">
+                <label for="pf-is_new" class="form-label-admin">منتج جديد (Is New)?</label>
+            </div>
+             <div class="flex items-center" id="pf-update-id-container">
+                <input type="checkbox" id="pf-update_id" class="admin-checkbox" checked>
+                <label for="pf-update_id" class="form-label-admin">تحديث ID تلقائياً عند الإضافة؟ (إذا ترك حقل ID فارغاً)</label>
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" id="cancel-product-form-btn" class="btn btn-secondary">إلغاء</button>
+                <button type="submit" id="save-product-form-btn" class="btn btn-primary">حفظ المنتج</button>
+            </div>
+         </form>
+    </div>
+
+    <!-- Product Export Modal (Sub-modal) -->
+    <div id="product-export-modal" class="admin-modal-overlay z-[102]">
+        <div class="admin-modal-content"> 
+            <button type="button" id="close-export-modal-btn" class="action-btn absolute top-3 left-3" title="إغلاق"><i class="fas fa-times text-xl"></i></button>
+            <h3 class="text-xl font-semibold text-center mb-4">تصدير بيانات المنتجات</h3>
+            <p class="text-sm mb-4 text-light-text-secondary dark:text-dark-text-secondary">سيتم تنزيل ملف CSV يحتوي على جميع بيانات المنتجات الحالية.</p>
+            <button id="download-csv-btn" class="btn btn-primary w-full py-3"><i class="fas fa-download mr-2"></i> تنزيل ملف CSV للمنتجات</button>
+        </div>
+    </div>
+
+    <!-- Product Import Modal (Sub-modal) -->
+    <div id="product-import-modal" class="admin-modal-overlay z-[102]">
+        <div class="admin-modal-content">
+            <button type="button" id="close-import-modal-btn" class="action-btn absolute top-3 left-3" title="إغلاق"><i class="fas fa-times text-xl"></i></button>
+            <h3 class="text-xl font-semibold text-center mb-4">استيراد بيانات المنتجات من CSV</h3>
+            <p class="text-sm mb-3 text-light-text-secondary dark:text-dark-text-secondary">
+                اختر ملف CSV لاستيراده. يجب أن يحتوي الملف على ترويسات (Headers) تطابق أسماء حقول المنتج (مثل: id, title, price, image1, size, base_size, category, availability, is_new, description, image2).
+                <br><strong>تحذير:</strong> سيتم استبدال جميع المنتجات الحالية بالبيانات من الملف المستورد.
+            </p>
+            <div class="mb-4">
+                <label for="csv-file-input" class="form-label-admin">اختر ملف CSV:</label>
+                <input type="file" id="csv-file-input" accept=".csv" class="form-input-admin">
+            </div>
+            <div id="import-error-message" class="hidden p-3 mb-3 bg-error/10 border border-error/30 text-error text-sm rounded-md font-medium text-center"></div>
+            <div id="csv-file-name-display" class="text-sm text-light-text-muted dark:text-dark-text-muted mb-3 min-h-[1.5em]"></div>
+            
+            <div class="mt-4 flex justify-end gap-3">
+                <button type="button" id="cancel-import-btn" class="btn btn-secondary">إلغاء</button>
+                <button type="button" id="process-import-btn" class="btn btn-success" disabled><i class="fas fa-cogs mr-2"></i> معالجة واستبدال المنتجات</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Scroll to Top Button -->
     <button id="scroll-to-top-btn" title="العودة للأعلى" class="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out opacity-0 invisible scale-90 bg-gradient-to-br from-primary to-accent text-white hover:scale-110 hover:brightness-110 active:scale-100 active:brightness-90 dark:from-primary-light dark:to-accent/80 dark:shadow-lg">
@@ -527,106 +870,87 @@
 
     <!-- External JS Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <!-- GSAP is not heavily used, can be removed if only basic animations are needed -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script> -->
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script> --> <!-- Analytics is optional -->
+
+    <script type="module">
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCKGjIRLL0nZbuYRBkqNG7I0c1yf5SkwMk", // This is YOUR apiKey from the previous step
+        authDomain: "login-72424.firebaseapp.com",
+        projectId: "login-72424",
+        storageBucket: "login-72424.firebasestorage.app", // Corrected or remove if not using
+        messagingSenderId: "891002963088",
+        appId: "1:891002963088:web:0700e51bc0de1b18528415",
+        measurementId: "G-185HKC3EB4" // Optional
+      };
+
+      // Initialize Firebase
+      // The Firebase App SDK is already loaded via CDN (firebase-app-compat.js)
+      // `firebase` will be available globally.
+      window.firebaseApp = firebase.initializeApp(firebaseConfig);
+      
+      // Make auth services available globally (auth-compat.js provides firebase.auth)
+      window.firebaseAuth = firebase.auth();
+      window.GoogleAuthProvider = firebase.auth.GoogleAuthProvider;
+      // These specific methods might not be needed globally if you call them on window.firebaseAuth instance
+      // window.signInWithPopup = firebase.auth.signInWithPopup; (deprecated if using firebase.auth() directly)
+      // window.signOutFirebase = firebase.auth.signOut; (deprecated if using firebase.auth() directly)
+      // window.onAuthStateChanged = firebase.auth.onAuthStateChanged; (deprecated if using firebase.auth() directly)
+
+    </script>
+
 
     <!-- Your App Logic (JavaScript) -->
     <script>
-    // --- Product Data ---
-    // Standardized to image1 and image2. Ensure you replace duplicate image1 URLs with actual image2 URLs.
-    const products = [
-  // Existing products, marked as is_new: false, with ID added to title
-  { "id": 1, "title": "بنطلون جيجنز أزرق مريح رقم 1", "image1": "photo/1.webp", "image2": "photo/1.webp", "price": "10,000", "size": "S (كمر 36)", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "جيجنز مريح وعملي بلون أزرق جذاب، مثالي للارتداء اليومي.", "is_new": false, "stock_level": "low" },
-  { "id": 5, "title": "بنطلون مطبع بألوان زاهية رقم 5", "image1": "photo/5.webp", "image2": "photo/5.5.webp", "price": "10,000", "size": "L (كمر 42)", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "بنطلون قماش خفيف بنقشة بيزلي زاهية ومميزة.", "is_new": false },
-  { "id": 8, "title": "بنطلون مقلم أرجل واسعة رمادي رقم 8", "image1": "photo/8.webp", "image2": "photo/8.8.webp", "price": "10,000", "size": "M (كمر 38)", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "بنطلون عصري مقلم بقصة أرجل واسعة ومريحة.", "is_new": false },
-  { "id": 11, "title": "بنطلون أصفر خردلي برباط خصر رقم 11", "image1": "photo/11.webp", "image2": "photo/11.11.webp", "price": "10,000", "size": "L (كمر 42)", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "بنطلون كاجوال مريح بلون أصفر خردلي جذاب وخصر مطاطي مع رباط.", "is_new": false },
-  { "id": 13, "title": "بنطلون دانتيل أبيض رقم 13", "image1": "photo/13.webp", "image2": "photo/13.13.webp", "price": "10,000", "size": "L (كمر 42)", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "بنطلون أنيق من الدانتيل الأبيض الفاخر لإطلالة مميزة وجذابة.", "is_new": false },
-  { "id": 14, "title": "بنطلون ليجنز زيتي مطبع رقم 14", "image1": "photo/14.webp", "image2": "photo/14.14.webp", "price": "10,000", "size": "M (كمر 37)", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "ليجنز مريح بلون زيتي عملي ونقشة هادئة.", "is_new": false },
-  { "id": 102, "title": "بنطلون كارجو بيج برباط كاحل رقم 102", "image1": "photo/102.webp", "image2": "photo/102.102.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "بنطلون كارجو عملي ومريح بلون بيج، يتميز برباط قابل للتعديل عند الكاحل.", "is_new": false },
-  { "id": 16, "title": "توب كروب مضلع أخضر ليموني رقم 16", "image1": "photo/16.webp", "image2": "photo/16.16.webp", "price": "4,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "توب كروب عصري مضلع بلون نيون منعش وحافة مكشكشة.", "is_new": false },
-  { "id": 17, "title": "توب تانك مخطط فوشي/أبيض رقم 17", "image1": "photo/17.webp", "image2": "photo/17.17.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب مخطط كلاسيكي بألوان صيفية زاهية وحواف بيضاء.", "is_new": false },
-  { "id": 19, "title": "توب تانك أخضر زاهي رقم 19", "image1": "photo/19.webp", "image2": "photo/19.19.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب أساسي مريح وعملي بلون أخضر منعش.", "is_new": false },
-  { "id": 22, "title": "كاميصول تركوازي بحواف دانتيل رقم 22", "image1": "photo/22.webp", "image2": "photo/22.22.webp", "price": "4,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "كاميصول ناعم بلون تركوازي مع لمسة دانتيل أنثوية على الحافة.", "is_new": false },
-  { "id": 24, "title": "توب تانك رمادي فاتح ميلانج رقم 24", "image1": "photo/24.webp", "image2": "photo/24.24.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "توب أساسي مريح وعملي بلون رمادي فاتح ميلانج.", "is_new": false },
-  { "id": 25, "title": "كاميصول أخضر فاتح بحواف دانتيل رقم 25", "image1": "photo/25.webp", "image2": "photo/25.25.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "كاميصول ناعم بلون أخضر باستيل ولمسة دانتيل رقيقة.", "is_new": false },
-  { "id": 26, "title": "توب كروب أخضر فاتح بملمس مميز رقم 26", "image1": "photo/26.webp", "image2": "photo/26.26.webp", "price": "4,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "توب كروب عصري بملمس مجعد (سموكيد) ورقبة V.", "is_new": false },
-  { "id": 27, "title": "توب تانك مخطط أخضر/أبيض مضلع رقم 27", "image1": "photo/27.webp", "image2": "photo/27.27.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "توب مضلع مخطط بقصة مريحة وألوان منعشة.", "is_new": false },
-  { "id": 29, "title": "توب كروب خوخي/مرجاني بملمس مميز رقم 29", "image1": "photo/29.webp", "image2": "photo/29.29.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "توب كروب عصري بملمس مجعد (سموكيد) ورقبة V بلون خوخي.", "is_new": false },
-  { "id": 30, "title": "توب/فيست محبوك بنقشة مموجة رقم 30", "image1": "photo/30.webp", "image2": "photo/30.30.webp", "price": "4,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "فيست محبوك بنقشة مموجة جريئة وألوان زاهية (أزرق وأصفر).", "is_new": false, "stock_level": "low" },
-  { "id": 32, "title": "توب كروب أخضر بقصة غير متماثلة رقم 32", "image1": "photo/32.webp", "image2": "photo/32.32.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب كروب عصري بقصة كتف غير متماثلة وجريئة.", "is_new": false },
-  { "id": 35, "title": "كاميصول فوشي بحواف دانتيل رقم 35", "image1": "photo/35.webp", "image2": "photo/35.35.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "كاميصول أنثوي بلون فوشي جذاب ولمسة دانتيل رقيقة.", "is_new": false },
-  { "id": 42, "title": "تي شيرت أصفر فاتح مطبع رقم 42", "image1": "photo/42.webp", "image2": "photo/42.42.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "تي شيرت عصري ومريح بلون أصفر فاتح مع طبعات كتابية، مثالي للإطلالات اليومية.", "is_new": false },
-  { "id": 43, "title": "بلوزة بأكمام طويلة ونقشة بيزلي رقم 43", "image1": "photo/43.webp", "image2": "photo/43.43.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة، تتميز بنقشة بيزلي باللونين الأزرق والأبيض.", "is_new": false },
-  { "id": 47, "title": "بلوزة بلون خمري وأكمام طويلة رقم 47", "image1": "photo/47.webp", "image2": "photo/47.47.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة ناعمة بلون خمري غني، تتميز بأكمام طويلة مع أساور مطاطية وياقة دائرية.", "is_new": false },
-  { "id": 48, "title": "تي شيرت أبيض بطبعة فلامنجو رقم 48", "image1": "photo/48.webp", "image2": "photo/48.48.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "تي شيرت قطني مريح باللون الأبيض مع طبعة فلامنجو وردية مميزة.", "is_new": false },
-  { "id": 49, "title": "بلوزة بأكمام طويلة ونقشة برتقالية وبيج رقم 49", "image1": "photo/49.webp", "image2": "photo/49.49.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة، تتميز بنقشة خطوط مموجة باللونين البرتقالي والبيج.", "is_new": false },
-  { "id": 51, "title": "بلوزة بنقشة حيوانية أبيض وأسود رقم 51", "image1": "photo/51.webp", "image2": "photo/51.51.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "بلوزة عصرية بأكمام متوسطة الطول ونقشة حيوانية جذابة باللونين الأبيض والأسود.", "is_new": false },
-  { "id": 53, "title": "بلوزة بيج بأكمام طويلة ورباط أمامي رقم 53", "image1": "photo/53.webp", "image2": "photo/53.53.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة، تتميز بتصميم رباط أمامي جذاب ولون بيج محايد.", "is_new": false },
-  { "id": 58, "title": "بلوزة فوشيا بأكمام طويلة وكسرات رقم 58", "image1": "photo/58.webp", "image2": "photo/58.58.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون فوشيا زاهي، تتميز بكسرات أمامية وأكمام طويلة وياقة برباط.", "is_new": false },
-  { "id": 59, "title": "بلوزة بيضاء أكتاف مكشوفة وكشكشة رقم 59", "image1": "photo/59.webp", "image2": "photo/59.59.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية أنيقة باللون الأبيض، تتميز بتصميم أكتاف مكشوفة وكشكشة عريضة على الصدر والأكمام.", "is_new": false },
-  { "id": 66, "title": "بلوزة خضراء بأكمام كشكشة رقم 66", "image1": "photo/66.webp", "image2": "photo/66.66.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية بلون أخضر زاهي، تتميز بأكمام قصيرة مزينة بكشكشة وياقة دائرية.", "is_new": false },
-  { "id": 67, "title": "بلوزة وردي فاتح بأكمام طويلة وكشكشة ياقة رقم 67", "image1": "photo/67.webp", "image2": "photo/67.67.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون وردي فاتح، تتميز بأكمام طويلة وياقة V مزينة بكشكشة.", "is_new": false, "stock_level": "low" },
-  { "id": 68, "title": "بلوزة منقطة بياقة عالية وأكمام طويلة رقم 68", "image1": "photo/68.webp", "image2": "photo/68.68.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بأكمام طويلة وياقة عالية مكشكشة، تتميز بنقشة منقطة باللونين البيج والأسود.", "is_new": false },
-  { "id": 69, "title": "بلوزة سوداء بأكمام طويلة وياقة دائرية رقم 69", "image1": "photo/69.webp", "image2": "photo/69.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة سوداء أساسية بأكمام طويلة وتصميم أكتاف منفوخة قليلاً وياقة دائرية.", "is_new": false },
-  { "id": 76, "title": "تي شيرت أبيض بطبعة قطة وزهور رقم 76", "image1": "photo/76.webp", "image2": "photo/76.76.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "تي شيرت قطني مريح باللون الأبيض، يتميز بطبعة مرحة لقطة سوداء مع زهور وكتابة \"It's Friday\".", "is_new": false },
-  { "id": 78, "title": "(تخفيض فقط لك عند شراء من موقع) رقم 78", "image1": "photo/78.webp", "image2": "photo/78.webp", "price": "0", "size": "qc50mq", "base_size": "qc50mq", "category": "tops", "availability": "in stock", "description": " يرجئ اضافة هذه قسيمة الئ عمليات شراء خاصة بكم وسوف تحصل علئ خصم 50% علئ قطعة شكرا لك لتصفحك موقعنا ", "is_new": false },
-  { "id": 84, "title": "بلوزة موردة بأكمام كشكشة رقم 84", "image1": "photo/84.webp", "image2": "photo/84.84.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية أنيقة بنقشة موردة، تتميز بأكمام قصيرة مزينة بكشكشة وياقة دائرية.", "is_new": false },
-  { "id": 91, "title": "توب تركوازي بياقة V وأكمام قصيرة رقم 91", "image1": "photo/91.webp", "image2": "photo/91.91.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب أساسي بلون تركوازي زاهي، يتميز بياقة V وأكمام قصيرة وحافة مموجة.", "is_new": false },
-  { "id": 92, "title": "بلوزة وردي فاتح بأكمام طويلة وكشكشة جانبية رقم 92", "image1": "photo/92.webp", "image2": "photo/92.92.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون وردي فاتح، تتميز بأكمام طويلة وياقة دائرية مع كشكشة تمتد بشكل مائل على الصدر.", "is_new": false },
-  { "id": 93, "title": "قميص وردي فاتح مقلم بأكمام طويلة رقم 93", "image1": "photo/93.webp", "image2": "photo/93.93.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "قميص كلاسيكي بلون وردي فاتح مع خطوط بيضاء رفيعة، يتميز بأكمام طويلة وياقة وأزرار أمامية.", "is_new": false },
-  { "id": 94, "title": "بلوزة تركوازي لف بأكمام طويلة رقم 94", "image1": "photo/94.webp", "image2": "photo/94.94.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون تركوازي لامع، تتميز بتصميم لف وياقة V وأكمام طويلة بأسورة.", "is_new": false },
-  { "id": 98, "title": "بلوزة منقوشة بأكمام كشكشة رقم 98", "image1": "photo/98.webp", "image2": "photo/98.98.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية بنقشة عصرية، تتميز بأكمام قصيرة مزينة بكشكشة وياقة دائرية.", "is_new": false },
-  { "id": 103, "title": "قميص/تونيك مقلم مع حزام رقم 103", "image1": "photo/103.webp", "image2": "photo/103.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "قميص أو تونيك طويل بأكمام طويلة وياقة، يتميز بخطوط طولية متعددة الألوان وحزام قماشي لربط الخصر.", "is_new": false },
-  { "id": 166, "title": "بلوزة سوداء بطبعة أوراق شجر بيضاء مكرر رقم 166", "image1": "photo/166.webp", "image2": "photo/166.166.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة سوداء أنيقة بأكمام 3/4 وياقة دائرية، تتميز بطبعة أوراق شجر بيضاء.", "is_new": false },
-  { "id": 116, "title": "فستان مورد أزرق وأخضر رقم 116", "image1": "photo/116.webp", "image2": "photo/116.116.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان صيفي ميدي بنقشة موردة زاهية، يتميز بياقة V وأكمام قصيرة مكشكشة وحافة متدرجة.", "is_new": false },
-  { "id": 117, "title": "فستان أخضر وأبيض منقوش بحزام رقم 117", "image1": "photo/117.webp", "image2": "photo/117.117.webp", "price": "12,000", "size": "XXL", "base_size": "XXL", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بنقشة عصرية باللونين الأخضر والأبيض، يتميز بأكمام طويلة وياقة V وحزام قماشي و حافة متدرجة.", "is_new": false },
-  { "id": 119, "title": "فستان أخضر سادة بأكمام قصيرة رقم 119", "image1": "photo/119.webp", "image2": "photo/119.119.webp", "price": "12,000", "size": "L", "base_size": "L", "category": "dresses", "availability": "in stock", "description": "فستان ميدي كاجوال بلون أخضر سادة، يتميز بأكمام قصيرة وياقة دائرية وخصر مرتفع.", "is_new": false },
-  { "id": 121, "title": "فستان ماكسي أزرق بنقشة بيزلي رقم 121", "image1": "photo/121.webp", "image2": "photo/121.121.webp", "price": "12,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي فضفاض ومريح بنقشة بيزلي زاهية، يتميز بأكمام قصيرة وياقة V.", "is_new": false },
-  { "id": 1211, "title": "فستان ماكسي أزرق بنقشة بيزلي مكرر رقم 1211", "image1": "photo/121s.webp", "image2": "photo/121s.webp", "price": "12,000", "size": "S", "base_size": "S", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي فضفاض ومريح بنقشة بيزلي زاهية، يتميز بأكمام قصيرة وياقة V.", "is_new": false },
-  { "id": 122, "title": "فستان كاروهات بخصر مزموم رقم 122", "image1": "photo/122.webp", "image2": "photo/122.122.webp", "price": "12,000", "size": "XL", "base_size": "XL", "category": "dresses", "availability": "in stock", "description": "فستان قصير بأكمام طويلة وقماش كاروهات، يتميز بخصر مزموم (مطاط) وياقة دائرية مع فتحة صغيرة.", "is_new": false, "stock_level": "low" },
-  { "id": 118, "title": "فستان خمري بأكمام طويلة وكشكشة ياقة رقم 118", "image1": "photo/124.webp", "image2": "photo/124.124.webp", "price": "12,000", "size": "s", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بلون خمري غني، يتميز بأكمام طويلة وياقة V مزينة بكشكشة وخصر مطاطي.", "is_new": false },
-  { "id": 127, "title": "فستان حوامل أخضر مورد بخصر مزموم رقم 127", "image1": "photo/127.webp", "image2": "photo/127.127.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "maternity", "availability": "in stock", "description": "فستان حوامل ميدي بنقشة موردة، يتميز بأكمام طويلة وياقة قميص وخصر مزموم (مطاط).", "is_new": false },
-  { "id": 128, "title": "فستان أخضر فاتح محكم بحزام رقم 128", "image1": "photo/128.webp", "image2": "photo/128.128.webp", "price": "12,000", "size": "XXL", "base_size": "XXL", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بلون أخضر فاتح وقماش محكم، يتميز بأكمام قصيرة مكشكشة وياقة V وحزام قماشي.", "is_new": false },
-  { "id": 143, "title": "فستان وردي سادة بياقة V رقم 143", "image1": "photo/143.webp", "image2": "photo/143.143.webp", "price": "12,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "فستان ميدي كاجوال بلون وردي، يتميز بأكمام قصيرة وياقة V وفتحة صغيرة بأزرار.", "is_new": false },
-  { "id": 146, "title": "فستان ماكسي وردي فاتح أكتاف مكشوفة رقم 146", "image1": "photo/146.webp", "image2": "photo/146.146.webp", "price": "12,000", "size": "XL", "base_size": "XL", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي بلون وردي فاتح وتصميم أكتاف مكشوفة، يتميز بأكمام 3/4 وياقة مكشكشة.", "is_new": false },
-  { "id": 151, "title": "فستان ماكسي تركوازي بليسيه بياقة هالتر رقم 151", "image1": "photo/151.webp", "image2": "photo/151.151.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي أنيق بلون تركوازي وقماش بليسيه، يتميز بياقة هالتر وحزام خصر معدني.", "is_new": false },
-  { "id": 155, "title": "فستان منقوش أزرق وأخضر بحزام رقم 155", "image1": "photo/155.webp", "image2": "photo/155.155.webp", "price": "12,000", "size": "S", "base_size": "S", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بنقشة عصرية باللونين الأزرق والأخضر، يتميز بأكمام 3/4 واسعة وياقة V وحزام قماشي.", "is_new": false },
-
-  // New products from uploaded files, marked as is_new: true, with ID added to title and corrected image paths
-  { "id": 160, "title": "بنطلون ليجنز جديد رقم 160", "image1": "photo/160-larg.webp", "image2": "photo/160-larg.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس L.", "is_new": true },
-  { "id": 161, "title": "بنطلون ليجنز جديد رقم 161", "image1": "photo/161-xl.webp", "image2": "photo/161.161.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XL.", "is_new": true },
-  { "id": 162, "title": "بنطلون ليجنز جديد رقم 162", "image1": "photo/162-m.webp", "image2": "photo/162.162.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 163, "title": "بنطلون ليجنز جديد رقم 163", "image1": "photo/163-xl.webp", "image2": "photo/163-xl.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XL.", "is_new": true },
-  { "id": 164, "title": "بنطلون ليجنز جديد رقم 164", "image1": "photo/164.webp", "image2": "photo/164.164.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس S.", "is_new": true },
-  { "id": 165, "title": "بنطلون ليجنز جديد رقم 165", "image1": "photo/165-M.webp", "image2": "photo/165.165.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 166, "title": "بنطلون ليجنز جديد رقم 166", "image1": "photo/166-S.webp", "image2": "photo/166.166.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس S.", "is_new": true },
-  { "id": 167, "title": "بنطلون ليجنز جديد رقم 167", "image1": "photo/167-M.webp", "image2": "photo/167.167.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 168, "title": "بنطلون ليجنز جديد رقم 168", "image1": "photo/168-XS.webp", "image2": "photo/168.168.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XS.", "is_new": true },
-  { "id": 170, "title": "بنطلون بأرجل واسعة جديد رقم 170", "image1": "photo/170-M.webp", "image2": "photo/170.170.webp", "price": "10,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون بأرجل واسعة عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 171, "title": "بنطلون ليجنز جديد رقم 171", "image1": "photo/171-M.webp", "image2": "photo/171.171.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 172, "title": "بنطلون ليجنز جديد رقم 172", "image1": "photo/172-XL.webp", "image2": "photo/172.172.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XL.", "is_new": true },
-  { "id": 173, "title": "بنطلون ليجنز جديد رقم 173", "image1": "photo/173-XS.webp", "image2": "photo/173.173.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XS.", "is_new": true },
-  { "id": 174, "title": "بنطلون ليجنز جديد رقم 174", "image1": "photo/174-M.webp", "image2": "photo/174.174.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 175, "title": "بنطلون ليجنز جديد رقم 175", "image1": "photo/175-M.webp", "image2": "photo/175.175.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 196, "title": "بنطلون ليجنز جديد رقم 196", "image1": "photo/196-XL.webp", "image2": "photo/196.196.webp", "price": "8,000", "size": "XL", "base_size": "XL", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XL.", "is_new": true },
-  { "id": 197, "title": "فستان جديد رقم 197", "image1": "photo/197-XS.webp", "image2": "photo/197.197.webp", "price": "12,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "قطعة فستان عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XS.", "is_new": true },
-  { "id": 198, "title": "فستان جديد رقم 198", "image1": "photo/198-XXL.webp", "image2": "photo/198.198.webp", "price": "12,000", "size": "XXL", "base_size": "XXL", "category": "dresses", "availability": "in stock", "description": "قطعة فستان عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XXL.", "is_new": true },
-  { "id": 200, "title": "فستان حوامل جديد رقم 200", "image1": "photo/200-M.webp", "image2": "photo/200.200.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "maternity", "availability": "in stock", "description": "قطعة فستان حوامل عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 201, "title": "بنطلون بأرجل واسعة جديد رقم 201", "image1": "photo/201-XS.webp", "image2": "photo/201.201.webp", "price": "10,000", "size": "XS", "base_size": "XS", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون بأرجل واسعة عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XS.", "is_new": true },
-  { "id": 202, "title": "بنطلون قماش جديد رقم 202", "image1": "photo/202-M.webp", "image2": "photo/202.202.webp", "price": "10,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون قماش عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 203, "title": "بنطلون بأرجل واسعة جديد رقم 203", "image1": "photo/203-M.webp", "image2": "photo/203.203.webp", "price": "10,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون بأرجل واسعة عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 204, "title": "بنطلون بأرجل واسعة جديد رقم 204", "image1": "photo/204-L.webp", "image2": "photo/204.204.webp", "price": "10,000", "size": "L", "base_size": "L", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون بأرجل واسعة عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس L.", "is_new": true },
-  { "id": 205, "title": "بنطلون قماش جديد رقم 205", "image1": "photo/205-M.webp", "image2": "photo/205.205.webp", "price": "10,000", "size": "M", "base_size": "M", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون قماش عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس M.", "is_new": true },
-  { "id": 206, "title": "فستان جديد رقم 206", "image1": "photo/206-XL.webp", "image2": "photo/206.206.webp", "price": "12,000", "size": "XL", "base_size": "XL", "category": "dresses", "availability": "in stock", "description": "قطعة فستان عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XL.", "is_new": true },
-  { "id": 207, "title": "بنطلون بأرجل واسعة جديد رقم 207", "image1": "photo/207-2XL.webp", "image2": "photo/207.207.webp", "price": "10,000", "size": "2XL", "base_size": "2XL", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون بأرجل واسعة عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس 2XL.", "is_new": true },
-  { "id": 208, "title": "فستان جديد رقم 208", "image1": "photo/208-XS.webp", "image2": "photo/208.208.webp", "price": "12,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "قطعة فستان عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XS.", "is_new": true },
-  { "id": 209, "title": "قميص نوم جديد رقم 209", "image1": "photo/209-XS.webp", "image2": "photo/209.209.webp", "price": "10,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "قطعة قميص نوم عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس XS.", "is_new": true },
-  { "id": 210, "title": "بنطلون ليجنز جديد رقم 210", "image1": "photo/210-S.webp", "image2": "photo/210.210.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس S.", "is_new": true },
-  { "id": 211, "title": "بنطلون ليجنز كابري جديد رقم 211", "image1": "photo/211-S.webp", "image2": "photo/211.211.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز كابري عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس S.", "is_new": true },
-  { "id": 212, "title": "بنطلون ليجنز جديد رقم 212", "image1": "photo/212-S.webp", "image2": "photo/212.212.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "قطعة بنطلون ليجنز عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس S.", "is_new": true },
-  { "id": 213, "title": "تي شيرت جديد رقم 213", "image1": "photo/213-S.webp", "image2": "photo/213.213.webp", "price": "4,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "قطعة تي شيرت عصرية جديدة ذات جودة عالية من Master Quality. متوفرة بمقاس S.", "is_new": true }
+// --- Product Data ---
+let products = [ 
+  { "id": 301, "title": "بلوزة فوشيا بليسيه بأكمام فخمة - رقم 1", "image1": "photo/1_M.webp", "image2": "photo/1-M.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة من البليسيه بلون فوشيا جذاب، تتميز بأكمام طويلة واسعة وياقة برباط أمامي. مثالية للمناسبات والإطلالات الراقية. قطعة رقم 1.", "is_new": true },
+  { "id": 302, "title": "بلوزة خضراء فاتحة مُخرّمة بأكمام بالون - رقم 2", "image1": "photo/2_XS.webp", "image2": "photo/2-XS.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية بلون أخضر ليموني فاتح، مصنوعة من قماش مُخرّم بنقشة زهور رقيقة. تتميز بأكمام منفوخة متوسطة الطول وياقة دائرية. قطعة رقم 2.", "is_new": true },
+  { "id": 303, "title": "كاميصول فوشيا بحافة دانتيل - رقم 3", "image1": "photo/3_2XL.webp", "image2": "photo/3-2XL.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "كاميصول ناعم بلون فوشيا زاهي، مزين بحافة دانتيل رقيقة على الياقة. مثالي للارتداء الداخلي أو كقطعة صيفية خفيفة. قطعة رقم 3.", "is_new": true },
+  { "id": 304, "title": "توب كروب أبيض بتطريز زهري رقيق - رقم 4", "image1": "photo/4_M.webp", "image2": "photo/4-M.webp", "price": "4,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "توب قصير (كروب توب) أنيق باللون الأبيض، مزين بتطريزات زهور صغيرة باللون الوردي والأخضر. مثالي لإطلالة عصرية وشبابية. قطعة رقم 4.", "is_new": true },
+  { "id": 305, "title": "كاميصول تركواز بحافة دانتيل - رقم 5", "image1": "photo/5_2xl.webp", "image2": "photo/5-2xl.webp", "price": "4,000", "size": "2XL", "base_size": "2XL", "category": "tops", "availability": "in stock", "description": "كاميصول ناعم بلون تركواز منعش، مزين بحافة دانتيل رقيقة على الياقة. قطعة أساسية مريحة وعملية. قطعة رقم 5.", "is_new": true },
+  { "id": 306, "title": "فستان أخضر قصير مورد بنقشة الأقحوان - رقم 6", "image1": "photo/6_S.webp", "image2": "photo/6-S.webp", "price": "12,000", "size": "S", "base_size": "S", "category": "dresses", "availability": "in stock", "description": "فستان قصير وجذاب باللون الأخضر، مزين بطبعة زهور الأقحوان البيضاء. تتميز بأكمام طويلة وياقة V بتصميم لف. قطعة رقم 6.", "is_new": true },
+  { "id": 307, "title": "توب أبيض مُخرّم بياقة مربعة وأكمام كشكشة - رقم 7", "image1": "photo/7_M.webp", "image2": "photo/7-M.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "توب أبيض قصير (كروب توب) بتطريز مُخرّم (برودري أنجليز)، يتميز بياقة مربعة وأكمام قصيرة مكشكشة. قطعة رقم 7.", "is_new": true },
+  { "id": 308, "title": "فستان تي شيرت أخضر زيتوني بخصر مرتفع - رقم 8", "image1": "photo/8_M.webp", "image2": "photo/8-M.webp", "price": "12,000", "size": "M", "base_size": "M", "category": "dresses", "availability": "in stock", "description": "فستان ميدي عملي بلون أخضر زيتوني باهت، مصمم بقصة تي شيرت مع خصر مرتفع مزموم وتنورة انسيابية. قطعة رقم 8.", "is_new": true },
+  { "id": 309, "title": "توب حوامل أسود مضلع بياقة V - رقم 9", "image1": "photo/9_M.webp", "image2": "photo/9-M.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "maternity", "availability": "in stock", "description": "توب مريح للحوامل باللون الأسود من قماش مضلع، يتميز بياقة V وأكمام قصيرة. قطعة رقم 9.", "is_new": true },
+  { "id": 310, "title": "تيشيرت رمادي فاتح بطبعة جرافيك - رقم 10", "image1": "photo/10_S.webp", "image2": "photo/10-S.webp", "price": "4,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "تيشيرت كاجوال بلون رمادي فاتح (ميلانج)، مزين بطبعة جرافيك أمامية. قطعة رقم 10.", "is_new": true },
+  { "id": 311, "title": "توب تانك أبيض أساسي بياقة واسعة - رقم 11", "image1": "photo/11_L.webp", "image2": "photo/11-L.webp", "price": "4,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "توب تانك أساسي باللون الأبيض، بدون أكمام مع ياقة دائرية واسعة وحمالات عريضة. قطعة رقم 11.", "is_new": true },
+  { "id": 312, "title": "توب تانك أزرق فاتح بياقة واسعة - رقم 12", "image1": "photo/12_M.webp", "image2": "photo/12-M.webp", "price": "4,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "توب تانك بلون أزرق فاتح أو تركواز باهت، بياقة دائرية واسعة وقماش مريح. قطعة رقم 12.", "is_new": true },
+  { "id": 313, "title": "بلوزة بيج ساتان بأكمام طويلة وعقدة أمامية - رقم 13", "image1": "photo/13_L.webp", "image2": "photo/13-L.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون بيج من قماش الساتان اللامع، تتميز بأكمام طويلة وياقة V مع عقدة أمامية. قطعة رقم 13.", "is_new": true },
+  { "id": 314, "title": "بنطلون ليجنز رياضي أسود بخصر عالي - رقم 14", "image1": "photo/14_S.webp", "image2": "photo/14-S.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "trousers", "availability": "in stock", "description": "بنطلون ليجنز رياضي باللون الأسود، يتميز بخصر عالي وقماش عملي مناسب للحركة. قطعة رقم 14.", "is_new": true },
+  { "id": 315, "title": "توب أخضر وأبيض منقوش بدون أكمام بكشكشة - رقم 15", "image1": "photo/15_L.webp", "image2": "photo/15-L.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "توب صيفي بدون أكمام بنقشة تجريدية باللونين الأخضر والأبيض، مزين بكشكشة على الأكتاف وياقة V. قطعة رقم 15.", "is_new": true },
+  { "id": 316, "title": "بلوزة لافندر بأكمام طويلة وياقة عالية مكشكشة - رقم 16", "image1": "photo/16_L.webp", "image2": "photo/16-L.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون لافندر فاتح، تتميز بياقة عالية مكشكشة وأكمام طويلة مع تفاصيل كشكشة. قطعة رقم 16.", "is_new": true },
+  { "id": 317, "title": "بلوزة بيج بتصميم لف أمامي وأكمام قصيرة - رقم 17", "image1": "photo/17_M.webp", "image2": "photo/17-M.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة بلون بيج فاتح (تان)، تتميز بأكمام قصيرة وياقة V مع تصميم لف أمامي أو رباط جانبي. قطعة رقم 17.", "is_new": true },
+  { "id": 318, "title": "بنطلون بيج كلاسيكي بفتحة كاحل - رقم 19", "image1": "photo/19_2xl.webp", "image2": "photo/19-2xl.webp", "price": "10,000", "size": "2XL", "base_size": "2XL", "category": "trousers", "availability": "in stock", "description": "بنطلون أنيق بلون بيج فاتح، يتميز بقصة كلاسيكية وفتحة صغيرة عند الكاحل لمزيد من الأناقة. مثالي للعمل أو المناسبات. قطعة رقم 19.", "is_new": true },
+  { "id": 319, "title": "فستان أحمر قصير بقصة A وأكمام منفوشة - رقم 20", "image1": "photo/20_Xs.webp", "image2": "photo/20-Xs.webp", "price": "12,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "فستان قصير بلون أحمر زاهي، يتميز بقصة A-line وياقة V وأكمام قصيرة ذات نفخة بسيطة. مثالي لإطلالة صيفية مفعمة بالحيوية. قطعة رقم 20.", "is_new": true },
+  { "id": 320, "title": "تيشيرت أساسي بيج فاتح (نود) - رقم 21", "image1": "photo/21_Xs.webp", "image2": "photo/21-Xs.webp", "price": "4,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "تيشيرت أساسي ومريح بلون بيج فاتح (نود)، بياقة دائرية وأكمام قصيرة. قطعة عملية لا غنى عنها في خزانة ملابسك. قطعة رقم 21.", "is_new": true },
+  { "id": 321, "title": "بلوزة وردي مغبر بأكمام طويلة وتصميم لف - رقم 22", "image1": "photo/22_L.webp", "image2": "photo/22-L.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون وردي مغبر، تتميز بأكمام طويلة وتصميم لف أمامي وياقة V عميقة. مثالية لإطلالة أنثوية ناعمة. قطعة رقم 22.", "is_new": true },
+  { "id": 322, "title": "بلوزة حوامل بيضاء بتصميم لف مريح - رقم 23", "image1": "photo/23_S.webp", "image2": "photo/23-S.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "maternity", "availability": "in stock", "description": "بلوزة مريحة وأنيقة للحوامل بلون أبيض، تتميز بتصميم لف يوفر مساحة وراحة. مثالية لفترة الحمل. قطعة رقم 23.", "is_new": true },
+  { "id": 323, "title": "بلوزة بيضاء بكشكشة وأكتاف مكشوفة - رقم 24", "image1": "photo/24_L.webp", "image2": "photo/24-L.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة صيفية جذابة باللون الأبيض، تتميز بتصميم أكتاف مكشوفة (أوف شولدر) وكشكشة عريضة وبارزة. قطعة رقم 24.", "is_new": true },
+  { "id": 324, "title": "بلوزة جاكار منقوشة (أخضر وأصفر) بدون أكمام - رقم 25", "image1": "photo/25_L.webp", "image2": "photo/25-L.webp", "price": "8,000", "size": "L", "base_size": "L", "category": "tops", "availability": "in stock", "description": "بلوزة فريدة من قماش الجاكار المنقوش بألوان الأخضر والأصفر، بدون أكمام مع ياقة قميص كلاسيكية وأزرار أمامية. قطعة رقم 25.", "is_new": true },
+  { "id": 325, "title": "تنورة ماكسي انسيابية بلون بيج فاتح - رقم 26", "image1": "photo/26_Xl.webp", "image2": "photo/26-Xl.webp", "price": "10,000", "size": "XL", "base_size": "XL", "category": "skirts", "availability": "in stock", "description": "تنورة ماكسي أنيقة وانسياابية بلون بيج فاتح، تتميز بقصة واسعة ومريحة. مثالية لإطلالات صيفية أو مناسبات خفيفة. قطعة رقم 26.", "is_new": true },
+  { "id": 326, "title": "تيشيرت أساسي رمادي غامق - رقم 27", "image1": "photo/27_M.webp", "image2": "photo/27-M.webp", "price": "4,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "تيشيرت أساسي وعملي بلون رمادي غامق (فحمي)، بياقة دائرية وأكمام قصيرة. قطعة أساسية تناسب مختلف الإطلالات. قطعة رقم 27.", "is_new": true },
+  { "id": 327, "title": "بلوزة حوامل وردية ناعمة برباط خصر - رقم 28", "image1": "photo/28_S.webp", "image2": "photo/28-S.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "maternity", "availability": "in stock", "description": "بلوزة أنيقة ومريحة للحوامل بلون وردي فاتح، تتميز بأكمام طويلة وتصميم لف أمامي مع رباط عند الخصر. قطعة رقم 28.", "is_new": true },
+  { "id": 328, "title": "توب تركواز بدون أكمام بصدرية مزمومة - رقم 29", "image1": "photo/29_Xl.webp", "image2": "photo/29-Xl.webp", "price": "4,000", "size": "XL", "base_size": "XL", "category": "tops", "availability": "in stock", "description": "توب صيفي بلون تركواز زاهي، بدون أكمام مع ياقة V وصدرية مزمومة (سموكيد) لمظهر جذاب. قطعة رقم 29.", "is_new": true },
+  { "id": 329, "title": "بلوزة خمرية بأكمام طويلة وياقة V - رقم 30", "image1": "photo/30_M.webp", "image2": "photo/30-M.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة أنيقة بلون خمري داكن، تتميز بأكمام طويلة وياقة قميص مفتوحة على شكل V وقصة انسيابية. قطعة رقم 30.", "is_new": true },
+  { "id": 330, "title": "بلوزة سوداء بنقشة لامعة وياقة V - رقم 31", "image1": "photo/31_XS.webp", "image2": "photo/31-XS.webp", "price": "8,000", "size": "XS", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "بلوزة سوداء أنيقة تتميز بنقشة أو ملمس لامع وياقة على شكل V. مثالية لإضافة لمسة بريق لإطلالتك. قطعة رقم 31.", "is_new": true },
+  { "id": 331, "title": "بلوزة بيضاء بنقشة تجريدية وياقة عالية مكشكشة - رقم 32", "image1": "photo/32_M.webp", "image2": "photo/32-M.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "بلوزة بيضاء عصرية بنقشة تجريدية باللونين الأسود والبيج، تتميز بياقة عالية مكشكشة وأكمام طويلة منفوخة. قطعة رقم 32.", "is_new": true },
+  { "id": 332, "title": "قميص كلاسيكي أزرق وأبيض بنقشة بيزلي - رقم 33", "image1": "photo/33_M.webp", "image2": "photo/33-M.webp", "price": "8,000", "size": "M", "base_size": "M", "category": "tops", "availability": "in stock", "description": "قميص كلاسيكي أنيق باللونين الأزرق الفاتح والأبيض، مزين بنقشة بيزلي مميزة. بأكمام طويلة وياقة قميص تقليدية. قطعة رقم 33.", "is_new": true },
+  { "id": 333, "title": "قميص أبيض كلاسيكي بأزرار وقصة مريحة - رقم 34", "image1": "photo/34_XS.webp", "image2": "photo/34-S.webp", "price": "8,000", "size": "XS (متوفر ايضاً S)", "base_size": "XS", "category": "tops", "availability": "in stock", "description": "قميص أبيض كلاسيكي وعملي، يتميز بأزرار أمامية وياقة قميص وقصة مريحة. الأكمام طويلة. قطعة رقم 34.", "is_new": true },
+  { "id": 334, "title": "قميص أبيض مطبوع بنقشة الخيول الملونة - رقم 35", "image1": "photo/35_S.webp", "image2": "photo/35-S.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "قميص أبيض فريد بأكمام طويلة وياقة قميص، مزين بطبعة ملونة وجريئة لنقوش الخيول. قطعة رقم 35.", "is_new": true },
+  { "id": 335, "title": "قميص أزرق فاتح (شامبراي) كلاسيكي - رقم 36", "image1": "photo/36_S.webp", "image2": "photo/36-S.webp", "price": "8,000", "size": "S", "base_size": "S", "category": "tops", "availability": "in stock", "description": "قميص كلاسيكي بلون أزرق فاتح (يشبه قماش الشامبراي أو الدنيم الخفيف)، بأكمام طويلة وياقة قميص وأزرار أمامية. قطعة رقم 36.", "is_new": true },
+  { "id": 336, "title": "فستان طويل ملون بنقشة بيزلي زاهية - رقم 37", "image1": "photo/37_2xl.webp", "image2": "photo/37-2xl.webp", "price": "12,000", "size": "2XL", "base_size": "2XL", "category": "dresses", "availability": "in stock", "description": "فستان طويل (ميدي أو ماكسي) مفعم بالألوان بنقشة بيزلي أو نقوش موردة مجردة. يتميز بياقة V وأكمام قصيرة وتنورة واسعة. قطعة رقم 37.", "is_new": true },
+  { "id": 337, "title": "فستان ماكسي انسيابي بلون لافندر فاتح - رقم 38", "image1": "photo/38_XL.webp", "image2": "photo/38-XL.webp", "price": "12,000", "size": "XL", "base_size": "XL", "category": "dresses", "availability": "in stock", "description": "فستان ماكسي أنيق وانسياابي بلون لافندر فاتح، يتميز بياقة V وأكمام قصيرة مكشكشة وقصة مريحة مع خصر مرتفع. قطعة رقم 38.", "is_new": true },
+  { "id": 338, "title": "بنطلون جينز حوامل كحلي بقصة ضيقة - رقم 39", "image1": "photo/39_M.webp", "image2": "photo/39-M.webp", "price": "10,000", "size": "M", "base_size": "M", "category": "maternity", "availability": "in stock", "description": "بنطلون جينز مخصص للحوامل بلون أزرق داكن (كحلي)، يتميز بقصة ضيقة (سكيني) وحزام خصر مطاطي عالي لتوفير الدعم والراحة. قطعة رقم 39.", "is_new": true },
+  { "id": 339, "title": "بنطلون جينز حوامل أسود بقصة ضيقة - رقم 40", "image1": "photo/40_L.webp", "image2": "photo/40-L.webp", "price": "10,000", "size": "L", "base_size": "L", "category": "maternity", "availability": "in stock", "description": "بنطلون جينز عملي للحوامل باللون الأسود، بقصة ضيقة (سكيني) مع حزام خصر مطاطي عالي ومريح. قطعة رقم 40.", "is_new": true },
+  { "id": 340, "title": "فستان قميص كاروهات (وردي وأبيض) - رقم 41", "image1": "photo/41_L.webp", "image2": "photo/41-L.webp", "price": "12,000", "size": "L", "base_size": "L", "category": "dresses", "availability": "in stock", "description": "فستان أنيق بتصميم قميص (شيرت دريس) بنقشة كاروهات باللونين الوردي والأبيض. يتميز بياقة V وأكمام طويلة وأزرار أمامية. قطعة رقم 41.", "is_new": true },
+  { "id": 341, "title": "فستان قميص ميدي مورد بخلفية داكنة - رقم 42", "image1": "photo/42_L.webp", "image2": "photo/42-L.webp", "price": "12,000", "size": "L", "base_size": "L", "category": "dresses", "availability": "in stock", "description": "فستان ميدي بتصميم قميص (شيرت دريس) جذاب، يتميز بطبعة زهور ملونة على خلفية داكنة، مع ياقة قميص وأكمام طويلة وحزام قماشي. قطعة رقم 42.", "is_new": true },
+  { "id": 342, "title": "قميص نوم أبيض مورد بحمالات رفيعة - رقم 43", "image1": "photo/43_xs.webp", "image2": "photo/43-xs.webp", "price": "10,000", "size": "XS", "base_size": "XS", "category": "dresses", "availability": "in stock", "description": "قميص نوم ناعم أو فستان منزلي خفيف باللون الأبيض، مزين بطبعة زهور رقيقة باللونين الوردي والأخضر. يتميز بحمالات سباغيتي وياقة V. قطعة رقم 43.", "is_new": true }
 ];
-
     // --- DOM Elements ---
     const htmlElement = document.documentElement;
     const header = document.getElementById('main-header');
@@ -635,6 +959,7 @@
     const mobileNavMenu = document.getElementById('mobile-nav-menu');
     const mobileNavMenuLinks = mobileNavMenu?.querySelectorAll('a.nav-link');
     const productGrid = document.getElementById('product-grid-main');
+    const categoryCardsContainer = document.getElementById('category-cards-container');
     const categoryHeader = document.getElementById('category-header');
     const categoryTitleMain = document.getElementById('category-title-main');
     const categoryDescription = document.getElementById('category-description');
@@ -684,20 +1009,65 @@
     const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
     const privacyPolicyLink = document.getElementById('privacy-policy-link');
     const privacyPolicyModalOverlay = document.getElementById('privacy-policy-modal');
-    const privacyPolicyModalContent = privacyPolicyModalOverlay?.querySelector('.modal-content');
     const privacyPolicyModalCloseButton = document.getElementById('modal-close-button-privacy');
     const privacyModalCloseBtnBottom = document.getElementById('privacy-modal-close-btn-bottom');
     const startShoppingBtnCart = document.getElementById('start-shopping-btn-cart');
     const returnPolicyLink = document.getElementById('return-policy-link');
     const returnPolicyModalOverlay = document.getElementById('return-policy-modal');
-    const returnPolicyModalContent = returnPolicyModalOverlay?.querySelector('.modal-content');
     const returnPolicyModalCloseButton = document.getElementById('modal-close-button-return');
     const returnModalCloseBtnBottom = document.getElementById('return-modal-close-btn-bottom');
     const sizeGuideFooterLink = document.getElementById('size-guide-footer-link');
     const sizeGuideModalOverlay = document.getElementById('size-guide-modal');
-    const sizeGuideModalContent = sizeGuideModalOverlay?.querySelector('.modal-content');
     const sizeGuideModalCloseButton = document.getElementById('modal-close-button-sizeguide');
     const sizeGuideModalCloseBtnBottom = document.getElementById('sizeguide-modal-close-btn-bottom');
+
+    // --- DOM Elements for Product Management ---
+    const productManagementToggleBtn = document.getElementById('product-management-toggle');
+    const productManagementPanel = document.getElementById('product-management-panel');
+    const productManagementPanelContent = productManagementPanel?.querySelector('.admin-modal-content');
+    const closeManagementPanelBtn = document.getElementById('close-management-panel-btn');
+    const addNewProductBtn = document.getElementById('add-new-product-btn');
+    const exportProductDataBtn = document.getElementById('export-product-data-btn');
+    const importProductDataBtn = document.getElementById('import-product-data-btn'); 
+    const productManagementTableBody = productManagementPanel?.querySelector('#product-management-table tbody');
+    const adminProductSearchInput = document.getElementById('admin-product-search-input'); 
+    const adminTotalProductsCount = document.getElementById('admin-total-products-count'); 
+
+
+    const productManagementFormContainer = document.getElementById('product-management-form-container');
+    const productForm = document.getElementById('product-form'); 
+    const productFormTitle = document.getElementById('product-form-title');
+    const closeProductFormBtn = document.getElementById('close-product-form-btn');
+    const cancelProductFormBtn = document.getElementById('cancel-product-form-btn');
+    // Form fields
+    const pfId = document.getElementById('pf-id');
+    const pfTitle = document.getElementById('pf-title');
+    const pfPrice = document.getElementById('pf-price');
+    const pfImage1 = document.getElementById('pf-image1');
+    const pfImage2 = document.getElementById('pf-image2');
+    const pfSize = document.getElementById('pf-size');
+    const pfBaseSize = document.getElementById('pf-base_size');
+    const pfCategory = document.getElementById('pf-category');
+    const pfAvailability = document.getElementById('pf-availability');
+    const pfDescription = document.getElementById('pf-description');
+    const pfIsNew = document.getElementById('pf-is_new');
+    const pfUpdateIdContainer = document.getElementById('pf-update-id-container');
+    const pfUpdateId = document.getElementById('pf-update_id');
+
+    const productExportModal = document.getElementById('product-export-modal');
+    const productExportModalContent = productExportModal?.querySelector('.admin-modal-content');
+    const closeExportModalBtn = document.getElementById('close-export-modal-btn');
+    const downloadCsvBtn = document.getElementById('download-csv-btn'); 
+
+    const productImportModal = document.getElementById('product-import-modal');
+    const productImportModalContent = productImportModal?.querySelector('.admin-modal-content');
+    const closeImportModalBtn = document.getElementById('close-import-modal-btn');
+    const csvFileInput = document.getElementById('csv-file-input'); 
+    const csvFileNameDisplay = document.getElementById('csv-file-name-display');
+    const processImportBtn = document.getElementById('process-import-btn');
+    const cancelImportBtn = document.getElementById('cancel-import-btn');
+    const importErrorMessage = document.getElementById('import-error-message');
+
 
     // --- State & Constants ---
     const whatsappNumber = '9647778076465';
@@ -706,20 +1076,36 @@
     let cart = JSON.parse(localStorage.getItem('mqCart_v4')) || [];
     let cartItemsForOrder = [];
     let displayedProductCount = 0;
-    const productsPerLoad = 12; // Number of products to load each time
+    const productsPerLoad = 12; 
     let currentFilteredProducts = [];
     let currentSearchTerm = '';
     let currentSizeFilter = 'all';
     let isMobileMenuOpen = false;
-    let activeModalOrOverlay = null;
-    let isPanelOpening = false; // Flag to prevent double opening
-    let swiperInstance = null; // Hold the swiper instance for arrivals
-    let detailSwiperInstance = null; // Hold the swiper instance for product detail panel
-    const categoryDescriptions = { all: "تصفحي جميع منتجاتنا المختارة بعناية فائقة.", trousers: "تشكيلة واسعة من البناطيل المريحة والأنيقة لجميع إطلالاتك.", dresses: "فساتين أنيقة وعصرية لمختلف المناسبات، من الكاجوال إلى السهرة.", maternity: "ملابس حوامل مصممة لتوفير الراحة والأناقة خلال فترة الحمل.", tops: "مجموعة متنوعة من التوبات والبلوزات والقمصان العصرية والكلاسيكية.", };
-    const MAX_RECENTLY_VIEWED = 8; // Max items in Recently Viewed
+    let activeModalOrOverlay = null; 
+    let activeManagementModal = null; 
+    let isPanelOpening = false; 
+    let swiperInstance = null; 
+    let detailSwiperInstance = null; 
+    const categoryData = {
+        all: { name: "الكل", icon: "fas fa-tags", description: "تصفحي جميع منتجاتنا المختارة بعناية فائقة." },
+        tops: { name: "توبات", icon: "fas fa-tshirt", description: "مجموعة متنوعة من التوبات والبلوزات والقمصان العصرية والكلاسيكية." },
+        dresses: { name: "فساتين", icon: "fas fa-vest-patches", description: "فساتين أنيقة وعصرية لمختلف المناسبات، من الكاجوال إلى السهرة." },
+        trousers: { name: "بناطيل", icon: "fas fa-user-secret", description: "تشكيلة واسعة من البناطيل المريحة والأنيقة لجميع إطلالاتك." },
+        maternity: { name: "حوامل", icon: "fas fa-person-pregnant", description: "ملابس حوامل مصممة لتوفير الراحة والأناقة خلال فترة الحمل." },
+        skirts: { name: "تنانير", icon: "fas fa-chess-queen", description: "أحدث موديلات التنانير المتنوعة لجميع الأذواق والمناسبات." }
+    };
+    const MAX_RECENTLY_VIEWED = 8; 
+    let isManagementPanelOpen = false;
+    let editingProductId = null; 
+    // const ADMIN_PASSWORD = "yourSuperSecretPassword123"; // Replaced by Firebase Auth
+    // let isAdminAuthenticated = false; // Replaced by Firebase Auth `currentUser`
+    const ALLOWED_ADMIN_EMAIL = "soso.lovr66@gmail.com"; // <<< YOUR ADMIN EMAIL HERE
+    let currentUser = null; // Firebase current user object
+
+    let adminProductSearchTerm = '';
+
 
     // --- Utility Functions ---
-    // Debounce function to limit the rate at which a function can fire
     const debounce = (func, wait) => {
       let timeout;
       return (...args) => {
@@ -727,18 +1113,18 @@
         timeout = setTimeout(() => func.apply(this, args), wait);
       };
     };
-    // Format price string (e.g., "10,000") to localized number string
     const formatPrice = (priceString) => {
         try {
-            // Remove commas and parse, then format for Iraqi locale
-            return parseInt(String(priceString).replace(/,/g, ''), 10).toLocaleString('ar-IQ');
+            // Attempt to remove non-numeric characters except comma and period, then parse
+            const cleanedPrice = String(priceString).replace(/[^\d,.]/g, '').replace(/,/g, '');
+            const num = parseFloat(cleanedPrice);
+            if (isNaN(num)) return priceString; // If still NaN, return original
+            return num.toLocaleString('ar-IQ'); // Use appropriate locale for formatting
         } catch {
-            return priceString; // Return original if parsing fails
+            return priceString; 
         }
     };
-    // Helper to check if a URL seems valid (basic check)
     const isValidImageUrl = (url) => {
-        // Basic check: not null, not empty string, not a placeholder
         return url && typeof url === 'string' && url.trim() !== '' && !url.startsWith('https://placehold.co');
     };
 
@@ -756,47 +1142,37 @@
         if (icon) icon.className = 'fas fa-sun text-lg';
         localStorage.setItem('mqTheme_v2', 'light');
       }
-       // Update placeholder images based on theme
         document.querySelectorAll('img[src^="https://placehold.co"]').forEach(img => {
             const currentSrc = img.getAttribute('src');
-            // Only update if it's a placeholder that might need theme change
             if (currentSrc && img.hasAttribute('onerror')) {
                 let newSrc = currentSrc;
                 const urlParts = currentSrc.split('/');
                 let bgIndex = urlParts.findIndex(part => part.length === 6 && /^[0-9A-Fa-f]{6}$/.test(part));
                 let textIndex = bgIndex + 1;
-
                 if (bgIndex > -1 && textIndex < urlParts.length) {
-                    // Define color mappings
-                    const lightBg = 'F8FAFC'; const darkBg = '1E293B'; // Main background placeholders
-                    const lightMuted = '6B7280'; const darkMuted = '9CA3AF'; // Muted text placeholders
-                    const primary = '0891B2'; const primaryLight = '67E8F9'; // Primary color placeholders
-                    const lightSurfaceBg = 'E5E7EB'; const darkSurfaceBg = '374151'; // Surface placeholders (like cart items)
-                    const errorPlaceholder = '7F1D1D'; // A potential error color placeholder text
-
+                    const lightBg = 'F8FAFC'; const darkBg = '1E293B'; 
+                    const lightMuted = '6B7280'; const darkMuted = '9CA3AF';
+                    const primary = '0891B2'; const primaryLight = '67E8F9';
+                    const lightSurfaceBg = 'E5E7EB'; const darkSurfaceBg = '374151';
+                    const errorPlaceholder = '7F1D1D'; 
                     let currentBg = urlParts[bgIndex].toUpperCase();
                     let currentText = urlParts[textIndex].toUpperCase();
-
                     if (theme === 'dark') {
                         if (currentBg === lightBg) urlParts[bgIndex] = darkBg;
                         if (currentBg === lightSurfaceBg) urlParts[bgIndex] = darkSurfaceBg;
-
                         if (currentText === primary) urlParts[textIndex] = primaryLight;
                         if (currentText === lightMuted) urlParts[textIndex] = darkMuted;
-                        if (currentText === errorPlaceholder) urlParts[textIndex] = darkMuted; // Change error text color too if needed
-
-                    } else { // Light theme
+                        if (currentText === errorPlaceholder) urlParts[textIndex] = darkMuted; 
+                    } else { 
                         if (currentBg === darkBg) urlParts[bgIndex] = lightBg;
                          if (currentBg === darkSurfaceBg) urlParts[bgIndex] = lightSurfaceBg;
-
                         if (currentText === primaryLight) urlParts[textIndex] = primary;
                         if (currentText === darkMuted) urlParts[textIndex] = lightMuted;
-                        if (currentText === errorPlaceholder) urlParts[textIndex] = errorPlaceholder; // Keep error text color same maybe
+                        if (currentText === errorPlaceholder) urlParts[textIndex] = errorPlaceholder;
                     }
                     newSrc = urlParts.join('/');
                 }
-                // Only update src if it changed to avoid unnecessary reloads
-                if (newSrc !== currentSrc && img.getAttribute('src') !== newSrc) { // Extra check
+                if (newSrc !== currentSrc && img.getAttribute('src') !== newSrc) {
                      img.src = newSrc;
                  }
             }
@@ -812,34 +1188,25 @@
         if (!cartCountSpan || !cartButton) return;
         const count = cart.length;
         cartCountSpan.textContent = count;
-        // Use Tailwind classes for visibility/transform
         cartCountSpan.classList.toggle('scale-100', count > 0);
         cartCountSpan.classList.toggle('scale-0', count === 0);
         cartCountSpan.classList.toggle('opacity-100', count > 0);
         cartCountSpan.classList.toggle('opacity-0', count === 0);
-        cartButton.classList.toggle('has-items', count > 0); // Keep custom class for icon animation if needed
+        cartButton.classList.toggle('has-items', count > 0);
     };
     const isInCart = (productId) => cart.includes(Number(productId));
-
-    // Update the visual state (icon, text, class) of Add/Remove to Cart buttons
     const updateCartButtonIcon = (btn, isNowInCart) => {
       if (!btn) return;
       const icon = btn.querySelector('i');
       if (icon) {
         const baseIconClass = btn.classList.contains('btn-icon') || btn.classList.contains('action-btn') ? 'text-base' : 'text-lg';
-        const checkIconClass = 'fas fa-check-circle text-success-DEFAULT dark:text-success-light'; // Adjusted for Tailwind
-        const addIconClass = 'fas fa-cart-plus';
-        // Clear existing FontAwesome classes and add new ones
-        icon.className = ''; // Clear all classes first
+        icon.className = ''; 
         icon.classList.add('fas', isNowInCart ? 'fa-check-circle' : 'fa-cart-plus', baseIconClass);
         if (isNowInCart) {
-          icon.classList.add('text-success-DEFAULT', 'dark:text-success-light'); // Use Tailwind colors directly
+          icon.classList.add('text-success-DEFAULT', 'dark:text-success-light'); 
         } else {
-            // Ensure text color resets if not success
             icon.classList.remove('text-success-DEFAULT', 'dark:text-success-light');
         }
-
-        // Simple scale animation on change (can use Tailwind animate-ping or similar)
         icon.classList.add('transition-transform', 'duration-200', 'ease-in-out');
         requestAnimationFrame(() => {
           icon.classList.add('scale-125');
@@ -848,28 +1215,21 @@
       }
       const ariaLabel = isNowInCart ? 'إزالة من السلة' : 'إضافة للسلة';
       btn.setAttribute('aria-label', ariaLabel);
-      if (btn.title) btn.title = ariaLabel; // Update tooltip if present
-
-      // Specific updates for the detail panel button
+      if (btn.title) btn.title = ariaLabel; 
       if (btn.id === 'detail-panel-cart-btn') {
           const textSpan = btn.querySelector('.button-text');
           if (textSpan) textSpan.textContent = isNowInCart ? 'تمت الإضافة (إزالة؟)' : 'إضافة للسلة';
-           // Change button style based on state using custom classes
            btn.classList.toggle('btn-success', isNowInCart);
            btn.classList.toggle('btn-secondary', !isNowInCart);
-           // Ensure only one style is active
            if (isNowInCart) btn.classList.remove('btn-secondary'); else btn.classList.remove('btn-success');
       }
-      btn.classList.toggle('is-in-cart', isNowInCart); // Keep custom class if needed for other logic
+      btn.classList.toggle('is-in-cart', isNowInCart); 
     };
-
-     // Add/Remove item from cart, update UI and localStorage
      const toggleCart = (productId) => {
         const numProductId = Number(productId);
         const index = cart.indexOf(numProductId);
         const wasInCart = index > -1;
         const isNowInCart = !wasInCart;
-
         if (wasInCart) {
             cart.splice(index, 1);
         } else {
@@ -877,18 +1237,14 @@
         }
         localStorage.setItem('mqCart_v4', JSON.stringify(cart));
         updateCartCount();
-
-        // Update all relevant buttons instantly
         document.querySelectorAll(`.cart-btn[data-id="${numProductId}"], .cart-remove-btn[data-id="${numProductId}"], #detail-panel-cart-btn[data-id="${numProductId}"]`)
              .forEach(btn => {
                 if (btn.classList.contains('cart-remove-btn')) {
-                    // Animate removal in cart modal using Tailwind classes if possible, or keep CSS transitions
                     if (wasInCart) {
                         const cartItemDiv = btn.closest('.cart-item');
                         if (cartItemDiv) {
-                            // Apply transitions using CSS classes or inline styles as before
                             cartItemDiv.style.transition = 'opacity 0.3s ease, transform 0.3s ease, max-height 0.4s ease, padding 0.3s ease, margin 0.3s ease, border 0.3s ease';
-                            requestAnimationFrame(() => { // Ensure transition applies
+                            requestAnimationFrame(() => { 
                                 cartItemDiv.style.opacity = '0';
                                 cartItemDiv.style.transform = 'translateX(20px) scale(0.95)';
                                 cartItemDiv.style.maxHeight = '0px';
@@ -898,51 +1254,40 @@
                             });
                             setTimeout(() => {
                                 cartItemDiv.remove();
-                                renderCartItems(); // Re-render to update total and potentially show empty message
-                            }, 400); // Match max-height duration
+                                renderCartItems(); 
+                            }, 400); 
                         }
                     }
                 } else {
-                    updateCartButtonIcon(btn, isNowInCart); // Update add/check icon state
+                    updateCartButtonIcon(btn, isNowInCart); 
                 }
             });
-
-        // Refresh cart modal if it's open and an item was ADDED (removal is handled above)
         if (cartModalOverlay?.classList.contains('visible') && isNowInCart) {
              renderCartItems();
         }
     };
 
     // --- Create Product Card HTML ---
-    // UPDATED: Now includes two images for hover effect
     const createProductCard = (product, isCarousel = false) => {
         if (!product) return null;
-
         const cardWrapper = document.createElement('div');
         cardWrapper.className = `product-card group flex flex-col bg-light-surface dark:bg-dark-surface rounded-xl overflow-hidden shadow-card border border-light-border/30 dark:border-dark-border/30 transition-all duration-medium ease-[cubic-bezier(0.33,1,0.68,1)] hover:shadow-card-hover hover:-translate-y-1.5 hover:border-primary/40 dark:hover:border-primary-light/40 ${isCarousel ? 'swiper-product-card max-w-[260px]' : 'section-animate'}`;
         cardWrapper.dataset.id = product.id;
         cardWrapper.dataset.category = product.category;
         cardWrapper.dataset.base_size = product.base_size;
         cardWrapper.dataset.title = product.title.toLowerCase();
-
         const isCurrentlyInCart = isInCart(product.id);
         const theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
         const placeholderBg = theme === 'dark' ? '1E293B' : 'F8FAFC';
         const placeholderText = theme === 'dark' ? '9CA3AF' : '6B7280';
         const placeholderImg1 = `https://placehold.co/400x400/${placeholderBg}/${placeholderText}?text=صورة+1&font=cairo`;
         const placeholderImg2 = `https://placehold.co/400x400/${placeholderBg}/${placeholderText}?text=صورة+2&font=cairo`;
-
-        // Use image1 as primary, image2 as hover (or fallback to image1 if image2 is invalid/same)
         const primaryImageSrc = product.image1 || placeholderImg1;
-        const hoverImageSrc = (isValidImageUrl(product.image2) && product.image2 !== product.image1) ? product.image2 : primaryImageSrc; // Fallback to primary if hover is invalid or same
-
+        const hoverImageSrc = (isValidImageUrl(product.image2) && product.image2 !== product.image1) ? product.image2 : primaryImageSrc; 
         cardWrapper.innerHTML = `
             <div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700 product-card-image-container">
-                 <!-- Primary Image -->
                  <img src="${primaryImageSrc}" alt="${product.title}" loading="lazy" class="product-card-img w-full h-full object-contain" onerror="if(this.src !== '${placeholderImg1}') { this.src='${placeholderImg1}'; this.classList.add('img-error', 'object-scale-down'); } this.onerror=null;">
-                 <!-- Hover Image -->
                  <img src="${hoverImageSrc}" alt="${product.title} - عرض آخر" loading="lazy" class="product-card-img-hover w-full h-full object-contain" onerror="if(this.src !== '${placeholderImg2}') { this.src='${placeholderImg2}'; this.classList.add('img-error', 'object-scale-down'); } this.onerror=null;">
-
                 <div class="badges-container absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
                     ${product.availability === 'in stock' ? `<span class="badge badge-stock text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-success-DEFAULT text-success-text">متوفر</span>` : `<span class="badge badge-out-stock text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-error-DEFAULT text-error-text">غير متوفر</span>`}
                     ${product.is_new ? `<span class="badge badge-new text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-info-DEFAULT text-info-text">جديد <i class="fas fa-fire text-xs"></i></span>` : ''}
@@ -964,15 +1309,11 @@
                 </p>
             </div>
         `;
-
-        // Add event listeners directly to the buttons within this card
         const cartBtn = cardWrapper.querySelector('.cart-btn');
         const detailsBtn = cardWrapper.querySelector('.view-details-btn');
         if (cartBtn) cartBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleCart(product.id); });
         if (detailsBtn) detailsBtn.addEventListener('click', (e) => { e.stopPropagation(); openDetailPanel(product.id); });
         cardWrapper.addEventListener('click', (e) => { if (!e.target.closest('button')) openDetailPanel(product.id); });
-
-        // If it's for a carousel, wrap it in a swiper-slide div
         if (isCarousel) {
             const slide = document.createElement('div');
             slide.className = 'swiper-slide !w-auto !h-auto flex-shrink-0 flex justify-center';
@@ -984,17 +1325,16 @@
     };
 
 
-    // --- Modal, Overlay & Panel Management ---
-    // (openOverlay and closeOverlay functions remain the same as previous version)
+    // --- Modal, Overlay & Panel Management (User-facing modals) ---
     const openOverlay = (overlayElement) => {
-        if (!overlayElement || activeModalOrOverlay === overlayElement) return;
-        if (activeModalOrOverlay) closeOverlay(true);
+        if (!overlayElement || activeModalOrOverlay === overlayElement || isManagementPanelOpen) return;
+        if (activeModalOrOverlay) closeOverlay(true); 
         if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(true);
-
+        
         activeModalOrOverlay = overlayElement;
-        overlayElement.style.display = 'flex';
-        requestAnimationFrame(() => overlayElement.classList.add('visible', 'opacity-100'));
+        overlayElement.style.display = 'flex'; 
         requestAnimationFrame(() => {
+            overlayElement.classList.add('visible', 'opacity-100');
             const content = overlayElement.querySelector('.modal-content, .overlay-content');
             if(content) {
                 content.classList.add('opacity-100', 'scale-100', 'translate-y-0');
@@ -1009,20 +1349,17 @@
         const overlayToClose = activeModalOrOverlay;
         if (!overlayToClose) return;
         activeModalOrOverlay = null;
-        const duration = instant ? 0 : 350;
-        overlayToClose.classList.remove('visible', 'opacity-100');
+        const duration = instant ? 0 : 300; 
+
         const content = overlayToClose.querySelector('.modal-content, .overlay-content');
         if(content) {
             content.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
             content.classList.add('opacity-0', 'scale-95', '-translate-y-5');
         }
-
+        overlayToClose.classList.remove('visible', 'opacity-100'); 
         setTimeout(() => {
             overlayToClose.style.display = 'none';
-            if(content) {
-                content.classList.remove('opacity-0', 'scale-95', '-translate-y-5');
-             }
-            if (!activeModalOrOverlay && !productDetailPanel?.classList.contains('visible')) {
+            if (!activeModalOrOverlay && !productDetailPanel?.classList.contains('visible') && !isMobileMenuOpen && !isManagementPanelOpen && !activeManagementModal) {
                 document.body.style.overflow = '';
             }
             overlayToClose.dispatchEvent(new CustomEvent('overlayClosed'));
@@ -1047,13 +1384,11 @@
         try {
             const viewedIds = JSON.parse(localStorage.getItem('mqRecentlyViewed_v1')) || [];
             const viewedProducts = viewedIds.map(id => products.find(p => p && p.id === id)).filter(p => p);
-
             if (viewedProducts.length > 0) {
                 recentlyViewedSection.classList.remove('hidden');
                 recentlyViewedEmpty.classList.add('hidden');
                 recentlyViewedWrapper.innerHTML = '';
                 recentlyViewedWrapper.classList.add('simple-grid');
-
                 const fragment = document.createDocumentFragment();
                 viewedProducts.forEach((product, index) => {
                     const card = createProductCard(product, false);
@@ -1069,7 +1404,6 @@
                     }
                 });
                 recentlyViewedWrapper.appendChild(fragment);
-
             } else {
                 recentlyViewedSection.classList.add('hidden');
                 recentlyViewedEmpty.classList.remove('hidden');
@@ -1083,65 +1417,46 @@
 
 
     // --- Product Detail Panel ---
-
-    // REINTRODUCED: Initialize Image Zoom Function (targets images inside zoom-containers)
     const initImageZoom = () => {
         const zoomContainers = productDetailContent?.querySelectorAll('.zoom-container');
         if (!zoomContainers || zoomContainers.length === 0) return;
-
-        const zoomScale = 1.75; // Zoom level
-
+        const zoomScale = 1.75; 
         zoomContainers.forEach(container => {
             const img = container.querySelector('.zoom-image');
             if (!img) return;
-
-            // Clear previous listeners if any (safety)
             if (container._mouseMoveHandler) container.removeEventListener('mousemove', container._mouseMoveHandler);
             if (container._mouseLeaveHandler) container.removeEventListener('mouseleave', container._mouseLeaveHandler);
-
-
             const handleMouseMove = (e) => {
                 if (img.naturalWidth === 0 || img.classList.contains('img-error')) return;
-
                 const rect = container.getBoundingClientRect();
                 const offsetX = e.clientX - rect.left;
                 const offsetY = e.clientY - rect.top;
                 const xPercent = Math.min(100, Math.max(0, (offsetX / container.offsetWidth) * 100));
                 const yPercent = Math.min(100, Math.max(0, (offsetY / container.offsetHeight) * 100));
-
                 img.style.transition = 'transform 0.1s linear';
                 img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
                 img.style.transform = `scale(${zoomScale})`;
             };
-
             const handleMouseLeave = () => {
                 img.style.transition = 'transform 0.2s ease-out';
                 img.style.transformOrigin = 'center center';
                 img.style.transform = 'scale(1)';
             };
-
             container.addEventListener('mousemove', handleMouseMove);
             container.addEventListener('mouseleave', handleMouseLeave);
-
-            // Store handlers for cleanup
             container._mouseMoveHandler = handleMouseMove;
             container._mouseLeaveHandler = handleMouseLeave;
         });
     };
-
-    // Initialize Swiper for Detail Panel
     const initDetailSwiper = () => {
         if (typeof Swiper === 'undefined') { console.error("Swiper library not loaded."); return; }
         const swiperContainer = productDetailContent?.querySelector('.detail-panel-swiper');
-        if (!swiperContainer) { /* console.log("Detail panel Swiper container not found yet."); */ return; } // Might not be ready immediately
-
-         if (detailSwiperInstance) { // Destroy if exists
+        if (!swiperContainer) { return; } 
+         if (detailSwiperInstance) { 
             detailSwiperInstance.destroy(true, true); detailSwiperInstance = null;
         }
-
         const slides = swiperContainer.querySelectorAll('.swiper-slide');
         const loopMode = slides.length > 1;
-
         try {
              detailSwiperInstance = new Swiper(swiperContainer, {
                  slidesPerView: 1, spaceBetween: 10, loop: loopMode,
@@ -1154,20 +1469,16 @@
                     slidesLengthChange: function (swiper) { swiper.el.classList.toggle('swiper-container-single-slide', swiper.slides.length <= 1); }
                   }
              });
-             // console.log("Detail Swiper Initialized", detailSwiperInstance);
         } catch (error) {
              console.error("Failed to initialize detail panel Swiper:", error);
              swiperContainer.querySelectorAll('.swiper-button-next, .swiper-button-prev, .swiper-pagination').forEach(el => el.style.display = 'none');
         }
     };
-
-
-    // UPDATED: Open Product Detail Panel - Uses SwiperJS AND calls initImageZoom
     const openDetailPanel = (productId) => {
         const product = products.find(p => p && p.id === Number(productId));
         if (!product || !productDetailPanel || !productDetailContent || !productDetailBackdrop || isPanelOpening) return;
-
         if (activeModalOrOverlay) closeOverlay(true);
+        if (isManagementPanelOpen) requestAdminAuthAndTogglePanel(false); 
 
         isPanelOpening = true;
         currentProductIdForDetail = Number(productId);
@@ -1180,34 +1491,32 @@
         const placeholderText = theme === 'dark' ? '6B7280' : '9CA3AF';
         const placeholderImg1 = `https://placehold.co/600x600/${placeholderBg}/${placeholderText}?text=صورة+1&font=cairo`;
         const placeholderImg2 = `https://placehold.co/600x600/${placeholderBg}/${placeholderText}?text=صورة+2&font=cairo`;
-
-        // --- Generate Swiper HTML Structure with Zoom Container ---
         let slidesHtml = '';
         const images = [product.image1, product.image2];
         const placeholders = [placeholderImg1, placeholderImg2];
         let validImageCount = 0;
-
         images.forEach((imgUrl, index) => {
             const placeholder = placeholders[index];
-            const isDuplicate = index === 1 && imgUrl === product.image1;
+            const isDuplicate = index === 1 && imgUrl === product.image1; 
             const isValid = isValidImageUrl(imgUrl) && !isDuplicate;
-            const src = isValid ? imgUrl : (validImageCount === 0 ? placeholder : null); // Use placeholder only if first or no valid image yet
-            const altText = `${product.title} - صورة ${index + 1}`;
-
-            if (src) { // Only create slide if we have a source
-                 // Wrap image in zoom-container
+            let srcToUse = null;
+            if (isValid) {
+                srcToUse = imgUrl;
+                validImageCount++;
+            } else if (index === 0 && !isValidImageUrl(imgUrl)) { 
+                srcToUse = placeholder;
+            }
+            if (srcToUse) {
                  slidesHtml += `
                     <div class="swiper-slide">
                          <div class="zoom-container w-full h-full">
-                            <img src="${src}" alt="${altText}" class="detail-swiper-image zoom-image" loading="eager" onerror="if(this.src !== '${placeholder}') { this.src='${placeholder}'; this.classList.add('img-error'); } this.onerror=null;">
+                            <img src="${srcToUse}" alt="${product.title} - صورة ${index + 1}" class="detail-swiper-image zoom-image" loading="eager" onerror="if(this.src !== '${placeholder}') { this.src='${placeholder}'; this.classList.add('img-error'); } this.onerror=null;">
                          </div>
                     </div>
                 `;
-                if (isValid) validImageCount++;
             }
         });
-
-        if (slidesHtml === '') { // Fallback
+        if (slidesHtml === '') {
              slidesHtml = `
                  <div class="swiper-slide">
                     <div class="zoom-container w-full h-full">
@@ -1216,30 +1525,20 @@
                  </div>
              `;
          }
-
         const imageSectionHtml = `
             <div class="detail-panel-image-wrapper aspect-square mb-6 relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden border border-light-border/50 dark:border-dark-border/50">
-                 <!-- Swiper -->
                 <div class="swiper detail-panel-swiper">
-                    <div class="swiper-wrapper">
-                        ${slidesHtml}
-                    </div>
-                    <!-- Add Pagination -->
+                    <div class="swiper-wrapper">${slidesHtml}</div>
                     <div class="swiper-pagination"></div>
-                    <!-- Add Navigation -->
                     <div class="swiper-button-prev"></div>
                     <div class="swiper-button-next"></div>
                 </div>
             </div>
         `;
-        // --- End Swiper HTML ---
-
-        // Set Inner HTML (This replaces old content and Swiper/Zoom listeners)
         productDetailContent.innerHTML = `
             ${imageSectionHtml}
             <h2 id="detail-panel-title" class="detail-panel-title text-2xl md:text-3xl font-bold font-heading text-light-text-primary dark:text-dark-text-primary leading-tight mb-4">${product.title}</h2>
             <div class="detail-panel-info flex flex-col gap-3 p-4 bg-light-surface dark:bg-dark-background rounded-lg border border-light-border dark:border-dark-border shadow-inner-sm mb-6">
-                <!-- ... (rest of the info rows remain the same) ... -->
                  <div class="info-row flex justify-between items-center pb-3 border-b border-dashed border-light-border/50 dark:border-dark-border/50 text-base">
                     <span class="flex items-center gap-2 text-light-text-secondary dark:text-dark-text-secondary font-medium"><i class="fas fa-ruler-combined text-base text-accent"></i>المقاس:</span>
                     <div class="flex items-center gap-2">
@@ -1283,25 +1582,17 @@
                 </button>
             </div>
         `;
-
-        // Add event listeners for buttons inside the panel
         const orderBtn = productDetailContent.querySelector('#detail-panel-order-btn');
         const cartBtn = productDetailContent.querySelector('#detail-panel-cart-btn');
         const sizeGuideBtn = productDetailContent.querySelector('#detail-panel-size-guide-btn');
-
         if (orderBtn && product.availability === 'in stock') orderBtn.addEventListener('click', (e) => { e.preventDefault(); openOrderModal(currentProductIdForDetail); });
         else if (orderBtn) orderBtn.classList.add('btn-disabled-visual');
         if (cartBtn) cartBtn.addEventListener('click', () => { toggleCart(currentProductIdForDetail); });
         if (sizeGuideBtn) sizeGuideBtn.addEventListener('click', openSizeGuideModal);
-
-        // Initialize Swiper and Zoom AFTER content is added and DOM is updated
         requestAnimationFrame(() => {
             initDetailSwiper();
-             // Delay zoom init slightly after swiper to ensure slides are fully processed
              setTimeout(initImageZoom, 50);
          });
-
-        // Show the panel and backdrop with animation
         productDetailPanel.classList.remove('hidden');
         productDetailBackdrop.style.display = 'block';
         requestAnimationFrame(() => {
@@ -1311,16 +1602,10 @@
         document.body.style.overflow = 'hidden';
         productDetailPanel.scrollTop = 0;
         addRecentlyViewed(currentProductIdForDetail);
-
         setTimeout(() => { isPanelOpening = false; }, 400);
     };
-
-
-    // UPDATED: Closes the product detail panel, cleans up Swiper AND Zoom listeners
     const closeDetailPanel = (instant = false) => {
         if (!productDetailPanel || !productDetailBackdrop || !productDetailPanel.classList.contains('visible') || isPanelOpening) return;
-
-         // Clean up zoom listeners first
          productDetailContent?.querySelectorAll('.zoom-container').forEach(container => {
              if (container._mouseMoveHandler) {
                  container.removeEventListener('mousemove', container._mouseMoveHandler);
@@ -1331,20 +1616,17 @@
                  container._mouseLeaveHandler = null;
              }
              const img = container.querySelector('.zoom-image');
-             if(img) { // Reset image style potentially altered by zoom
+             if(img) { 
                  img.style.transform = 'scale(1)';
                  img.style.transformOrigin = 'center center';
                  img.style.transition = 'none';
              }
          });
-
-         // Destroy the detail Swiper instance
          if (detailSwiperInstance) {
             try { detailSwiperInstance.destroy(true, true); }
             catch (e) { console.error("Error destroying detail Swiper:", e); }
             detailSwiperInstance = null;
         }
-
         const duration = instant ? 0 : 400;
         productDetailPanel.classList.remove('visible', 'opacity-100', 'translate-x-0');
         productDetailBackdrop.classList.remove('visible', 'opacity-100');
@@ -1352,27 +1634,29 @@
             productDetailPanel.classList.add('hidden');
             productDetailBackdrop.style.display = 'none';
             currentProductIdForDetail = null;
-            productDetailContent.innerHTML = ''; // Clear content AFTER animation
-            if (!activeModalOrOverlay) document.body.style.overflow = '';
+            if(productDetailContent) productDetailContent.innerHTML = ''; 
+            if (!activeModalOrOverlay && !isMobileMenuOpen && !isManagementPanelOpen && !activeManagementModal) document.body.style.overflow = '';
         }, duration);
     };
 
     // --- Order Modal ---
-    // (Remains the same as previous version)
     const openOrderModal = (productId = null) => {
         if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(true);
         if (activeModalOrOverlay) closeOverlay(true);
+        if (isManagementPanelOpen) requestAdminAuthAndTogglePanel(false); 
 
         let orderTotal = 0;
         const currency = "د.ع";
         orderSummarySingleItemDetails.classList.add('hidden');
         orderSummaryItemsList.classList.add('hidden');
-        orderSummaryItemsList.innerHTML = '';
-        orderFormProductId.value = ''; orderFormProductTitle.value = '';
-        orderFormProductSize.value = ''; orderFormProductPrice.value = '';
+        if(orderSummaryItemsList) orderSummaryItemsList.innerHTML = '';
+        if(orderFormProductId) orderFormProductId.value = ''; 
+        if(orderFormProductTitle) orderFormProductTitle.value = '';
+        if(orderFormProductSize) orderFormProductSize.value = ''; 
+        if(orderFormProductPrice) orderFormProductPrice.value = '';
         cartItemsForOrder = [];
 
-        if (productId) { // Single Product Order
+        if (productId) { 
             const product = products.find(p => p && p.id === Number(productId));
             if (!product || product.availability !== 'in stock') {
                 alert("عفواً، لا يمكن طلب هذا المنتج حالياً."); return;
@@ -1385,8 +1669,7 @@
             orderFormProductId.value = product.id; orderFormProductTitle.value = product.title;
             orderFormProductSize.value = product.size; orderFormProductPrice.value = product.price;
             try { orderTotal = parseInt(String(product.price).replace(/,/g, ''), 10); } catch { orderTotal = 0; }
-
-        } else { // Order from Cart
+        } else { 
              cartItemsForOrder = cart.map(id => products.find(p => p.id === id))
                                      .filter(p => p && p.availability === 'in stock');
             if (cartItemsForOrder.length === 0) {
@@ -1410,7 +1693,6 @@
             orderSummaryItemsList.appendChild(totalLi);
             orderSummaryMainTitle.innerHTML = `<i class="fas fa-receipt text-lg"></i> ملخص طلب (${cartItemsForOrder.length} منتجات)`;
         }
-
         orderForm?.reset();
         formErrorMessage?.classList.add('hidden');
         orderForm?.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
@@ -1424,17 +1706,14 @@
 
 
     // --- Cart Modal ---
-    // (Remains the same as previous version)
     const openCartModal = () => { renderCartItems(); openOverlay(cartModalOverlay); };
     const closeCartModal = () => closeOverlay();
     const renderCartItems = () => {
         if (!cartItemsContainer || !cartEmptyMessage || !cartOrderAllBtn) return;
-
         const fragment = document.createDocumentFragment();
         const cartProducts = cart.map(id => products.find(p => p.id === id)).filter(p => p);
         let availableItemsCount = 0;
         cartItemsContainer.innerHTML = '';
-
         if (cartProducts.length === 0) {
             cartEmptyMessage.classList.remove('hidden');
             cartItemsContainer.classList.remove('has-items');
@@ -1446,15 +1725,12 @@
             cartProducts.forEach(product => {
                 if (!product) return;
                 if (product.availability === 'in stock') availableItemsCount++;
-
                 const itemElement = document.createElement('div');
                 itemElement.className = `cart-item bg-light-background dark:bg-dark-background flex items-center gap-4 p-3 rounded-lg border border-light-border dark:border-dark-border shadow-sm transition-all duration-300 ease-in-out w-full box-border ${product.availability !== 'in stock' ? 'unavailable opacity-60 filter grayscale-[80%] border-dashed' : 'hover:shadow-md hover:border-light-border/80 dark:hover:border-dark-border/80'}`;
-
                 const theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
                 const placeholderBg = theme === 'dark' ? '374151' : 'E5E7EB';
                 const placeholderText = theme === 'dark' ? '9CA3AF' : '6B7280';
                 const placeholderImg = `https://placehold.co/80x96/${placeholderBg}/${placeholderText}?text=Img&font=cairo`;
-
                  itemElement.innerHTML = `
                      <img src="${product.image1 || placeholderImg}" alt="${product.title}" class="cart-item-image w-[60px] h-[75px] object-contain rounded border border-light-border dark:border-dark-border bg-white dark:bg-dark-surface flex-shrink-0" loading="lazy" onerror="if(this.src !== '${placeholderImg}') { this.src='${placeholderImg}'; this.classList.add('img-error', 'object-scale-down'); } this.onerror=null;">
                      <div class="cart-item-details flex-grow flex flex-col gap-0.5 overflow-hidden min-w-0">
@@ -1469,7 +1745,6 @@
                              <i class="fas fa-truck"></i>
                          </button>
                      </div>`;
-
                 const removeBtn = itemElement.querySelector('.cart-remove-btn');
                 const orderSingleBtn = itemElement.querySelector('.cart-order-single-btn');
                 if (removeBtn) removeBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleCart(product.id); });
@@ -1484,7 +1759,6 @@
                 fragment.appendChild(itemElement);
             });
             cartItemsContainer.appendChild(fragment);
-
             cartOrderAllBtn.disabled = availableItemsCount === 0;
             cartOrderAllBtn.classList.toggle('opacity-50', availableItemsCount === 0);
             cartOrderAllBtn.classList.toggle('cursor-not-allowed', availableItemsCount === 0);
@@ -1502,13 +1776,11 @@
     const closeSizeGuideModal = () => closeOverlay();
 
     // --- Filter and Display Products ---
-    // (Remains the same as previous version)
     const applyFilters = (scrollToProducts = false, instantScroll = false) => {
       if (!productGrid || !loadMoreButton || !categoryTitleMain || !categoryDescription || !noResultsDiv || !clearFiltersBtn) return;
-
         currentSearchTerm = overlaySearchInput?.value.trim().toLowerCase() || '';
         currentSizeFilter = overlaySizeSelect?.value || 'all';
-        activeCategory = document.querySelector('.category-card.active')?.dataset.category || 'all';
+        activeCategory = document.querySelector('#category-cards-container .category-card.active')?.dataset.category || 'all';
 
         let filtered = products.filter(p => {
             if (!p) return false;
@@ -1518,7 +1790,6 @@
                                (p.title && p.title.toLowerCase().includes(searchTermLower)) ||
                                (p.description && p.description.toLowerCase().includes(searchTermLower)) ||
                                String(p.id).includes(searchTermLower);
-
             let sizeMatch = true;
             if (currentSizeFilter !== 'all') {
                 const productSizeUpper = String(p.size || '').toUpperCase();
@@ -1529,19 +1800,14 @@
             }
              return categoryMatch && titleMatch && sizeMatch;
         });
-
         currentFilteredProducts = filtered;
-
-        const activeCategoryElement = document.querySelector(`.category-card[data-category='${activeCategory}'] span`);
-        categoryTitleMain.textContent = activeCategory === 'all' ? 'جميع المنتجات' : (activeCategoryElement?.textContent || activeCategory);
-        categoryDescription.textContent = categoryDescriptions[activeCategory] || `عرض ${currentFilteredProducts.length} منتج مطابق للفلترة.`;
-
+        const activeCatData = categoryData[activeCategory];
+        categoryTitleMain.textContent = activeCategory === 'all' ? 'جميع المنتجات' : (activeCatData?.name || activeCategory);
+        categoryDescription.textContent = activeCatData?.description || `عرض ${currentFilteredProducts.length} منتج مطابق للفلترة.`;
         const isFiltered = activeCategory !== 'all' || !!currentSearchTerm || currentSizeFilter !== 'all';
         clearFiltersBtn.classList.toggle('hidden', !isFiltered);
-
-        productGrid.innerHTML = '';
+        if(productGrid) productGrid.innerHTML = '';
         displayedProductCount = 0;
-
         if (currentFilteredProducts.length > 0) {
             noResultsDiv.classList.add('hidden');
             productGrid.classList.remove('hidden');
@@ -1552,7 +1818,6 @@
             productGrid.classList.add('hidden');
             loadMoreButton.parentElement?.classList.add('hidden');
         }
-
         if (scrollToProducts) {
             setTimeout(() => {
                 const targetElement = document.getElementById('products');
@@ -1568,7 +1833,6 @@
     const debouncedApplyFilters = debounce(applyFilters, 350);
 
     // --- Load More Products ---
-    // (Remains the same as previous version)
     const loadMoreProducts = (instant = false) => {
         if (!productGrid || !loadMoreButton) return;
         const nextBatch = currentFilteredProducts.slice(displayedProductCount, displayedProductCount + productsPerLoad);
@@ -1604,18 +1868,16 @@
     };
 
     // --- Clear All Filters ---
-    // (Remains the same as previous version)
     const clearAllFilters = () => {
         activeCategory = 'all'; currentSearchTerm = ''; currentSizeFilter = 'all';
         if(overlaySearchInput) overlaySearchInput.value = '';
         if(overlaySizeSelect) overlaySizeSelect.value = 'all';
-        document.querySelectorAll('.category-card').forEach(el => el.classList.toggle('active', el.dataset.category === 'all'));
+        document.querySelectorAll('#category-cards-container .category-card').forEach(el => el.classList.toggle('active', el.dataset.category === 'all'));
         applyFilters(true, true);
         if (searchFilterOverlay?.classList.contains('visible')) closeOverlay();
     };
 
     // --- WhatsApp Order Submission ---
-    // (Remains the same as previous version)
     const handleOrderSubmit = (event) => {
         event.preventDefault();
         if (!orderForm || !formErrorMessage) return;
@@ -1689,10 +1951,9 @@
     }
 
     // --- Category Filtering & Active State ---
-    // (Remains the same as previous version)
-    const setActiveCategory = (category, clickedElement = null) => {
-        activeCategory = category;
-        document.querySelectorAll('.category-card').forEach(card => card.classList.toggle('active', card.dataset.category === category));
+    const setActiveCategory = (categoryKey, clickedElement = null) => {
+        activeCategory = categoryKey;
+        document.querySelectorAll('#category-cards-container .category-card').forEach(card => card.classList.toggle('active', card.dataset.category === categoryKey));
         if (clickedElement) {
             currentSearchTerm = ''; currentSizeFilter = 'all';
             if (overlaySearchInput) overlaySearchInput.value = '';
@@ -1702,10 +1963,9 @@
     };
 
     // --- Swiper Initialization ---
-    // (Remains the same as previous version - for Arrivals)
     const initSwiper = () => {
         if (typeof Swiper === 'undefined' || !newArrivalsWrapper) { console.warn("Swiper library not found or wrapper missing."); return; }
-        const newArrivals = products.filter(p => p && p.is_new).sort((a, b) => (b.id || 0) - (a.id || 0));
+        const newArrivals = products.filter(p => p && p.is_new).sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
         const arrivalsSection = newArrivalsWrapper.closest('#new-arrivals');
         if (newArrivals.length > 0) {
             if (arrivalsSection) arrivalsSection.style.display = '';
@@ -1733,7 +1993,6 @@
     };
 
     // --- Header Scroll & Active Nav ---
-    // (Remains the same as previous version)
      const handleHeaderScroll = () => {
         if (!header) return;
         const scrollY = window.scrollY;
@@ -1744,7 +2003,7 @@
         const scrollPosition = scrollY + headerHeight + 50;
         for (let i = sections.length - 1; i >= 0; i--) {
              const section = sections[i];
-             if (section && section.offsetTop <= scrollPosition && section.offsetHeight > 50) {
+             if (section && section.offsetTop <= scrollPosition && section.offsetHeight > 50) { 
                  currentSectionId = section.id; break;
              }
          }
@@ -1753,7 +2012,6 @@
     };
 
     // --- Mobile Menu ---
-    // (Remains the same as previous version)
      const toggleMobileMenu = () => {
         isMobileMenuOpen = !isMobileMenuOpen;
         if (mobileNavMenu && mobileNavToggle) {
@@ -1761,13 +2019,16 @@
             mobileNavMenu.classList.toggle('translate-y-0', isMobileMenuOpen); mobileNavMenu.classList.toggle('-translate-y-full', !isMobileMenuOpen); mobileNavMenu.classList.toggle('invisible', !isMobileMenuOpen);
             const icon = mobileNavToggle.querySelector('i'); if (icon) icon.className = `fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-lg`;
             mobileNavToggle.setAttribute('aria-expanded', String(isMobileMenuOpen));
-            if (isMobileMenuOpen) { document.body.style.overflow = 'hidden'; } else if (!activeModalOrOverlay && !productDetailPanel?.classList.contains('visible')) { document.body.style.overflow = ''; }
+            if (isMobileMenuOpen) { 
+                document.body.style.overflow = 'hidden'; 
+            } else if (!activeModalOrOverlay && !productDetailPanel?.classList.contains('visible') && !isManagementPanelOpen && !activeManagementModal) { 
+                document.body.style.overflow = ''; 
+            }
         }
     };
     const closeMobileMenu = () => { if (isMobileMenuOpen) toggleMobileMenu(); };
 
     // --- Section Animation Observer ---
-    // (Remains the same as previous version)
     let sectionObserver = null;
     const initSectionObserver = () => {
         const elementsToAnimate = document.querySelectorAll('.section-animate');
@@ -1782,7 +2043,6 @@
     };
 
     // --- Scroll to Top ---
-    // (Remains the same as previous version)
     const handleScroll = () => {
         if (scrollToTopBtn) {
             const isVisible = window.scrollY > window.innerHeight * 0.6;
@@ -1793,11 +2053,625 @@
     };
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
+
+    // --- Firebase Authentication Functions ---
+    const signInWithGoogle = async () => {
+        if (!window.firebaseAuth || !window.GoogleAuthProvider) {
+            alert("لم يتم تهيئة Firebase Auth بشكل صحيح.");
+            console.error("Firebase Auth or GoogleAuthProvider not available on window object.");
+            return null;
+        }
+        const provider = new window.GoogleAuthProvider();
+        try {
+            const result = await window.firebaseAuth.signInWithPopup(provider);
+            // const result = await signInWithPopup(window.firebaseAuthInstance, provider); // If you stored instance
+            const user = result.user;
+            if (user.email === ALLOWED_ADMIN_EMAIL) {
+                console.log("Admin signed in:", user.displayName, user.email);
+                return user; // currentUser will be set by onAuthStateChanged
+            } else {
+                alert("هذا الحساب ("+ user.email +") غير مصرح له بالوصول كمدير.");
+                await window.firebaseAuth.signOut();
+                return null;
+            }
+        } catch (error) {
+            console.error("Error during Google sign-in:", error);
+            // Common errors: 'auth/popup-closed-by-user', 'auth/network-request-failed'
+            if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                 alert(`فشل تسجيل الدخول: ${error.message} (Code: ${error.code})`);
+            }
+            return null;
+        }
+    };
+
+    const signOutAdmin = async () => {
+        if (!window.firebaseAuth) {
+            alert("لم يتم تهيئة Firebase Auth بشكل صحيح.");
+            return;
+        }
+        try {
+            await window.firebaseAuth.signOut();
+            console.log("Admin signed out by button click");
+            // currentUser will be set to null by onAuthStateChanged
+            // The panel will also be closed by onAuthStateChanged
+        } catch (error) {
+            console.error("Error signing out:", error);
+            alert("فشل تسجيل الخروج.");
+        }
+    };
+
+
+    // --- Product Data Management Functions ---
+    const generateNewProductId = () => {
+        if (products.length === 0) return 1;
+        const maxId = Math.max(...products.map(p => Number(p.id) || 0));
+        return maxId + 1;
+    };
+
+    const refreshAllDynamicContent = () => {
+        console.log("Refreshing all dynamic content due to data change.");
+        applyFilters(false, true); 
+        initSwiper();
+        renderRecentlyViewed();
+        if (cartModalOverlay?.classList.contains('visible')) {
+            renderCartItems();
+        }
+        updateCartCount();
+        if (currentProductIdForDetail) {
+            const detailedProduct = products.find(p => Number(p.id) === currentProductIdForDetail);
+             if (!detailedProduct) {
+                closeDetailPanel(true); 
+            }
+        }
+        if (isManagementPanelOpen) {
+            renderProductManagementTable(adminProductSearchInput?.value.trim().toLowerCase() || '');
+        }
+    };
+    
+    const openManagementModal = (modalElement, contentElementToAnimate) => {
+        if (!modalElement || activeManagementModal === modalElement) return;
+        if (activeManagementModal) closeManagementModal(true); 
+        
+        activeManagementModal = modalElement;
+        modalElement.style.display = 'flex';
+        requestAnimationFrame(() => {
+            modalElement.classList.add('visible', 'opacity-100');
+            // Animate the actual modal-content div within the overlay
+            const actualContentDiv = modalElement.querySelector('.admin-modal-content');
+            if(actualContentDiv) {
+                actualContentDiv.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+                actualContentDiv.classList.remove('opacity-0', 'scale-95', '-translate-y-5');
+            }
+        });
+        if (modalElement === productImportModal && importErrorMessage) {
+            importErrorMessage.classList.add('hidden');
+            importErrorMessage.textContent = '';
+             if(csvFileInput) csvFileInput.value = ''; 
+             if(csvFileNameDisplay) csvFileNameDisplay.textContent = '';
+             if(processImportBtn) processImportBtn.disabled = true;
+        }
+    };
+
+    const closeManagementModal = (instant = false) => {
+        const modalToClose = activeManagementModal;
+        if (!modalToClose) return;
+        
+        const contentElement = modalToClose.querySelector('.admin-modal-content');
+        const duration = instant ? 0 : 300;
+
+        if (contentElement) { 
+            contentElement.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+            contentElement.classList.add('opacity-0', 'scale-95', '-translate-y-5');
+        }
+        modalToClose.classList.remove('visible', 'opacity-100');
+        
+        setTimeout(() => {
+            modalToClose.style.display = 'none';
+            if (activeManagementModal === modalToClose) activeManagementModal = null;
+        }, duration);
+    };
+
+
+    const openProductForm = (productToEdit = null) => {
+        if (!productForm || !productManagementFormContainer) return;
+        productForm.reset();
+        if(pfId) pfId.disabled = false; 
+        if(pfUpdateId) pfUpdateId.checked = true; 
+        if(pfUpdateIdContainer) pfUpdateIdContainer.style.display = 'flex';
+
+        if (productToEdit) {
+            editingProductId = productToEdit.id;
+            if(productFormTitle) productFormTitle.textContent = `تعديل المنتج: ${productToEdit.title}`;
+            if(pfId) {
+                pfId.value = productToEdit.id; 
+                pfId.disabled = true; 
+            }
+            if(pfTitle) pfTitle.value = productToEdit.title;
+            if(pfPrice) pfPrice.value = productToEdit.price; 
+            if(pfImage1) pfImage1.value = productToEdit.image1 || '';
+            if(pfImage2) pfImage2.value = productToEdit.image2 || '';
+            if(pfSize) pfSize.value = productToEdit.size;
+            if(pfBaseSize) pfBaseSize.value = productToEdit.base_size;
+            if(pfCategory) pfCategory.value = productToEdit.category;
+            if(pfAvailability) pfAvailability.value = productToEdit.availability;
+            if(pfDescription) pfDescription.value = productToEdit.description || '';
+            if(pfIsNew) pfIsNew.checked = productToEdit.is_new || false;
+            if(pfUpdateIdContainer) pfUpdateIdContainer.style.display = 'none'; 
+        } else {
+            editingProductId = null;
+            if(productFormTitle) productFormTitle.textContent = 'إضافة منتج جديد';
+            if(pfId) pfId.value = ''; 
+        }
+        openManagementModal(productManagementFormContainer, productForm); // Pass the form element for animation target
+    };
+
+    const closeProductForm = () => {
+        closeManagementModal(); 
+    };
+
+    const handleProductFormSubmit = (event) => {
+        event.preventDefault();
+        if (!pfTitle || !pfPrice || !pfImage1 || !pfSize || !pfBaseSize || !pfCategory || !pfAvailability) {
+            alert("بعض الحقول المطلوبة فارغة في كود النموذج نفسه!");
+            return;
+        }
+        
+        const priceValue = pfPrice.value.trim();
+        if (!/^\d{1,3}(,\d{3})*(\.\d+)?$/.test(priceValue.replace(/\s/g,'')) && !/^\d+(\.\d+)?$/.test(priceValue.replace(/\s/g,''))) {
+            alert("تنسيق السعر غير صحيح. الرجاء إدخال رقم (مثال: 8000) أو رقم بفاصلة آلاف (مثل: 8,000).");
+            pfPrice.focus();
+            return;
+        }
+
+        const productData = {
+            title: pfTitle.value.trim(),
+            price: priceValue, 
+            image1: pfImage1.value.trim(),
+            image2: pfImage2.value.trim() || null,
+            size: pfSize.value.trim(),
+            base_size: pfBaseSize.value,
+            category: pfCategory.value,
+            availability: pfAvailability.value,
+            description: pfDescription.value.trim() || '',
+            is_new: pfIsNew.checked,
+        };
+
+        if (!productData.title || !productData.price || !productData.image1 || !productData.size || !productData.base_size || !productData.category) {
+            alert("يرجى ملء جميع الحقول المطلوبة (*).");
+            return;
+        }
+
+        if (editingProductId !== null) { 
+            productData.id = Number(editingProductId);
+            const index = products.findIndex(p => Number(p.id) === productData.id);
+            if (index > -1) {
+                products[index] = { ...products[index], ...productData };
+                alert(`تم تعديل المنتج: ${productData.title}`);
+            } else {
+                alert("خطأ: لم يتم العثور على المنتج للتعديل.");
+                return;
+            }
+        } else { 
+            let newId;
+            const manualIdRaw = pfId.value.trim();
+             if (manualIdRaw && !isNaN(parseInt(manualIdRaw))) { 
+                 newId = parseInt(manualIdRaw);
+                 if (products.some(p => Number(p.id) === newId)) {
+                    alert(`خطأ: المنتج بالمعرف (ID) ${newId} موجود بالفعل. الرجاء استخدام ID فريد أو اتركه فارغًا للتحديث التلقائي.`);
+                    pfId.focus();
+                    return;
+                }
+            } else if (pfUpdateId && pfUpdateId.checked) { 
+                newId = generateNewProductId();
+            } else { 
+                 alert("يرجى إدخال ID للمنتج أو تحديد خيار التحديث التلقائي.");
+                 pfId.focus();
+                 return;
+            }
+            productData.id = newId; 
+            products.push(productData);
+            products.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0)); 
+            alert(`تمت إضافة المنتج: ${productData.title} (ID: ${productData.id})`);
+        }
+        
+        closeProductForm();
+        refreshAllDynamicContent(); 
+    };
+
+    const renderProductManagementTable = (searchTerm = '') => {
+        if (!productManagementTableBody || !adminTotalProductsCount) return;
+        productManagementTableBody.innerHTML = '';
+        
+        const filteredAdminProducts = products.filter(product => {
+            if (!searchTerm) return true;
+            const term = searchTerm.toLowerCase();
+            return String(product.id).includes(term) || 
+                   (product.title && product.title.toLowerCase().includes(term));
+        }).sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+
+        adminTotalProductsCount.textContent = `الإجمالي: ${filteredAdminProducts.length} منتج${filteredAdminProducts.length !== 1 ? 'ات' : ''}`;
+
+        if (filteredAdminProducts.length === 0) {
+            const row = productManagementTableBody.insertRow();
+            const cell = row.insertCell();
+            cell.colSpan = 5; 
+            cell.textContent = "لا توجد منتجات تطابق البحث أو لا توجد منتجات مضافة.";
+            cell.className = "text-center py-5 text-light-text-muted dark:text-dark-text-muted";
+            return;
+        }
+
+        filteredAdminProducts.forEach(product => {
+            const row = productManagementTableBody.insertRow();
+            row.innerHTML = `
+                <td>${product.id}</td>
+                <td class="whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px] sm:max-w-xs" title="${product.title}">${product.title}</td>
+                <td>${product.price}</td>
+                <td>${categoryData[product.category]?.name || product.category}</td>
+                <td class="whitespace-nowrap">
+                    <button class="edit-product-btn btn btn-sm btn-secondary mr-1" data-id="${product.id}" title="تعديل"><i class="fas fa-edit"></i></button>
+                    <button class="delete-product-btn btn btn-sm btn-danger" data-id="${product.id}" title="حذف"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            row.querySelector('.edit-product-btn').addEventListener('click', () => {
+                const productToEdit = products.find(p => Number(p.id) === Number(product.id));
+                if (productToEdit) openProductForm(productToEdit);
+            });
+            row.querySelector('.delete-product-btn').addEventListener('click', () => {
+                deleteProductFromManager(Number(product.id));
+            });
+        });
+    };
+    const debouncedRenderAdminTable = debounce(renderProductManagementTable, 300);
+
+
+    const deleteProductFromManager = (productId) => {
+        const numProductId = Number(productId);
+        const productToDelete = products.find(p => Number(p.id) === numProductId);
+        if (!productToDelete) {
+            alert("لم يتم العثور على المنتج للحذف.");
+            return;
+        }
+        if (confirm(`هل أنت متأكد أنك تريد حذف المنتج: "${productToDelete.title}" (ID: ${numProductId})؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
+            const productIndex = products.findIndex(p => Number(p.id) === numProductId);
+            if (productIndex > -1) {
+                products.splice(productIndex, 1);
+                
+                const cartIndex = cart.indexOf(numProductId); 
+                if (cartIndex > -1) {
+                    cart.splice(cartIndex, 1);
+                    localStorage.setItem('mqCart_v4', JSON.stringify(cart));
+                }
+                try { 
+                    let viewed = JSON.parse(localStorage.getItem('mqRecentlyViewed_v1')) || [];
+                    viewed = viewed.filter(id => Number(id) !== numProductId);
+                    localStorage.setItem('mqRecentlyViewed_v1', JSON.stringify(viewed));
+                } catch (e) { console.error("Error updating recently viewed after deletion:", e); }
+
+                alert(`تم حذف المنتج: ${productToDelete.title}`);
+                refreshAllDynamicContent(); 
+            }
+        }
+    };
+
+    // --- CSV Export/Import ---
+    const convertToCSV = (arr) => {
+        if (!arr || arr.length === 0) return "";
+        const array = [Object.keys(arr[0])].concat(arr); 
+        return array.map(row => {
+            return Object.values(row).map(value => {
+                let valStr = String(value === null || value === undefined ? '' : value);
+                if (valStr.includes(',') || valStr.includes('"') || valStr.includes('\n')) {
+                    valStr = '"' + valStr.replace(/"/g, '""') + '"'; 
+                }
+                return valStr;
+            }).join(',');
+        }).join('\r\n');
+    };
+
+    const downloadCSVFile = (csvString, filename = "products.csv") => {
+        const blob = new Blob(["\uFEFF" + csvString], { type: 'text/csv;charset=utf-8;' }); // Added BOM for Excel UTF-8
+        const link = document.createElement("a");
+        if (link.download !== undefined) { 
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    };
+    
+    const openExportModal = () => {
+        if (!productExportModal) return;
+        openManagementModal(productExportModal, productExportModal.querySelector('.admin-modal-content'));
+    };
+    const closeExportModal = () => closeManagementModal();
+    
+    const handleDownloadCSV = () => {
+        if (products.length === 0) {
+            alert("لا توجد منتجات لتصديرها.");
+            return;
+        }
+        try {
+            const sortedProductsForExport = [...products].sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+            const csvData = convertToCSV(sortedProductsForExport);
+            downloadCSVFile(csvData, `master_quality_products_${new Date().toISOString().slice(0,10)}.csv`);
+            alert("بدء تنزيل ملف CSV للمنتجات.");
+            closeExportModal();
+        } catch(e) {
+            alert("حدث خطأ أثناء تجهيز البيانات للتصدير كملف CSV.");
+            console.error("Error exporting products to CSV:", e);
+        }
+    };
+
+    const parseCSV = (csvText) => {
+        const rows = [];
+        let currentRow = [];
+        let inQuotes = false;
+        let currentField = '';
+
+        for (let i = 0; i < csvText.length; i++) {
+            const char = csvText[i];
+            if (char === '"') {
+                if (inQuotes && i + 1 < csvText.length && csvText[i + 1] === '"') {
+                    currentField += '"'; 
+                    i++; 
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (char === ',' && !inQuotes) {
+                currentRow.push(currentField);
+                currentField = '';
+            } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                if (char === '\r' && i + 1 < csvText.length && csvText[i + 1] === '\n') {
+                    i++; 
+                }
+                currentRow.push(currentField);
+                rows.push(currentRow);
+                currentRow = [];
+                currentField = '';
+            } else {
+                currentField += char;
+            }
+        }
+        currentRow.push(currentField);
+        rows.push(currentRow);
+        return rows.filter(row => row.length > 1 || (row.length === 1 && row[0] !== ''));
+    };
+
+    const openImportModal = () => {
+        if (!productImportModal) return;
+        openManagementModal(productImportModal, productImportModal.querySelector('.admin-modal-content'));
+    };
+    const closeImportModal = () => closeManagementModal();
+
+    const handleProcessImport = () => {
+        if (!csvFileInput || !csvFileInput.files || csvFileInput.files.length === 0) {
+            importErrorMessage.textContent = "يرجى اختيار ملف CSV أولاً.";
+            importErrorMessage.classList.remove('hidden');
+            return;
+        }
+        importErrorMessage.classList.add('hidden');
+        importErrorMessage.textContent = '';
+
+        const file = csvFileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            try {
+                const csvData = event.target.result;
+                const parsedRows = parseCSV(csvData);
+
+                if (parsedRows.length < 2) {
+                    throw new Error("ملف CSV فارغ أو يحتوي على ترويسات فقط.");
+                }
+
+                const headers = parsedRows[0].map(h => String(h).trim().toLowerCase().replace(/\s+/g, '_')); // Sanitize headers
+                const dataRows = parsedRows.slice(1);
+                const importedProducts = [];
+                const validationErrors = [];
+                const productIds = new Set();
+
+                const expectedHeaders = ['id', 'title', 'price', 'image1', 'size', 'base_size', 'category', 'availability'];
+                // Check if all expected headers are present
+                for (const expectedHeader of expectedHeaders) {
+                    if (!headers.includes(expectedHeader)) {
+                        validationErrors.push(`الترويسة المطلوبة ("${expectedHeader}") مفقودة في ملف CSV.`);
+                    }
+                }
+                 if (validationErrors.length > 0 && headers.includes("ï»¿id")) { // Check for BOM issue
+                    validationErrors.push("قد يكون هناك حرف BOM في بداية الملف (خاصةً من Excel). حاول حفظ الملف كـ 'CSV UTF-8 (Comma delimited)' بدون BOM.");
+                }
+
+
+                dataRows.forEach((row, rowIndex) => {
+                    if (row.every(cell => cell.trim() === '')) return; // Skip fully empty rows
+
+                    if (row.length !== headers.length) {
+                         validationErrors.push(`عدد الأعمدة في السطر ${rowIndex + 2} (${row.length}) لا يطابق عدد الترويسات (${headers.length}). قد يكون هناك فاصلة (,) داخل حقل غير محاط بعلامات اقتباس مزدوجة.`);
+                        return; 
+                    }
+                    
+                    const product = {};
+                    headers.forEach((header, colIndex) => {
+                        product[header] = row[colIndex] !== undefined ? String(row[colIndex]).trim() : '';
+                    });
+
+                    // ID (use sanitized header 'id')
+                    const idHeader = headers.find(h => h.includes('id')); // Find header that might be 'id' or 'ï»¿id'
+                    const productIdRaw = product[idHeader || 'id'];
+
+                    if (productIdRaw === undefined || productIdRaw === '' || isNaN(parseInt(productIdRaw))) {
+                        validationErrors.push(`المنتج في السطر ${rowIndex + 2} لديه ID ("${productIdRaw}") غير صالح أو مفقود.`);
+                    } else {
+                        product.id = parseInt(productIdRaw);
+                        if (productIds.has(product.id)) {
+                             validationErrors.push(`معرف المنتج (ID) مكرر في الملف: ${product.id} (السطر ${rowIndex + 2}).`);
+                        }
+                        productIds.add(product.id);
+                    }
+
+                    ['title', 'price', 'image1', 'size', 'base_size', 'category', 'availability'].forEach(field => {
+                        if (!product[field] || String(product[field]).trim() === '') {
+                            validationErrors.push(`المنتج '${product.title || `في السطر ${rowIndex+2}`}' يفتقد قيمة للحقل المطلوب: ${field}`);
+                        }
+                    });
+                     if (product.price && !/^\d{1,3}(,\d{3})*(\.\d+)?$/.test(String(product.price).replace(/\s/g,'')) && !/^\d+(\.\d+)?$/.test(String(product.price).replace(/\s/g,''))) {
+                        validationErrors.push(`المنتج '${product.title || `في السطر ${rowIndex+2}`}' لديه تنسيق سعر غير صالح: '${product.price}'.`);
+                    }
+
+                    const isNewVal = String(product.is_new || 'false').trim().toLowerCase();
+                    product.is_new = isNewVal === 'true' || isNewVal === '1' || isNewVal === 'yes';
+                    
+                    product.image2 = product.image2 ? String(product.image2).trim() : null;
+                    if(product.image2 === '') product.image2 = null;
+                    product.description = product.description ? String(product.description).trim() : '';
+
+                    importedProducts.push(product);
+                });
+
+                if (validationErrors.length > 0) {
+                    importErrorMessage.innerHTML = "<strong>أخطاء في التحقق من صحة بيانات CSV:</strong><br>" + validationErrors.slice(0, 15).join("<br>") + (validationErrors.length > 15 ? "<br>... و المزيد من الأخطاء." : "");
+                    importErrorMessage.classList.remove('hidden');
+                    return;
+                }
+
+                if (confirm(`هل أنت متأكد أنك تريد استبدال جميع المنتجات الحالية بـ ${importedProducts.length} منتج من ملف CSV؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
+                    products = importedProducts.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+                    
+                    cart = cart.filter(cartId => products.some(p => Number(p.id) === cartId));
+                    localStorage.setItem('mqCart_v4', JSON.stringify(cart));
+                    try {
+                        let viewed = JSON.parse(localStorage.getItem('mqRecentlyViewed_v1')) || [];
+                        viewed = viewed.filter(viewedId => products.some(p => Number(p.id) === viewedId));
+                        localStorage.setItem('mqRecentlyViewed_v1', JSON.stringify(viewed));
+                    } catch(e) { console.error("Error cleaning recently viewed during CSV import:", e); }
+                    
+                    refreshAllDynamicContent();
+                    alert(`تم استيراد ${products.length} منتج من ملف CSV بنجاح!`);
+                    closeImportModal();
+                }
+
+            } catch (error) {
+                console.error("Error processing CSV import:", error);
+                importErrorMessage.textContent = "فشل استيراد ملف CSV. تأكد من صحة تنسيق الملف (UTF-8). الخطأ: " + error.message;
+                importErrorMessage.classList.remove('hidden');
+            }
+        };
+        reader.onerror = function() {
+            importErrorMessage.textContent = "خطأ في قراءة الملف.";
+            importErrorMessage.classList.remove('hidden');
+            console.error("FileReader error:", reader.error);
+        };
+        reader.readAsText(file, 'UTF-8');
+    };
+
+    const requestAdminAuthAndTogglePanel = async (forceOpen = null) => {
+        const openPanel = () => {
+            isManagementPanelOpen = true;
+            if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(true);
+            if (activeModalOrOverlay) closeOverlay(true);
+            if (isMobileMenuOpen) closeMobileMenu();
+            if(adminProductSearchInput) adminProductSearchInput.value = '';
+            renderProductManagementTable(); 
+            productManagementPanel.style.display = 'flex';
+            productManagementPanel.classList.remove('invisible');
+            requestAnimationFrame(() => {
+                productManagementPanel.classList.add('visible', 'opacity-100');
+                if (productManagementPanelContent) {
+                    productManagementPanelContent.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+                    productManagementPanelContent.classList.remove('opacity-0', 'scale-95', '-translate-y-5');
+                }
+            });
+            document.body.style.overflow = 'hidden';
+
+            let signOutButton = document.getElementById('admin-sign-out-btn');
+            if (!signOutButton && productManagementPanelContent) {
+                const panelTitle = productManagementPanelContent.querySelector('h2.font-heading');
+                signOutButton = document.createElement('button');
+                signOutButton.id = 'admin-sign-out-btn';
+                signOutButton.className = 'btn btn-danger btn-sm'; // Kept style brief, specific style in <style>
+                signOutButton.innerHTML = '<i class="fas fa-sign-out-alt mr-1"></i> تسجيل الخروج';
+                signOutButton.addEventListener('click', signOutAdmin); // Changed to direct call
+                
+                if (panelTitle) {
+                    panelTitle.appendChild(signOutButton); // Append to title for better layout
+                     // Adjust title display if needed to accommodate button
+                    panelTitle.classList.add('flex', 'justify-between', 'items-center', 'w-full');
+                } else {
+                    // Fallback if title not found
+                     productManagementPanelContent.insertBefore(signOutButton, productManagementPanelContent.firstChild);
+                }
+            }
+            if (signOutButton) signOutButton.style.display = 'inline-flex';
+        };
+
+        const closePanel = () => {
+            isManagementPanelOpen = false;
+            if (activeManagementModal) closeManagementModal(true); 
+            if (productManagementPanelContent) {
+                productManagementPanelContent.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+                productManagementPanelContent.classList.add('opacity-0', 'scale-95', '-translate-y-5');
+            }
+            productManagementPanel.classList.remove('visible', 'opacity-100');
+            setTimeout(() => {
+                productManagementPanel.style.display = 'none';
+                productManagementPanel.classList.add('invisible');
+                if (!activeModalOrOverlay && !productDetailPanel?.classList.contains('visible') && !isMobileMenuOpen) {
+                    document.body.style.overflow = '';
+                }
+            }, 300);
+            
+            const signOutButton = document.getElementById('admin-sign-out-btn');
+            if (signOutButton) signOutButton.style.display = 'none'; // Hide on panel close
+        };
+        
+        const shouldOpen = forceOpen !== null ? forceOpen : !isManagementPanelOpen;
+
+        if (shouldOpen) {
+            if (!currentUser) { 
+                const user = await signInWithGoogle();
+                // onAuthStateChanged will handle opening the panel if sign-in was successful & authorized
+            } else if (currentUser.email === ALLOWED_ADMIN_EMAIL) { 
+                openPanel();
+            } else { 
+                alert("وصول غير مصرح به. الحساب المسجل حالياً (" + currentUser.email + ") ليس لديه صلاحيات المدير.");
+                await signOutAdmin();
+            }
+        } else { 
+             if (isManagementPanelOpen) {
+                closePanel();
+            }
+        }
+    };
+
+
     // --- Event Listeners Setup ---
-    // (Remains mostly the same, ensures modal closures trigger correctly)
+    let originalHandleEscapeKey; 
+    
     const setupEventListeners = () => {
          window.addEventListener('scroll', debounce(handleScroll, 50), { passive: true });
-         document.addEventListener('keydown', handleEscapeKey);
+         originalHandleEscapeKey = (event) => { 
+            if (event.key === 'Escape' || event.key === 'Esc') {
+                 if (productDetailPanel?.classList.contains('visible')) closeDetailPanel();
+                 else if (activeModalOrOverlay) closeOverlay();
+                 else if (isMobileMenuOpen) closeMobileMenu();
+            }
+         };
+         document.addEventListener('keydown', (event) => { 
+            if (event.key === 'Escape' || event.key === 'Esc') {
+                if (activeManagementModal && activeManagementModal.style.display === 'flex') {
+                    closeManagementModal();
+                } else if (isManagementPanelOpen) {
+                    requestAdminAuthAndTogglePanel(false); 
+                } else {
+                    originalHandleEscapeKey(event); 
+                }
+            }
+         });
+
          mobileNavToggle?.addEventListener('click', toggleMobileMenu);
          searchFilterToggleBtn?.addEventListener('click', () => openOverlay(searchFilterOverlay));
          themeToggleButton?.addEventListener('click', toggleTheme);
@@ -1807,7 +2681,7 @@
         closeSearchFilterOverlayBtn?.addEventListener('click', closeOverlay);
         searchFilterOverlay?.addEventListener('click', (e) => { if (e.target === searchFilterOverlay) closeOverlay(); });
         applyOverlayFiltersBtn?.addEventListener('click', handleApplyOverlayFilters);
-        overlaySearchInput?.addEventListener('input', () => debouncedApplyFilters(true, false));
+        overlaySearchInput?.addEventListener('input', () => debouncedApplyFilters(true, false)); 
         overlaySizeSelect?.addEventListener('change', () => applyFilters(true, true));
         clearOverlayFiltersBtn?.addEventListener('click', clearAllFilters);
         clearFiltersBtn?.addEventListener('click', clearAllFilters);
@@ -1831,25 +2705,113 @@
         sizeGuideModalCloseBtnBottom?.addEventListener('click', closeSizeGuideModal);
         sizeGuideModalOverlay?.addEventListener('click', (e) => { if (e.target === sizeGuideModalOverlay) closeSizeGuideModal(); });
         scrollToTopBtn?.addEventListener('click', scrollToTop);
-        document.querySelectorAll('.category-card').forEach(card => card.addEventListener('click', (e) => { e.preventDefault(); const cat = card.dataset.category; if(cat) setActiveCategory(cat, card); }));
         loadMoreButton?.addEventListener('click', () => { loadMoreButton.disabled = true; loadMoreButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2 text-sm"></i> جاري التحميل...`; requestAnimationFrame(() => { setTimeout(() => loadMoreProducts(), 150); }); });
         const yearSpan = document.getElementById('year'); if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+        // Product Management Listeners
+        productManagementToggleBtn?.addEventListener('click', () => requestAdminAuthAndTogglePanel());
+        closeManagementPanelBtn?.addEventListener('click', () => requestAdminAuthAndTogglePanel(false)); // Always close
+        productManagementPanel?.addEventListener('click', (e) => { 
+            if (e.target === productManagementPanel) requestAdminAuthAndTogglePanel(false);
+        });
+        addNewProductBtn?.addEventListener('click', () => openProductForm(null));
+        exportProductDataBtn?.addEventListener('click', openExportModal);
+        importProductDataBtn?.addEventListener('click', openImportModal);
+        productForm?.addEventListener('submit', handleProductFormSubmit);
+        closeProductFormBtn?.addEventListener('click', closeProductForm);
+        cancelProductFormBtn?.addEventListener('click', closeProductForm);
+        productManagementFormContainer?.addEventListener('click', (e) => { 
+            if (e.target === productManagementFormContainer) closeProductForm();
+        });
+        downloadCsvBtn?.addEventListener('click', handleDownloadCSV);
+        closeExportModalBtn?.addEventListener('click', closeExportModal);
+        productExportModal?.addEventListener('click', (e) => { 
+            if (e.target === productExportModal) closeExportModal();
+        });
+        closeImportModalBtn?.addEventListener('click', closeImportModal);
+        cancelImportBtn?.addEventListener('click', closeImportModal);
+        processImportBtn?.addEventListener('click', handleProcessImport);
+        productImportModal?.addEventListener('click', (e) => {
+            if (e.target === productImportModal) closeImportModal();
+        });
+        csvFileInput?.addEventListener('change', (event) => {
+            if (csvFileNameDisplay && processImportBtn) {
+                if (event.target.files && event.target.files.length > 0) {
+                    csvFileNameDisplay.textContent = `الملف المحدد: ${event.target.files[0].name}`;
+                    processImportBtn.disabled = false;
+                } else {
+                    csvFileNameDisplay.textContent = '';
+                    processImportBtn.disabled = true;
+                }
+            }
+        });
+        adminProductSearchInput?.addEventListener('input', () => {
+            debouncedRenderAdminTable(adminProductSearchInput.value.trim().toLowerCase());
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && (e.key.toLowerCase() === 'm' || e.key.toLowerCase() === 'ح')) { 
+                e.preventDefault();
+                requestAdminAuthAndTogglePanel();
+            }
+        });
     };
 
     // --- Helper Functions ---
-    // (Remains the same as previous version)
     const handleApplyOverlayFilters = () => { applyFilters(true, true); closeOverlay(); };
-    const handleEscapeKey = (event) => { if (event.key === 'Escape' || event.key === 'Esc') { if (productDetailPanel?.classList.contains('visible')) closeDetailPanel(); else if (activeModalOrOverlay) closeOverlay(); else if (isMobileMenuOpen) closeMobileMenu(); } };
+    const populateCategoryCards = () => {
+        if (!categoryCardsContainer) return;
+        categoryCardsContainer.innerHTML = ''; 
+        Object.keys(categoryData).forEach(key => {
+            const cat = categoryData[key];
+            const card = document.createElement('a');
+            card.href = "#products";
+            card.dataset.category = key;
+            card.className = `category-card group flex flex-col items-center justify-center p-4 md:p-5 bg-light-surface dark:bg-dark-surface border-2 border-transparent rounded-xl shadow-sm hover:shadow-lg hover:border-primary/40 dark:hover:border-primary-light/40 transition-all duration-200 ease-out text-center min-h-[100px] md:min-h-[120px]`;
+            if (key === 'all') card.classList.add('active'); 
+            card.innerHTML = `<i class="${cat.icon} text-3xl md:text-4xl mb-2.5 text-primary dark:text-primary-light transition-transform duration-200 group-hover:scale-110"></i><span class="text-sm md:text-base font-medium text-light-text-secondary dark:text-dark-text-secondary group-hover:text-primary dark:group-hover:text-primary-light transition-colors">${cat.name}</span>`;
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                setActiveCategory(key, card);
+            });
+            categoryCardsContainer.appendChild(card);
+        });
+    };
+
 
     // --- Initialization ---
-    // (Remains the same as previous version)
     document.addEventListener('DOMContentLoaded', () => {
         console.log("DOM Ready. Initializing App.");
+
+        if (typeof firebase === 'undefined' || !window.firebaseApp || !window.firebaseAuth) {
+            console.error("Firebase SDKs not loaded or initialized correctly! Admin features will not work.");
+            // Optionally, disable admin button or show an error to the user on the page
+             if(productManagementToggleBtn) productManagementToggleBtn.disabled = true;
+        } else {
+            window.firebaseAuth.onAuthStateChanged((user) => {
+                if (user && user.email === ALLOWED_ADMIN_EMAIL) {
+                    currentUser = user;
+                    console.log("Admin state changed: Signed In as", user.email);
+                    // If admin panel was intended to be open, ensure it is after auth state resolves
+                    // This handles cases where user was already signed in from previous session
+                    // if(isManagementPanelOpen) requestAdminAuthAndTogglePanel(true); // Can cause loop if panel closed by this fn
+                } else {
+                    if (currentUser) { // If there was a previous admin user
+                        console.log("Admin state changed: Signed Out or unauthorized email attempt:", user ? user.email : 'No user');
+                    }
+                    currentUser = null;
+                    if (isManagementPanelOpen) {
+                        requestAdminAuthAndTogglePanel(false); // Force close if panel is open and user is not admin
+                    }
+                }
+            });
+        }
+
         const storedTheme = localStorage.getItem('mqTheme_v2');
         const initialTheme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         applyTheme(initialTheme);
+        populateCategoryCards();
         initSectionObserver();
-        initSwiper(); // Init arrivals swiper
+        initSwiper(); 
         if (productGrid && loadMoreButton) {
              setActiveCategory('all');
         } else {
@@ -1859,11 +2821,39 @@
         }
         updateCartCount();
         renderRecentlyViewed();
-        setupEventListeners();
-        handleScroll();
+        setupEventListeners(); 
+        handleScroll(); 
         console.log("App Initialized.");
     });
     </script>
 
 </body>
 </html>
+```
+
+**ملخص التغييرات في الكود الكامل أعلاه:**
+
+1.  **Firebase SDKs في `<head>` أو قبل `</body>`**:
+    ```html
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script> -->
+
+    <script type="module">
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCKGjIRLL0nZbuYRBkqNG7I0c1yf5SkwMk", // هذا هو مفتاح API الخاص بك
+        authDomain: "login-72424.firebaseapp.com",
+        projectId: "login-72424",
+        storageBucket: "login-72424.firebasestorage.app",
+        messagingSenderId: "891002963088",
+        appId: "1:891002963088:web:0700e51bc0de1b18528415",
+        measurementId: "G-185HKC3EB4"
+      };
+
+      // Initialize Firebase
+      window.firebaseApp = firebase.initializeApp(firebaseConfig);
+      window.firebaseAuth = firebase.auth(); // Authentication service
+      window.GoogleAuthProvider = firebase.auth.GoogleAuthProvider; // Google provider
+    </script>
