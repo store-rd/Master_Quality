@@ -2829,31 +2829,3 @@ let products = [
 
 </body>
 </html>
-```
-
-**ملخص التغييرات في الكود الكامل أعلاه:**
-
-1.  **Firebase SDKs في `<head>` أو قبل `</body>`**:
-    ```html
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script> -->
-
-    <script type="module">
-      // Your web app's Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyCKGjIRLL0nZbuYRBkqNG7I0c1yf5SkwMk", // هذا هو مفتاح API الخاص بك
-        authDomain: "login-72424.firebaseapp.com",
-        projectId: "login-72424",
-        storageBucket: "login-72424.firebasestorage.app",
-        messagingSenderId: "891002963088",
-        appId: "1:891002963088:web:0700e51bc0de1b18528415",
-        measurementId: "G-185HKC3EB4"
-      };
-
-      // Initialize Firebase
-      window.firebaseApp = firebase.initializeApp(firebaseConfig);
-      window.firebaseAuth = firebase.auth(); // Authentication service
-      window.GoogleAuthProvider = firebase.auth.GoogleAuthProvider; // Google provider
-    </script>
