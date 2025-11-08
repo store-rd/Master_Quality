@@ -145,7 +145,7 @@ let products = [];
         dresses: { name: "تي شيرت", icon: "fas fa-vest-patches", description: "تي شيرت أنيقة وعصرية لمختلف المناسبات، من الكاجوال إلى السهرة." },
         trousers: { name: "بناطيل", icon: "fa-solid fa-person", description: "تشكيلة واسعة من البناطيل المريحة والأنيقة لجميع إطلالاتك." },
         maternity: { name: "ملابس منزلية", icon: "fas fa-person-pregnant", description: "ملابس ملابس منزلية مصممة لتوفير الراحة والأناقة خلال فترة الحمل." },
-        skirts: { name: "تنانير", icon: "fas fa-chess-queen", description: "أحدث موديلات التنانير المتنوعة لجميع الأذواق والمناسبات." }
+        skirts: { name: "غير ذلك", icon: "fas fa-chess-queen", description: "أحدث موديلات التنانير المتنوعة لجميع الأذواق والمناسبات." }
     };
     const MAX_RECENTLY_VIEWED = 8; 
     let isManagementPanelOpen = false;
