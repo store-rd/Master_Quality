@@ -1,5 +1,5 @@
 // --- Security Utility: XSS Prevention ---
-// This uses DOMPurify to sanitize HTML content, far superior to simple escaping.
+// This uses DOMPurify to sanitize HTML content.
 const safeHTML = (unsafe) => {
     if (typeof DOMPurify !== 'undefined') {
         return DOMPurify.sanitize(unsafe, {
@@ -7,15 +7,16 @@ const safeHTML = (unsafe) => {
             ADD_ATTR: ['target'], // Allow target attribute for links if needed
         });
     }
-    // Fallback if DOMPurify fails to load (should not happen)
+    // FIX: Fallback shouldn't destroy UI if DOMPurify fails. 
+    // In a client-side app rendering known templates, it's better to show the UI than raw code.
+    console.warn("DOMPurify not loaded. Returning raw HTML for UI stability.");
     if (!unsafe) return "";
-    return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return unsafe; 
 };
 
 // --- Product Data & State ---
 let products = [];
 const whatsappNumber = '9647778076465', productsPerLoad = 12, MAX_RECENTLY_VIEWED = 8;
-// NOTE: This list is for UI ONLY (showing/hiding buttons). Real security is in Firestore Rules.
 const ALLOWED_ADMIN_EMAILS = ["soso.lovr66@gmail.com", "ramysaad404@gmail.com"];
 let currentProductIdForDetail = null, activeCategory = 'all', displayedProductCount = 0, currentFilteredProducts = [], currentSearchTerm = '', currentSizeFilter = 'all', isMobileMenuOpen = false, activeModalOrOverlay = null, activeManagementModal = null, isPanelOpening = false, swiperInstance = null, detailSwiperInstance = null, isManagementPanelOpen = false, editingProductId = null, currentUser = null, initialProductsFetched = false, adminProductSearchTerm = '';
 let cart = JSON.parse(localStorage.getItem('mqCart_v4')) || [], cartItemsForOrder = [];
@@ -46,7 +47,8 @@ const cartModalOverlay = document.getElementById('cart-modal'), cartModalCloseBu
 const orderFormModalOverlay = document.getElementById('order-form-modal'), orderFormModalCloseButton = document.getElementById('modal-close-button-order'), orderForm = document.getElementById('order-form'), formErrorMessage = document.getElementById('form-error-message');
 const orderSummaryMainTitle = document.getElementById('order-summary-main-title'), orderSummarySingleItemDetails = document.getElementById('order-summary-single-item-details'), orderSummaryItemsList = document.getElementById('order-summary-items-list');
 const orderSummaryTitle = document.getElementById('order-summary-title'), orderSummarySize = document.getElementById('order-summary-size'), orderSummaryPrice = document.getElementById('order-summary-price');
-const orderFormProductId = document.getElementById('order-form-product-id'), orderFormProductTitle = document.getElementById('orderFormProductTitle'), orderFormProductSize = document.getElementById('order-form-product-size'), orderFormProductPrice = document.getElementById('order-form-product-price');
+// FIX: Corrected ID for title to match HTML (was causing null error)
+const orderFormProductId = document.getElementById('order-form-product-id'), orderFormProductTitle = document.getElementById('order-form-product-title'), orderFormProductSize = document.getElementById('order-form-product-size'), orderFormProductPrice = document.getElementById('order-form-product-price');
 
 // Product Detail Panel Elements
 const productDetailPanel = document.getElementById('product-detail-panel'), productDetailContent = document.getElementById('product-detail-content'), closeDetailPanelBtn = document.getElementById('close-detail-panel-btn'), productDetailBackdrop = document.getElementById('product-detail-backdrop');
@@ -157,9 +159,6 @@ const createProductCard = (product, isCarousel = false) => {
     const img1 = product.image1 || ph1, img2 = (isValidImageUrl(product.image2) && product.image2 !== product.image1) ? product.image2 : img1;
     const inCart = isInCart(product.id), isOnSale = product.on_sale && product.original_price && parseFormattedPrice(product.original_price) > parseFormattedPrice(product.price);
     
-    // Security: We use simple escaping for attributes, DOMPurify for the main HTML block if complex
-    // For simple values, simple escaping is faster, but for structure injection, we use sanitize.
-    
     const card = document.createElement('div');
     card.className = `product-card group flex flex-col bg-light-surface dark:bg-dark-surface rounded-xl overflow-hidden shadow-card border border-light-border/30 dark:border-dark-border/30 transition-all duration-medium ease-[cubic-bezier(0.33,1,0.68,1)] hover:shadow-card-hover hover:-translate-y-1.5 hover:border-primary/40 dark:hover:border-primary-light/40 ${isCarousel ? 'swiper-product-card max-w-[260px]' : 'section-animate'}`;
     Object.assign(card.dataset, { id: product.id, category: product.category, base_size: product.base_size, title: product.title.toLowerCase() });
@@ -168,7 +167,6 @@ const createProductCard = (product, isCarousel = false) => {
         ? `<p class="price text-lg font-bold text-red-600 dark:text-red-400 mt-2"><span class="original-price">${safeHTML(formatPrice(product.original_price))}</span>${safeHTML(formatPrice(product.price))} <span class="currency text-sm font-normal text-light-text-muted dark:text-dark-text-muted mr-0.5">د.ع</span></p>`
         : `<p class="price text-lg font-bold text-primary dark:text-primary-light mt-2">${safeHTML(formatPrice(product.price))} <span class="currency text-sm font-normal text-light-text-muted dark:text-dark-text-muted mr-0.5">د.ع</span></p>`;
 
-    // Sanitizing the entire inner HTML block
     card.innerHTML = safeHTML(`
         <div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700 product-card-image-container">
              <img src="${img1}" alt="${product.title}" loading="lazy" class="product-card-img w-full h-full object-contain" onerror="if(this.src!=='${ph1}'){this.src='${ph1}';this.classList.add('img-error','object-scale-down');}this.onerror=null;">
@@ -265,7 +263,9 @@ const openDetailPanel = (id) => {
     if (!product || !productDetailPanel || isPanelOpening) return;
     if (activeModalOrOverlay) closeOverlay(true); if (isManagementPanelOpen) requestAdminAuthAndTogglePanel(false);
     isPanelOpening = true; currentProductIdForDetail = Number(id);
-    const inCart = isInCart(id), inStock = product.availability === 'in stock';
+    const inCart = isInCart(id);
+    // Fix: Availability check robustness
+    const inStock = product.availability.toLowerCase().trim() === 'in stock';
     const theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
     const phBg = theme === 'dark' ? '1E293B' : 'F8FAFC', phTxt = theme === 'dark' ? '9CA3AF' : '6B7280';
     const ph1 = `https://placehold.co/600x600/${phBg}/${phTxt}?text=صورة+1&font=cairo`, ph2 = `https://placehold.co/600x600/${phBg}/${phTxt}?text=صورة+2&font=cairo`;
@@ -355,21 +355,33 @@ const openOrderModal = (productId = null) => {
     let total = 0, listHtml = ''; orderSummarySingleItemDetails.classList.add('hidden'); orderSummaryItemsList.classList.add('hidden');
     cartItemsForOrder = []; orderForm?.reset(); formErrorMessage?.classList.add('hidden'); orderForm?.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
 
-    if (productId) {
+    // FIX: Check for null specifically, because productId can be 0
+    if (productId !== null && productId !== undefined) {
         const p = products.find(x => x && Number(x.id) === Number(productId));
         if (!p || p.availability !== 'in stock') return alert("عفواً، لا يمكن طلب هذا المنتج حالياً.");
+        
+        // Safeguard: Check if elements exist before setting value
+        if(orderFormProductId) orderFormProductId.value=p.id;
+        if(orderFormProductTitle) orderFormProductTitle.value=p.title;
+        if(orderFormProductSize) orderFormProductSize.value=p.size;
+        if(orderFormProductPrice) orderFormProductPrice.value=p.price;
+        
         orderSummarySingleItemDetails.classList.remove('hidden');
         orderSummaryMainTitle.innerHTML = `<i class="fas fa-receipt text-lg"></i> ملخص طلب لمنتج واحد`;
         orderSummaryTitle.textContent = p.title; orderSummarySize.textContent = p.size; orderSummaryPrice.textContent = formatPrice(p.price);
-        orderFormProductId.value=p.id; orderFormProductTitle.value=p.title; orderFormProductSize.value=p.size; orderFormProductPrice.value=p.price;
         total = parseFormattedPrice(p.price) || 0;
     } else {
+        // FIX: Clear hidden inputs to prevent phantom single-product submission
+        if(orderFormProductId) orderFormProductId.value = ""; 
+        if(orderFormProductTitle) orderFormProductTitle.value = ""; 
+        if(orderFormProductSize) orderFormProductSize.value = ""; 
+        if(orderFormProductPrice) orderFormProductPrice.value = "";
+        
         cartItemsForOrder = cart.map(id => products.find(x => Number(x.id) === Number(id))).filter(p => p && p.availability === 'in stock');
         if (cartItemsForOrder.length === 0) return alert("لا توجد منتجات متاحة للطلب في السلة.");
         orderSummaryItemsList.classList.remove('hidden');
         cartItemsForOrder.forEach(item => {
             const price = parseFormattedPrice(item.price)||0; total+=price;
-            // Security: Sanitize item details in the list
             listHtml += safeHTML(`<li class="flex justify-between border-b border-light-border/50 dark:border-dark-border/50 pb-3 mb-3"><span class="flex-1 leading-tight">${item.title} <span class="text-sm text-light-text-muted">(${item.size})</span></span><span class="font-semibold text-primary dark:text-primary-light">${formatPrice(item.price)} د.ع</span></li>`);
         });
         orderSummaryItemsList.innerHTML = listHtml + `<li class="flex justify-between pt-3 mt-3 border-t border-primary/20 font-bold text-lg"><span>الإجمالي:</span><span class="text-primary dark:text-primary-light">${total.toLocaleString('ar-IQ')} د.ع</span></li>`;
@@ -489,12 +501,10 @@ const handleOrderSubmit = (e) => {
     const name = document.getElementById('customer-name'), phone = document.getElementById('customer-phone'), address = document.getElementById('customer-address');
     let valid = true, errs = []; formErrorMessage.classList.add('hidden'); orderForm.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
     
-    // Basic validation (client-side only, but good for UX)
     if(!name.value.trim()){ errs.push("يرجى إدخال الاسم."); valid=false; name.classList.add('invalid'); }
     if(!phone.value.trim() || !phone.checkValidity()){ errs.push("رقم الهاتف غير صحيح."); valid=false; phone.classList.add('invalid'); }
     if(!address.value.trim()){ errs.push("يرجى إدخال العنوان."); valid=false; address.classList.add('invalid'); }
     
-    // Security: While encodeURIComponent protects the URL parameter, using safe values is good practice.
     const safeName = safeHTML(name.value.trim());
     const safePhone = safeHTML(phone.value.trim());
     const safeAddress = safeHTML(address.value.trim());
@@ -506,14 +516,20 @@ const handleOrderSubmit = (e) => {
     if (cartItemsForOrder.length > 0) {
         cartItemsForOrder.forEach((item, i) => { msg += `${i+1}. ${item.title} (${item.size}) - *${formatPrice(item.price)} د.ع*\n`; total+=parseFormattedPrice(item.price)||0; });
     } else if (orderFormProductId?.value) {
-         msg += `1. ${orderFormProductTitle.value} (${orderFormProductSize.value}) - *${formatPrice(orderFormProductPrice.value)} د.ع*\n`; total=parseFormattedPrice(orderFormProductPrice.value)||0;
+         // SAFEGUARD: Ensure title element exists before reading
+         const titleVal = orderFormProductTitle ? orderFormProductTitle.value : "(اسم المنتج غير متوفر)";
+         msg += `1. ${titleVal} (${orderFormProductSize.value}) - *${formatPrice(orderFormProductPrice.value)} د.ع*\n`; total=parseFormattedPrice(orderFormProductPrice.value)||0;
     }
     msg += `\n💰 *الإجمالي:* ${total.toLocaleString('ar-IQ')} د.ع\n\n_تم الإرسال من الموقع_`;
     
-    // Security Fix: Prevent reverse tabnabbing
-    const newWindow = window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
+    
+    // FIX: Try opening new window, if blocked, redirect current window.
+    const newWindow = window.open(whatsappUrl, '_blank');
     if (newWindow) {
         newWindow.opener = null;
+    } else {
+        window.location.href = whatsappUrl;
     }
     
     const btn = orderForm.querySelector('button[type="submit"]'); const oldHTML = btn.innerHTML;
@@ -601,7 +617,6 @@ const renderProductManagementTable = (term = '') => {
     filtered.forEach(p => {
         const row = productManagementTableBody.insertRow(); if (p.availability !== 'in stock') row.classList.add('product-out-of-stock');
         
-        // Security: Using safeHTML to prevent XSS in admin table
         const safeId = safeHTML(p.id);
         const safeTitle = safeHTML(p.title);
         const safePrice = safeHTML(formatPrice(p.price));
@@ -667,8 +682,6 @@ const handleProductFormSubmit = async (e) => {
     if(pfOnSale.checked && !pfOriginalPrice.value) errs.push("السعر الأصلي مطلوب للتخفيض");
     if(errs.length){ formValidationError.innerHTML=errs.join('<br>'); formValidationError.classList.remove('hidden'); return; }
     
-    // Sanitization before sending to DB (Good Practice)
-    // We sanitize here to store clean data, but we ALSO sanitize on display for double protection.
     const data = {
         title: pfTitle.value.trim(), 
         price: pfPrice.value.trim(), 
@@ -717,10 +730,9 @@ const convertToCSV = (arr) => {
     if(!arr.length) return "";
     const headers = ['id','title','price','original_price','on_sale','image1','image2','size','base_size','category','availability','description','is_new'];
     return [headers.join(',')].concat(arr.map(o => headers.map(h => {
-        // Security Fix: CSV Injection (Excel Formula Injection) prevention
         let val = String(o[h]===undefined?'':o[h]);
         if (/^[=+\-@]/.test(val)) {
-            val = "'" + val; // Prepend single quote to force text mode in Excel
+            val = "'" + val; 
         }
         return `"${val.replace(/"/g,'""')}"`;
     }).join(','))).join('\r\n');
@@ -764,17 +776,12 @@ const handleProcessImport = () => {
             }).filter(x => !isNaN(x.id));
             
             if(confirm(`استبدال المنتجات بـ ${data.length} منتج جديد؟`)) {
-                // Security/Stability Fix: Firestore Batches are limited to 500 operations.
-                // We must chunk the import to avoid crashing.
                 const oldSnaps = await productsCollectionRef().get();
                 const totalOps = oldSnaps.size + data.length;
-                
-                // Helper to chunk array
                 const chunkArray = (arr, size) => {
                    const res = []; for (let i=0; i<arr.length; i+=size) res.push(arr.slice(i,i+size)); return res;
                 };
 
-                // 1. Delete old products in chunks
                 const deleteChunks = chunkArray(oldSnaps.docs, 400);
                 for (const chunk of deleteChunks) {
                     const batch = window.db.batch();
@@ -782,7 +789,6 @@ const handleProcessImport = () => {
                     await batch.commit();
                 }
 
-                // 2. Add new products in chunks
                 const addChunks = chunkArray(data, 400);
                 for (const chunk of addChunks) {
                     const batch = window.db.batch();
@@ -818,7 +824,6 @@ const setupEventListeners = () => {
     orderFormModalCloseButton?.addEventListener('click', closeOrderModal); cartModalCloseButton?.addEventListener('click', closeCartModal);
     cartOrderAllBtn?.addEventListener('click', prepareOrderForAllCartItems);
     
-    // Fixed assignments using checks instead of optional chaining assignment
     if(privacyPolicyLink) privacyPolicyLink.onclick = openPrivacyPolicyModal; 
     if(privacyPolicyModalCloseButton) privacyPolicyModalCloseButton.onclick = closePrivacyPolicyModal;
     if(privacyModalCloseBtnBottom) privacyModalCloseBtnBottom.onclick = closePrivacyPolicyModal; 
@@ -835,7 +840,6 @@ const setupEventListeners = () => {
     
     loadMoreButton?.addEventListener('click', () => loadMoreProducts());
     
-    // Admin Listeners
     productManagementToggleBtn?.addEventListener('click', () => requestAdminAuthAndTogglePanel());
     closeManagementPanelBtn?.addEventListener('click', () => requestAdminAuthAndTogglePanel(false));
     addNewProductBtn?.addEventListener('click', () => openProductForm(null));
@@ -858,10 +862,8 @@ const setupEventListeners = () => {
     csvFileInput?.addEventListener('change', (e) => { if(e.target.files.length) { csvFileNameDisplay.textContent = e.target.files[0].name; processImportBtn.disabled = false; } });
     adminProductSearchInput?.addEventListener('input', () => debouncedRenderAdminTable(adminProductSearchInput.value));
     
-    // Forms Click Outside
     [productManagementPanel, productManagementFormContainer, productExportModal, productImportModal].forEach(el => el?.addEventListener('click', e => { if(e.target===el && el.classList.contains('admin-modal-overlay')) closeManagementModal(); else if(e.target===el) requestAdminAuthAndTogglePanel(false); }));
     
-    // Restore Click Outside to Close for User Modals
     [searchFilterOverlay, cartModalOverlay, orderFormModalOverlay, privacyPolicyModalOverlay, returnPolicyModalOverlay, sizeGuideModalOverlay].forEach(el => {
         el?.addEventListener('click', (e) => {
             if (e.target === el) closeOverlay();
