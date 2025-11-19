@@ -520,10 +520,7 @@ const toggleMobileMenu = () => {
     }
 };
 const closeMobileMenu = () => { if (isMobileMenuOpen) toggleMobileMenu(); };
-
-// ADDED MISSING FUNCTION HERE
 const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-
 const handleScroll = () => {
     if (scrollToTopBtn) { const vis = window.scrollY > window.innerHeight * 0.6; scrollToTopBtn.classList.toggle('visible', vis); scrollToTopBtn.classList.toggle('opacity-0', !vis); scrollToTopBtn.classList.toggle('invisible', !vis); }
     handleHeaderScroll();
@@ -733,15 +730,15 @@ const setupEventListeners = () => {
     // Fixed assignments using checks instead of optional chaining assignment
     if(privacyPolicyLink) privacyPolicyLink.onclick = openPrivacyPolicyModal; 
     if(privacyPolicyModalCloseButton) privacyPolicyModalCloseButton.onclick = closePrivacyPolicyModal;
-    if(privacyModalCloseBtnBottom) privacyModalCloseBtnBottom.onclick = closePrivacyPolicyModal; // Added
+    if(privacyModalCloseBtnBottom) privacyModalCloseBtnBottom.onclick = closePrivacyPolicyModal; 
 
     if(returnPolicyLink) returnPolicyLink.onclick = openReturnPolicyModal; 
     if(returnPolicyModalCloseButton) returnPolicyModalCloseButton.onclick = closeReturnPolicyModal;
-    if(returnModalCloseBtnBottom) returnModalCloseBtnBottom.onclick = closeReturnPolicyModal; // Added
+    if(returnModalCloseBtnBottom) returnModalCloseBtnBottom.onclick = closeReturnPolicyModal; 
 
     if(sizeGuideFooterLink) sizeGuideFooterLink.onclick = openSizeGuideModal; 
     if(sizeGuideModalCloseButton) sizeGuideModalCloseButton.onclick = closeSizeGuideModal;
-    if(sizeGuideModalCloseBtnBottom) sizeGuideModalCloseBtnBottom.onclick = closeSizeGuideModal; // Added
+    if(sizeGuideModalCloseBtnBottom) sizeGuideModalCloseBtnBottom.onclick = closeSizeGuideModal; 
 
     if(scrollToTopBtn) scrollToTopBtn.onclick = scrollToTop;
     
@@ -754,7 +751,7 @@ const setupEventListeners = () => {
     productForm?.addEventListener('submit', handleProductFormSubmit);
     
     closeProductFormBtn?.addEventListener('click', () => closeManagementModal());
-    cancelProductFormBtn?.addEventListener('click', () => closeManagementModal()); // Added
+    cancelProductFormBtn?.addEventListener('click', () => closeManagementModal()); 
 
     exportProductDataBtn?.addEventListener('click', () => openManagementModal(productExportModal));
     importProductDataBtn?.addEventListener('click', () => openManagementModal(productImportModal));
@@ -764,7 +761,7 @@ const setupEventListeners = () => {
     closeExportModalBtn?.addEventListener('click', () => closeManagementModal());
     
     closeImportModalBtn?.addEventListener('click', () => closeManagementModal());
-    cancelImportBtn?.addEventListener('click', () => closeManagementModal()); // Added
+    cancelImportBtn?.addEventListener('click', () => closeManagementModal()); 
 
     processImportBtn?.addEventListener('click', handleProcessImport);
     csvFileInput?.addEventListener('change', (e) => { if(e.target.files.length) { csvFileNameDisplay.textContent = e.target.files[0].name; processImportBtn.disabled = false; } });
@@ -773,6 +770,13 @@ const setupEventListeners = () => {
     // Forms Click Outside
     [productManagementPanel, productManagementFormContainer, productExportModal, productImportModal].forEach(el => el?.addEventListener('click', e => { if(e.target===el && el.classList.contains('admin-modal-overlay')) closeManagementModal(); else if(e.target===el) requestAdminAuthAndTogglePanel(false); }));
     
+    // Restore Click Outside to Close for User Modals
+    [searchFilterOverlay, cartModalOverlay, orderFormModalOverlay, privacyPolicyModalOverlay, returnPolicyModalOverlay, sizeGuideModalOverlay].forEach(el => {
+        el?.addEventListener('click', (e) => {
+            if (e.target === el) closeOverlay();
+        });
+    });
+
     const yearSpan = document.getElementById('year'); if(yearSpan) yearSpan.textContent = new Date().getFullYear();
     if(pfOnSale) pfOnSale.addEventListener('change', () => pfOriginalPrice.parentElement.style.display = pfOnSale.checked ? 'block' : 'none');
     if(orderForm) { orderForm.addEventListener('submit', handleOrderSubmit); ['customer-name','customer-phone','customer-address'].forEach(id=>document.getElementById(id)?.addEventListener('input',function(){this.classList.remove('invalid')})); }
