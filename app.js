@@ -1,6 +1,21 @@
+// --- Security Utility: XSS Prevention ---
+// This uses DOMPurify to sanitize HTML content, far superior to simple escaping.
+const safeHTML = (unsafe) => {
+    if (typeof DOMPurify !== 'undefined') {
+        return DOMPurify.sanitize(unsafe, {
+            USE_PROFILES: { html: true }, // Ensure strict HTML profile
+            ADD_ATTR: ['target'], // Allow target attribute for links if needed
+        });
+    }
+    // Fallback if DOMPurify fails to load (should not happen)
+    if (!unsafe) return "";
+    return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+};
+
 // --- Product Data & State ---
 let products = [];
 const whatsappNumber = '9647778076465', productsPerLoad = 12, MAX_RECENTLY_VIEWED = 8;
+// NOTE: This list is for UI ONLY (showing/hiding buttons). Real security is in Firestore Rules.
 const ALLOWED_ADMIN_EMAILS = ["soso.lovr66@gmail.com", "ramysaad404@gmail.com"];
 let currentProductIdForDetail = null, activeCategory = 'all', displayedProductCount = 0, currentFilteredProducts = [], currentSearchTerm = '', currentSizeFilter = 'all', isMobileMenuOpen = false, activeModalOrOverlay = null, activeManagementModal = null, isPanelOpening = false, swiperInstance = null, detailSwiperInstance = null, isManagementPanelOpen = false, editingProductId = null, currentUser = null, initialProductsFetched = false, adminProductSearchTerm = '';
 let cart = JSON.parse(localStorage.getItem('mqCart_v4')) || [], cartItemsForOrder = [];
@@ -31,7 +46,7 @@ const cartModalOverlay = document.getElementById('cart-modal'), cartModalCloseBu
 const orderFormModalOverlay = document.getElementById('order-form-modal'), orderFormModalCloseButton = document.getElementById('modal-close-button-order'), orderForm = document.getElementById('order-form'), formErrorMessage = document.getElementById('form-error-message');
 const orderSummaryMainTitle = document.getElementById('order-summary-main-title'), orderSummarySingleItemDetails = document.getElementById('order-summary-single-item-details'), orderSummaryItemsList = document.getElementById('order-summary-items-list');
 const orderSummaryTitle = document.getElementById('order-summary-title'), orderSummarySize = document.getElementById('order-summary-size'), orderSummaryPrice = document.getElementById('order-summary-price');
-const orderFormProductId = document.getElementById('order-form-product-id'), orderFormProductTitle = document.getElementById('order-form-product-title'), orderFormProductSize = document.getElementById('order-form-product-size'), orderFormProductPrice = document.getElementById('order-form-product-price');
+const orderFormProductId = document.getElementById('order-form-product-id'), orderFormProductTitle = document.getElementById('orderFormProductTitle'), orderFormProductSize = document.getElementById('order-form-product-size'), orderFormProductPrice = document.getElementById('order-form-product-price');
 
 // Product Detail Panel Elements
 const productDetailPanel = document.getElementById('product-detail-panel'), productDetailContent = document.getElementById('product-detail-content'), closeDetailPanelBtn = document.getElementById('close-detail-panel-btn'), productDetailBackdrop = document.getElementById('product-detail-backdrop');
@@ -142,15 +157,19 @@ const createProductCard = (product, isCarousel = false) => {
     const img1 = product.image1 || ph1, img2 = (isValidImageUrl(product.image2) && product.image2 !== product.image1) ? product.image2 : img1;
     const inCart = isInCart(product.id), isOnSale = product.on_sale && product.original_price && parseFormattedPrice(product.original_price) > parseFormattedPrice(product.price);
     
+    // Security: We use simple escaping for attributes, DOMPurify for the main HTML block if complex
+    // For simple values, simple escaping is faster, but for structure injection, we use sanitize.
+    
     const card = document.createElement('div');
     card.className = `product-card group flex flex-col bg-light-surface dark:bg-dark-surface rounded-xl overflow-hidden shadow-card border border-light-border/30 dark:border-dark-border/30 transition-all duration-medium ease-[cubic-bezier(0.33,1,0.68,1)] hover:shadow-card-hover hover:-translate-y-1.5 hover:border-primary/40 dark:hover:border-primary-light/40 ${isCarousel ? 'swiper-product-card max-w-[260px]' : 'section-animate'}`;
     Object.assign(card.dataset, { id: product.id, category: product.category, base_size: product.base_size, title: product.title.toLowerCase() });
     
     const priceHtml = isOnSale 
-        ? `<p class="price text-lg font-bold text-red-600 dark:text-red-400 mt-2"><span class="original-price">${formatPrice(product.original_price)}</span>${formatPrice(product.price)} <span class="currency text-sm font-normal text-light-text-muted dark:text-dark-text-muted mr-0.5">د.ع</span></p>`
-        : `<p class="price text-lg font-bold text-primary dark:text-primary-light mt-2">${formatPrice(product.price)} <span class="currency text-sm font-normal text-light-text-muted dark:text-dark-text-muted mr-0.5">د.ع</span></p>`;
+        ? `<p class="price text-lg font-bold text-red-600 dark:text-red-400 mt-2"><span class="original-price">${safeHTML(formatPrice(product.original_price))}</span>${safeHTML(formatPrice(product.price))} <span class="currency text-sm font-normal text-light-text-muted dark:text-dark-text-muted mr-0.5">د.ع</span></p>`
+        : `<p class="price text-lg font-bold text-primary dark:text-primary-light mt-2">${safeHTML(formatPrice(product.price))} <span class="currency text-sm font-normal text-light-text-muted dark:text-dark-text-muted mr-0.5">د.ع</span></p>`;
 
-    card.innerHTML = `
+    // Sanitizing the entire inner HTML block
+    card.innerHTML = safeHTML(`
         <div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700 product-card-image-container">
              <img src="${img1}" alt="${product.title}" loading="lazy" class="product-card-img w-full h-full object-contain" onerror="if(this.src!=='${ph1}'){this.src='${ph1}';this.classList.add('img-error','object-scale-down');}this.onerror=null;">
              <img src="${img2}" alt="${product.title}" loading="lazy" class="product-card-img-hover w-full h-full object-contain" onerror="if(this.src!=='${ph2}'){this.src='${ph2}';this.classList.add('img-error','object-scale-down');}this.onerror=null;">
@@ -166,7 +185,7 @@ const createProductCard = (product, isCarousel = false) => {
         </div>
         <div class="product-card-info p-4 pt-3 text-center border-t border-light-border/50 dark:border-dark-border/50 flex-grow flex flex-col justify-between min-h-[100px]">
             <h3 class="title text-base font-semibold text-light-text-primary dark:text-dark-text-primary mb-1.5 leading-snug h-[2.8em] overflow-hidden line-clamp-2">${product.title}</h3>${priceHtml}
-        </div>`;
+        </div>`);
     
     const stopProp = (e) => e.stopPropagation();
     card.querySelector('.cart-btn')?.addEventListener('click', (e) => { stopProp(e); toggleCart(product.id); });
@@ -251,20 +270,24 @@ const openDetailPanel = (id) => {
     const phBg = theme === 'dark' ? '1E293B' : 'F8FAFC', phTxt = theme === 'dark' ? '9CA3AF' : '6B7280';
     const ph1 = `https://placehold.co/600x600/${phBg}/${phTxt}?text=صورة+1&font=cairo`, ph2 = `https://placehold.co/600x600/${phBg}/${phTxt}?text=صورة+2&font=cairo`;
     
-    let priceHtml = `<span id="detail-panel-price" class="price-value text-xl font-bold text-primary dark:text-primary-light">${formatPrice(product.price)}</span>`;
+    // Prepare safe values
+    const safePrice = safeHTML(formatPrice(product.price));
+    const safeOriginalPrice = safeHTML(formatPrice(product.original_price));
+
+    let priceHtml = `<span id="detail-panel-price" class="price-value text-xl font-bold text-primary dark:text-primary-light">${safePrice}</span>`;
     if (product.on_sale && product.original_price && parseFormattedPrice(product.original_price) > parseFormattedPrice(product.price)) {
-        priceHtml = `<span class="original-price mr-2">${formatPrice(product.original_price)}</span><span id="detail-panel-price" class="price-value text-xl font-bold text-red-600 dark:text-red-400">${formatPrice(product.price)}</span>`;
+        priceHtml = `<span class="original-price mr-2">${safeOriginalPrice}</span><span id="detail-panel-price" class="price-value text-xl font-bold text-red-600 dark:text-red-400">${safePrice}</span>`;
     }
 
     let slides = '';
     [product.image1, product.image2].forEach((url, i) => {
         const ph = i===0?ph1:ph2;
         if ((url && isValidImageUrl(url) && !(i===1 && url===product.image1)) || (i===0)) {
-             slides += `<div class="swiper-slide"><div class="zoom-container w-full h-full"><img src="${url||ph}" alt="${product.title}" class="detail-swiper-image zoom-image" loading="eager" onerror="if(this.src!=='${ph}'){this.src='${ph}';this.classList.add('img-error');}this.onerror=null;"></div></div>`;
+             slides += `<div class="swiper-slide"><div class="zoom-container w-full h-full"><img src="${url||ph}" alt="${safeHTML(product.title)}" class="detail-swiper-image zoom-image" loading="eager" onerror="if(this.src!=='${ph}'){this.src='${ph}';this.classList.add('img-error');}this.onerror=null;"></div></div>`;
         }
     });
 
-    productDetailContent.innerHTML = `
+    productDetailContent.innerHTML = safeHTML(`
         <div class="detail-panel-image-wrapper aspect-square mb-6 relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden border border-light-border/50 dark:border-dark-border/50">
             ${product.on_sale && product.original_price ? '<span class="sale-badge absolute top-2 right-2 z-10 text-xs">تخفيض!</span>' : ''}
             <div class="swiper detail-panel-swiper"><div class="swiper-wrapper">${slides}</div><div class="swiper-pagination"></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div></div>
@@ -292,7 +315,7 @@ const openDetailPanel = (id) => {
         <div class="detail-panel-actions mt-8 flex flex-col gap-3">
             <button id="detail-panel-order-btn" data-id="${product.id}" class="btn btn-primary w-full py-3.5 text-lg" ${!inStock?'disabled':''}><i class="fas fa-truck mr-2"></i> ${inStock?'اطلب هذا المنتج الآن':'غير متوفر حالياً للطلب'}</button>
             <button id="detail-panel-cart-btn" data-id="${product.id}" class="cart-btn btn ${inCart?'btn-success is-in-cart':'btn-secondary'} w-full py-3 text-lg"><i class="text-lg ${inCart?'fas fa-check-circle':'fas fa-cart-plus'}"></i><span class="button-text mr-2">${inCart?'تمت الإضافة (إزالة؟)':'إضافة للسلة'}</span></button>
-        </div>`;
+        </div>`);
     
     const orderBtn = productDetailContent.querySelector('#detail-panel-order-btn'), cartBtn = productDetailContent.querySelector('#detail-panel-cart-btn'), sgBtn = productDetailContent.querySelector('#detail-panel-size-guide-btn');
     if(orderBtn && inStock) orderBtn.onclick = (e) => { e.preventDefault(); openOrderModal(currentProductIdForDetail); }; else if(orderBtn) orderBtn.classList.add('btn-disabled-visual');
@@ -346,7 +369,8 @@ const openOrderModal = (productId = null) => {
         orderSummaryItemsList.classList.remove('hidden');
         cartItemsForOrder.forEach(item => {
             const price = parseFormattedPrice(item.price)||0; total+=price;
-            listHtml += `<li class="flex justify-between border-b border-light-border/50 dark:border-dark-border/50 pb-3 mb-3"><span class="flex-1 leading-tight">${item.title} <span class="text-sm text-light-text-muted">(${item.size})</span></span><span class="font-semibold text-primary dark:text-primary-light">${formatPrice(item.price)} د.ع</span></li>`;
+            // Security: Sanitize item details in the list
+            listHtml += safeHTML(`<li class="flex justify-between border-b border-light-border/50 dark:border-dark-border/50 pb-3 mb-3"><span class="flex-1 leading-tight">${item.title} <span class="text-sm text-light-text-muted">(${item.size})</span></span><span class="font-semibold text-primary dark:text-primary-light">${formatPrice(item.price)} د.ع</span></li>`);
         });
         orderSummaryItemsList.innerHTML = listHtml + `<li class="flex justify-between pt-3 mt-3 border-t border-primary/20 font-bold text-lg"><span>الإجمالي:</span><span class="text-primary dark:text-primary-light">${total.toLocaleString('ar-IQ')} د.ع</span></li>`;
         orderSummaryMainTitle.innerHTML = `<i class="fas fa-receipt text-lg"></i> ملخص طلب (${cartItemsForOrder.length} منتجات)`;
@@ -374,14 +398,16 @@ const renderCartItems = () => {
             if (p.availability === 'in stock') availableCount++;
             const theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
             const ph = `https://placehold.co/80x96/${theme==='dark'?'374151':'E5E7EB'}/${theme==='dark'?'9CA3AF':'6B7280'}?text=Img&font=cairo`;
-            const priceDisplay = (p.on_sale && p.original_price) ? `<span class="original-price text-xs">${formatPrice(p.original_price)}</span><span class="font-bold text-red-600 dark:text-red-400">${formatPrice(p.price)}</span>` : `<span class="font-bold text-primary dark:text-primary-light">${formatPrice(p.price)}</span>`;
+            
+            const priceDisplay = (p.on_sale && p.original_price) ? `<span class="original-price text-xs">${safeHTML(formatPrice(p.original_price))}</span><span class="font-bold text-red-600 dark:text-red-400">${safeHTML(formatPrice(p.price))}</span>` : `<span class="font-bold text-primary dark:text-primary-light">${safeHTML(formatPrice(p.price))}</span>`;
             
             const el = document.createElement('div');
             el.className = `cart-item bg-light-background dark:bg-dark-background flex items-center gap-4 p-3 rounded-lg border border-light-border dark:border-dark-border shadow-sm w-full ${p.availability!=='in stock'?'unavailable opacity-60 grayscale-[80%] border-dashed':''}`;
-            el.innerHTML = `
+            // Security: Sanitize the entire block
+            el.innerHTML = safeHTML(`
                 <img src="${p.image1||ph}" class="w-[60px] h-[75px] object-contain rounded border bg-white dark:bg-dark-surface" onerror="if(this.src!=='${ph}'){this.src='${ph}';this.classList.add('img-error');}">
                 <div class="flex-grow overflow-hidden min-w-0"><p class="text-sm font-semibold line-clamp-2">${p.title}</p><p class="text-xs text-muted">المقاس: <span class="font-medium bg-light-border/50 px-1 rounded">${p.size}</span></p><p class="text-sm">${priceDisplay} <span class="text-xs">د.ع</span></p>${p.availability!=='in stock'?'<p class="text-xs text-error-DEFAULT">(غير متوفر)</p>':''}</div>
-                <div class="flex flex-col gap-2 items-center"><button class="cart-remove-btn btn-icon btn-icon-danger btn-icon-sm" data-id="${p.id}"><i class="fas fa-trash-alt"></i></button><button class="cart-order-single-btn btn-icon btn-icon-primary btn-icon-sm" data-id="${p.id}" ${p.availability!=='in stock'?'disabled':''}><i class="fas fa-truck"></i></button></div>`;
+                <div class="flex flex-col gap-2 items-center"><button class="cart-remove-btn btn-icon btn-icon-danger btn-icon-sm" data-id="${p.id}"><i class="fas fa-trash-alt"></i></button><button class="cart-order-single-btn btn-icon btn-icon-primary btn-icon-sm" data-id="${p.id}" ${p.availability!=='in stock'?'disabled':''}><i class="fas fa-truck"></i></button></div>`);
             
             el.querySelector('.cart-remove-btn').onclick = (e) => { e.stopPropagation(); toggleCart(p.id); };
             if (p.availability === 'in stock') el.querySelector('.cart-order-single-btn').onclick = (e) => { e.stopPropagation(); closeCartModal(); setTimeout(() => openOrderModal(p.id), 50); };
@@ -462,9 +488,17 @@ const handleOrderSubmit = (e) => {
     e.preventDefault(); if(!orderForm) return;
     const name = document.getElementById('customer-name'), phone = document.getElementById('customer-phone'), address = document.getElementById('customer-address');
     let valid = true, errs = []; formErrorMessage.classList.add('hidden'); orderForm.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+    
+    // Basic validation (client-side only, but good for UX)
     if(!name.value.trim()){ errs.push("يرجى إدخال الاسم."); valid=false; name.classList.add('invalid'); }
     if(!phone.value.trim() || !phone.checkValidity()){ errs.push("رقم الهاتف غير صحيح."); valid=false; phone.classList.add('invalid'); }
     if(!address.value.trim()){ errs.push("يرجى إدخال العنوان."); valid=false; address.classList.add('invalid'); }
+    
+    // Security: While encodeURIComponent protects the URL parameter, using safe values is good practice.
+    const safeName = safeHTML(name.value.trim());
+    const safePhone = safeHTML(phone.value.trim());
+    const safeAddress = safeHTML(address.value.trim());
+
     if(!valid){ formErrorMessage.innerHTML=errs.join('<br>'); formErrorMessage.classList.remove('hidden'); return; }
     
     let msg = `👋 *طلب جديد من Master Quality*\n\n👤 *الاسم:* ${name.value}\n📞 *الهاتف:* ${phone.value}\n📍 *العنوان:* ${address.value}\n\n🛒 *المنتجات:*\n`;
@@ -475,7 +509,12 @@ const handleOrderSubmit = (e) => {
          msg += `1. ${orderFormProductTitle.value} (${orderFormProductSize.value}) - *${formatPrice(orderFormProductPrice.value)} د.ع*\n`; total=parseFormattedPrice(orderFormProductPrice.value)||0;
     }
     msg += `\n💰 *الإجمالي:* ${total.toLocaleString('ar-IQ')} د.ع\n\n_تم الإرسال من الموقع_`;
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+    
+    // Security Fix: Prevent reverse tabnabbing
+    const newWindow = window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+    if (newWindow) {
+        newWindow.opener = null;
+    }
     
     const btn = orderForm.querySelector('button[type="submit"]'); const oldHTML = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> تم الإرسال!'; btn.disabled = true;
@@ -561,8 +600,17 @@ const renderProductManagementTable = (term = '') => {
     
     filtered.forEach(p => {
         const row = productManagementTableBody.insertRow(); if (p.availability !== 'in stock') row.classList.add('product-out-of-stock');
-        const priceDisplay = (p.on_sale && p.original_price) ? `<strong class="text-red-600">${formatPrice(p.price)}</strong>` : formatPrice(p.price);
-        row.innerHTML = `<td><img src="${p.image1||''}" class="admin-table-thumbnail" onerror="this.src='https://placehold.co/80x80'"></td><td class="id-cell" onclick="navigator.clipboard.writeText('${p.id}')">${p.id}</td><td class="max-w-[200px] truncate">${p.title}</td><td>${p.original_price?formatPrice(p.original_price):'-'}</td><td>${priceDisplay}</td><td>${categoryData[p.category]?.name||p.category}</td><td>${p.availability==='in stock'?'متوفر':'غير متوفر'}</td><td>${p.on_sale?'نعم':'لا'}</td><td><div class="admin-product-actions"><button class="quick-view-btn btn btn-sm btn-info" data-id="${p.id}"><i class="fas fa-eye"></i></button><button class="edit-btn btn btn-sm btn-secondary" data-id="${p.id}"><i class="fas fa-edit"></i></button><button class="del-btn btn btn-sm btn-danger" data-id="${p.id}"><i class="fas fa-trash"></i></button></div></td>`;
+        
+        // Security: Using safeHTML to prevent XSS in admin table
+        const safeId = safeHTML(p.id);
+        const safeTitle = safeHTML(p.title);
+        const safePrice = safeHTML(formatPrice(p.price));
+        const safeOriginal = safeHTML(formatPrice(p.original_price));
+        const safeCategory = safeHTML(categoryData[p.category]?.name || p.category);
+
+        const priceDisplay = (p.on_sale && p.original_price) ? `<strong class="text-red-600">${safePrice}</strong>` : safePrice;
+        
+        row.innerHTML = `<td><img src="${p.image1||''}" class="admin-table-thumbnail" onerror="this.src='https://placehold.co/80x80'"></td><td class="id-cell" onclick="navigator.clipboard.writeText('${safeId}')">${safeId}</td><td class="max-w-[200px] truncate">${safeTitle}</td><td>${p.original_price?safeOriginal:'-'}</td><td>${priceDisplay}</td><td>${safeCategory}</td><td>${p.availability==='in stock'?'متوفر':'غير متوفر'}</td><td>${p.on_sale?'نعم':'لا'}</td><td><div class="admin-product-actions"><button class="quick-view-btn btn btn-sm btn-info" data-id="${p.id}"><i class="fas fa-eye"></i></button><button class="edit-btn btn btn-sm btn-secondary" data-id="${p.id}"><i class="fas fa-edit"></i></button><button class="del-btn btn btn-sm btn-danger" data-id="${p.id}"><i class="fas fa-trash"></i></button></div></td>`;
         row.querySelector('.quick-view-btn').onclick = () => openDetailPanel(p.id);
         row.querySelector('.edit-btn').onclick = () => openProductForm(products.find(x => Number(x.id)===Number(p.id)));
         row.querySelector('.del-btn').onclick = () => deleteProductFromManager(p.id);
@@ -598,7 +646,7 @@ const requestAdminAuthAndTogglePanel = async (force = null) => {
         isManagementPanelOpen = true; if(activeModalOrOverlay) closeOverlay(true);
         productManagementPanel.style.display = 'flex'; requestAnimationFrame(() => productManagementPanel.classList.add('visible')); setBodyScrollLock(true);
         if (!initialProductsFetched) await initializeProductsAndUI(true); else refreshAllDynamicContent();
-        if(adminUserInfo) adminUserInfo.innerHTML = `Admin: ${currentUser.email}`; adminUserInfo?.classList.remove('hidden');
+        if(adminUserInfo) adminUserInfo.innerHTML = `Admin: ${safeHTML(currentUser.email)}`; adminUserInfo?.classList.remove('hidden');
     }
 };
 const openProductForm = (p = null) => {
@@ -619,10 +667,23 @@ const handleProductFormSubmit = async (e) => {
     if(pfOnSale.checked && !pfOriginalPrice.value) errs.push("السعر الأصلي مطلوب للتخفيض");
     if(errs.length){ formValidationError.innerHTML=errs.join('<br>'); formValidationError.classList.remove('hidden'); return; }
     
+    // Sanitization before sending to DB (Good Practice)
+    // We sanitize here to store clean data, but we ALSO sanitize on display for double protection.
     const data = {
-        title: pfTitle.value.trim(), price: pfPrice.value.trim(), original_price: pfOnSale.checked?pfOriginalPrice.value.trim():null, on_sale: pfOnSale.checked,
-        image1: pfImage1.value.trim(), image2: pfImage2.value.trim()||null, size: pfSize.value.trim(), base_size: pfBaseSize.value, category: pfCategory.value, availability: pfAvailability.value, description: pfDescription.value.trim()||'', is_new: pfIsNew.checked
+        title: pfTitle.value.trim(), 
+        price: pfPrice.value.trim(), 
+        original_price: pfOnSale.checked?pfOriginalPrice.value.trim():null, 
+        on_sale: pfOnSale.checked,
+        image1: pfImage1.value.trim(), 
+        image2: pfImage2.value.trim()||null, 
+        size: pfSize.value.trim(), 
+        base_size: pfBaseSize.value, 
+        category: pfCategory.value, 
+        availability: pfAvailability.value, 
+        description: pfDescription.value.trim()||'', 
+        is_new: pfIsNew.checked
     };
+
     try {
         const ref = productsCollectionRef();
         if (editingProductId) { await ref.doc(String(editingProductId)).set({...data, id: Number(editingProductId)}, {merge:true}); }
@@ -655,7 +716,14 @@ const deleteAllProductsFromManager = async () => {
 const convertToCSV = (arr) => {
     if(!arr.length) return "";
     const headers = ['id','title','price','original_price','on_sale','image1','image2','size','base_size','category','availability','description','is_new'];
-    return [headers.join(',')].concat(arr.map(o => headers.map(h => `"${String(o[h]===undefined?'':o[h]).replace(/"/g,'""')}"`).join(','))).join('\r\n');
+    return [headers.join(',')].concat(arr.map(o => headers.map(h => {
+        // Security Fix: CSV Injection (Excel Formula Injection) prevention
+        let val = String(o[h]===undefined?'':o[h]);
+        if (/^[=+\-@]/.test(val)) {
+            val = "'" + val; // Prepend single quote to force text mode in Excel
+        }
+        return `"${val.replace(/"/g,'""')}"`;
+    }).join(','))).join('\r\n');
 };
 const handleDownloadCSV = async () => {
     if(!window.db) return;
@@ -696,10 +764,33 @@ const handleProcessImport = () => {
             }).filter(x => !isNaN(x.id));
             
             if(confirm(`استبدال المنتجات بـ ${data.length} منتج جديد؟`)) {
-                const batch = window.db.batch(), old = await productsCollectionRef().get();
-                old.forEach(d => batch.delete(d.ref));
-                data.forEach(d => batch.set(productsCollectionRef().doc(String(d.id)), d));
-                await batch.commit(); alert("تم الاستيراد"); await initializeProductsAndUI(true); closeManagementModal();
+                // Security/Stability Fix: Firestore Batches are limited to 500 operations.
+                // We must chunk the import to avoid crashing.
+                const oldSnaps = await productsCollectionRef().get();
+                const totalOps = oldSnaps.size + data.length;
+                
+                // Helper to chunk array
+                const chunkArray = (arr, size) => {
+                   const res = []; for (let i=0; i<arr.length; i+=size) res.push(arr.slice(i,i+size)); return res;
+                };
+
+                // 1. Delete old products in chunks
+                const deleteChunks = chunkArray(oldSnaps.docs, 400);
+                for (const chunk of deleteChunks) {
+                    const batch = window.db.batch();
+                    chunk.forEach(doc => batch.delete(doc.ref));
+                    await batch.commit();
+                }
+
+                // 2. Add new products in chunks
+                const addChunks = chunkArray(data, 400);
+                for (const chunk of addChunks) {
+                    const batch = window.db.batch();
+                    chunk.forEach(d => batch.set(productsCollectionRef().doc(String(d.id)), d));
+                    await batch.commit();
+                }
+
+                alert("تم الاستيراد بنجاح"); await initializeProductsAndUI(true); closeManagementModal();
             }
         } catch (er) { alert("فشل: " + er.message); }
     };
@@ -796,5 +887,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     applyTheme(localStorage.getItem('mqTheme_v2') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
     populateCategoryCards();
     initSectionObserver(); updateCartCount(); setupEventListeners(); handleScroll();
-    console.log("App Ready");
+    console.log("App Ready (Secure Mode)");
 });

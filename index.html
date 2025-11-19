@@ -3,19 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Security: Content Security Policy (CSP) - Updated for Maximum Protection -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self' https://*.firebaseapp.com https://*.googleapis.com https://*.gstatic.com;
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com https://images.dmca.com https://apis.google.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.jsdelivr.net;
+        img-src 'self' data: https: blob:;
+        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+        connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com wss://*.firebaseio.com https://firestore.googleapis.com;
+        frame-src https://*.firebaseapp.com https://*.firebase.com https://*.google.com;
+        object-src 'none';
+        base-uri 'self';
+    ">
+    
     <title>Master Quality - STORE-RD</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" xintegrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
     <!-- Link to your BUILT CSS file (Tailwind) -->
     <link rel="stylesheet" href="dist/output.css">
 
-    <!-- <link rel="stylesheet" href="style.css"> -->
+    <!-- Security: DOMPurify for XSS protection -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 
 </head>
 <body class="bg-light-background dark:bg-dark-background text-light-text-primary dark:text-dark-text-primary transition-colors duration-medium font-sans antialiased text-base overflow-x-hidden">
@@ -60,7 +75,7 @@
     <main class="main-content pt-8 md:pt-12">
 
         <section id="hero" class="relative min-h-[75vh] md:min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-primary/10 via-transparent to-accent/5 dark:from-primary-dark/15 dark:via-transparent dark:to-accent/10 overflow-hidden section-animate">
-             <div class="absolute inset-0 opacity-20 dark:opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230891B2' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E'); "></div>
+             <div class="absolute inset-0 opacity-20 dark:opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%230891B2\' fill-opacity=\'0.1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E'); "></div>
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 animate-fade-in-up animation-delay-200">
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold font-heading mb-5 md:mb-6 leading-tight tracking-tight drop-shadow-md dark:drop-shadow-lg">
                     <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent dark:from-primary-light dark:to-accent/90">الأناقة</span> تبدأ من هنا
@@ -158,7 +173,7 @@
 
         <!-- DMCA Badge - RD UPDATE 1.0-->
         <div class="mt-6 flex justify-center">
-        <a href="//www.dmca.com/Protection/Status.aspx?ID=1053e588-12d8-46b9-b837-636227cc6840" title="DMCA.com Protection Status" class="dmca-badge"> <img src ="https://images.dmca.com/Badges/dmca_protected_sml_120m.png?ID=1053e588-12d8-46b9-b837-636227cc6840"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script>            <div class="mt-6 text-center">
+        <a href="//www.dmca.com/Protection/Status.aspx?ID=1053e588-12d8-46b9-b837-636227cc6840" title="DMCA.com Protection Status" class="dmca-badge" target="_blank" rel="noopener noreferrer"> <img src ="https://images.dmca.com/Badges/dmca_protected_sml_120m.png?ID=1053e588-12d8-46b9-b837-636227cc6840"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script>            <div class="mt-6 text-center">
             <button id="product-management-toggle" class="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">إدارة المنتجات (Admin)</button>
         </div>
     </div>
