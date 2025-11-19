@@ -80,7 +80,9 @@ const formatPrice = (priceString) => {
     try { const cleaned = String(priceString).replace(/[^\d,.]/g, '').replace(/,/g, ''); const num = parseFloat(cleaned); return isNaN(num) ? priceString : num.toLocaleString('ar-IQ'); } catch { return priceString; }
 };
 const parseFormattedPrice = (formattedPrice) => (!formattedPrice || typeof formattedPrice !== 'string') ? NaN : parseFloat(formattedPrice.replace(/,/g, ''));
-const isValidImageUrl = (url) => url && typeof url === 'string' && url.trim() !== '' && !url.startsWith('https://placehold.co');
+
+// FIX: Simplified image validation to allow ALL external URLs
+const isValidImageUrl = (url) => url && typeof url === 'string' && url.trim() !== '';
 
 // --- Theme Management ---
 const applyTheme = (theme) => {
@@ -171,8 +173,8 @@ const createProductCard = (product, isCarousel = false) => {
         <div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700 product-card-image-container">
              <img src="${img1}" alt="${product.title}" loading="lazy" class="product-card-img w-full h-full object-contain" onerror="if(this.src!=='${ph1}'){this.src='${ph1}';this.classList.add('img-error','object-scale-down');}this.onerror=null;">
              <img src="${img2}" alt="${product.title}" loading="lazy" class="product-card-img-hover w-full h-full object-contain" onerror="if(this.src!=='${ph2}'){this.src='${ph2}';this.classList.add('img-error','object-scale-down');}this.onerror=null;">
-             ${isOnSale ? '<span class="sale-badge">تخفيض!</span>' : ''}
             <div class="badges-container absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
+                ${isOnSale ? '<span class="badge badge-sale text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-red-600 text-white">تخفيض!</span>' : ''}
                 ${product.availability === 'in stock' ? `<span class="badge badge-stock text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-success-DEFAULT text-success-text">متوفر</span>` : `<span class="badge badge-out-stock text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-error-DEFAULT text-error-text">غير متوفر</span>`}
                 ${product.is_new ? `<span class="badge badge-new text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-info-DEFAULT text-info-text">جديد <i class="fas fa-fire text-xs"></i></span>` : ''}
             </div>
@@ -289,7 +291,10 @@ const openDetailPanel = (id) => {
 
     productDetailContent.innerHTML = safeHTML(`
         <div class="detail-panel-image-wrapper aspect-square mb-6 relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden border border-light-border/50 dark:border-dark-border/50">
-            ${product.on_sale && product.original_price ? '<span class="sale-badge absolute top-2 right-2 z-10 text-xs">تخفيض!</span>' : ''}
+            <div class="absolute top-3 left-3 z-10 flex flex-col gap-1.5 pointer-events-none">
+                 ${product.on_sale && product.original_price ? '<span class="badge badge-sale text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-red-600 text-white">تخفيض!</span>' : ''}
+                 ${product.availability === 'in stock' ? `<span class="badge badge-stock text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-success-DEFAULT text-success-text">متوفر</span>` : `<span class="badge badge-out-stock text-xs font-medium py-1 px-2.5 rounded-full shadow-sm border border-white/20 bg-error-DEFAULT text-error-text">غير متوفر</span>`}
+            </div>
             <div class="swiper detail-panel-swiper"><div class="swiper-wrapper">${slides}</div><div class="swiper-pagination"></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div></div>
         </div>
         <h2 class="detail-panel-title text-2xl md:text-3xl font-bold font-heading text-light-text-primary dark:text-dark-text-primary leading-tight mb-4">${product.title}</h2>
